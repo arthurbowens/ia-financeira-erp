@@ -1,0 +1,103 @@
+<div class="assinatura-container" *ngIf="contrato; else contratoNaoEncontrado">
+  <div class="header">
+    <button class="back-btn" (click)="voltarParaContratos()">
+      ← Voltar para Contratos
+    </button>
+    <h1>✍️ Assinatura Digital</h1>
+  </div>
+
+  <div class="contrato-info">
+    <div class="contrato-header">
+      <h2>{{ contrato.titulo }}</h2>
+      <span class="status-badge" [ngClass]="getStatusClass(contrato.status)">
+        {{ getStatusText(contrato.status) }}
+      </span>
+    </div>
+
+    <div class="contrato-details">
+      <div class="detail-row">
+        <span class="label">Cliente:</span>
+        <span class="value">{{ contrato.cliente }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Valor:</span>
+        <span class="value valor">{{ formatCurrency(contrato.valor) }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Vencimento:</span>
+        <span class="value">{{ formatDate(contrato.dataVencimento) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="contrato-content">
+      <h3>📄 Conteúdo do Contrato</h3>
+      <div class="document-viewer">
+        <pre>{{ contrato.conteudo }}</pre>
+      </div>
+    </div>
+
+    <div class="assinatura-panel">
+      <h3>🔐 Assinatura Digital</h3>
+      
+      <div class="ai-analysis" *ngIf="isAnalisando || analiseIA">
+        <h4>🤖 Análise da IA</h4>
+        <div class="analysis-content" *ngIf="isAnalisando">
+          <div class="loading-spinner"></div>
+          <p>Analisando contrato com IA...</p>
+        </div>
+        <div class="analysis-content" *ngIf="analiseIA && !isAnalisando">
+          <p>{{ analiseIA }}</p>
+        </div>
+      </div>
+
+      <div class="signature-section" *ngIf="!assinaturaRealizada">
+        <h4>✍️ Assinatura</h4>
+        <div class="signature-form">
+          <label for="assinatura">Digite sua assinatura digital:</label>
+          <input 
+            type="text" 
+            id="assinatura"
+            [(ngModel)]="assinaturaDigital"
+            placeholder="Digite seu nome completo"
+            class="signature-input"
+            [disabled]="isAssinando"
+          >
+          
+          <button 
+            class="sign-btn"
+            (click)="simularAssinaturaDigital()"
+            [disabled]="!assinaturaDigital.trim() || isAssinando"
+          >
+            {{ isAssinando ? 'Assinando...' : 'Assinar Digitalmente' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="signature-success" *ngIf="assinaturaRealizada">
+        <div class="success-icon">✅</div>
+        <h4>Contrato Assinado com Sucesso!</h4>
+        <div class="signature-details">
+          <p><strong>Assinatura:</strong> {{ assinaturaDigital }}</p>
+          <p><strong>Hash:</strong> {{ gerarHashAssinatura() }}</p>
+          <p><strong>Data/Hora:</strong> {{ currentDate | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+        </div>
+        <button class="back-btn" (click)="voltarParaContratos()">
+          Voltar para Contratos
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #contratoNaoEncontrado>
+  <div class="error-container">
+    <div class="error-icon">❌</div>
+    <h2>Contrato não encontrado</h2>
+    <p>O contrato solicitado não foi encontrado.</p>
+    <button class="back-btn" (click)="voltarParaContratos()">
+      Voltar para Contratos
+    </button>
+  </div>
+</ng-template>

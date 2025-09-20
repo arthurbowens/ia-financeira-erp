@@ -1,0 +1,58 @@
+<div class="chatbot-container">
+  <div class="chat-header">
+    <h2>🤖 IA Financeira</h2>
+    <button class="clear-btn" (click)="clearChat()" title="Limpar conversa">
+      🗑️
+    </button>
+  </div>
+
+  <div class="chat-messages" #chatContainer>
+    <div 
+      *ngFor="let message of messages" 
+      class="message"
+      [ngClass]="{'user-message': message.role === 'user', 'ai-message': message.role === 'assistant'}"
+    >
+      <div class="message-content">
+        <div class="message-header">
+          <span class="sender">
+            {{ message.role === 'user' ? 'Você' : 'IA Financeira' }}
+          </span>
+          <span class="timestamp">
+            {{ message.timestamp | date:'HH:mm' }}
+          </span>
+        </div>
+        <div class="message-text" [innerHTML]="message.content"></div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="message ai-message">
+      <div class="message-content">
+        <div class="message-header">
+          <span class="sender">IA Financeira</span>
+        </div>
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <textarea
+      [(ngModel)]="newMessage"
+      (keypress)="onKeyPress($event)"
+      placeholder="Digite sua mensagem aqui..."
+      [disabled]="isLoading"
+      rows="2"
+    ></textarea>
+    <button 
+      (click)="sendMessage()" 
+      [disabled]="!newMessage.trim() || isLoading"
+      class="send-btn"
+    >
+      {{ isLoading ? '⏳' : '📤' }}
+    </button>
+  </div>
+</div>

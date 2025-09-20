@@ -1,0 +1,103 @@
+<div class="contratos-container">
+  <div class="header">
+    <h1>📋 Gestão de Contratos</h1>
+    <button class="add-btn" (click)="adicionarContrato()">
+      ➕ Novo Contrato
+    </button>
+  </div>
+
+  <div class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-number">{{ getTotalContratos() }}</div>
+      <div class="stat-label">Total de Contratos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ formatCurrency(getTotalValor()) }}</div>
+      <div class="stat-label">Valor Total</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label for="statusFilter">Status:</label>
+      <select 
+        id="statusFilter" 
+        [(ngModel)]="filtroStatus"
+        class="filter-select"
+      >
+        <option value="todos">Todos</option>
+        <option value="pendente">Pendente</option>
+        <option value="assinado">Assinado</option>
+        <option value="vencido">Vencido</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="textFilter">Buscar:</label>
+      <input 
+        id="textFilter"
+        type="text" 
+        [(ngModel)]="filtroTexto"
+        placeholder="Título ou cliente..."
+        class="filter-input"
+      >
+    </div>
+  </div>
+
+  <div class="contratos-grid">
+    <div 
+      *ngFor="let contrato of contratosFiltrados" 
+      class="contrato-card"
+      [ngClass]="getStatusClass(contrato.status)"
+    >
+      <div class="contrato-header">
+        <h3>{{ contrato.titulo }}</h3>
+        <span class="status-badge" [ngClass]="getStatusClass(contrato.status)">
+          {{ getStatusText(contrato.status) }}
+        </span>
+      </div>
+
+      <div class="contrato-info">
+        <div class="info-row">
+          <span class="label">Cliente:</span>
+          <span class="value">{{ contrato.cliente }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Valor:</span>
+          <span class="value valor">{{ formatCurrency(contrato.valor) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Vencimento:</span>
+          <span class="value">{{ formatDate(contrato.dataVencimento) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Descrição:</span>
+          <span class="value">{{ contrato.descricao }}</span>
+        </div>
+      </div>
+
+      <div class="contrato-actions">
+        <button 
+          class="action-btn primary"
+          (click)="assinarContrato(contrato)"
+          [disabled]="contrato.status === 'assinado'"
+        >
+          {{ contrato.status === 'assinado' ? '✅ Assinado' : '✍️ Assinar' }}
+        </button>
+        
+        <button 
+          class="action-btn secondary"
+          (click)="enviarWhatsApp(contrato)"
+        >
+          📱 WhatsApp
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="contratosFiltrados.length === 0" class="no-results">
+      <div class="no-results-icon">📄</div>
+      <h3>Nenhum contrato encontrado</h3>
+      <p>Tente ajustar os filtros ou adicionar um novo contrato.</p>
+    </div>
+  </div>
+</div>
