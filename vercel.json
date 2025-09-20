@@ -1,7 +1,9 @@
 {
   "version": 2,
+  "framework": "angular",
   "buildCommand": "npm run build:vercel",
-  "outputDirectory": "dist/ia-financeira-erp",
+  "outputDirectory": "dist/ia-financeira-erp/browser",
+  "installCommand": "npm install",
   "rewrites": [
     {
       "source": "/(.*)",
