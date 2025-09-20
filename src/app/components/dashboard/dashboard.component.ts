@@ -3,7 +3,6 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { DADOS_FINANCEIROS_MOCK, DadosFinanceiros } from '../../data/mock-data';
-import { AiService } from '../../services/ai.service';
 
 Chart.register(...registerables);
 
@@ -12,18 +11,14 @@ Chart.register(...registerables);
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   dados: DadosFinanceiros = DADOS_FINANCEIROS_MOCK;
   receitaChart: Chart | null = null;
   despesasChart: Chart | null = null;
-  analiseIA: string = '';
-  isAnalisando: boolean = false;
   currentDate: Date = new Date();
 
   constructor(
-    private aiService: AiService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -32,7 +27,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.criarGraficoReceitas();
       this.criarGraficoDespesas();
     }
-    this.analisarDadosFinanceiros();
   }
 
   ngOnDestroy() {
@@ -148,20 +142,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.despesasChart = new Chart(ctx, config);
   }
 
-  analisarDadosFinanceiros() {
-    this.isAnalisando = true;
-    this.aiService.analyzeFinancialData(this.dados).subscribe({
-      next: (response) => {
-        this.analiseIA = response.message;
-        this.isAnalisando = false;
-      },
-      error: (error) => {
-        console.error('Erro na análise da IA:', error);
-        this.analiseIA = 'Erro ao analisar os dados financeiros. Tente novamente.';
-        this.isAnalisando = false;
-      }
-    });
-  }
 
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('pt-BR', {
@@ -176,6 +156,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getMargemLucro(): string {
     return this.getLucroPercentual().toFixed(1) + '%';
+  }
+
+  getMargemDespesas(): string {
+    const margem = (this.dados.despesas / this.dados.receitas) * 100;
+    return margem.toFixed(1) + '%';
   }
 
   getStatusLucro(): string {

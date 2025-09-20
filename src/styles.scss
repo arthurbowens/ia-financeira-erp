@@ -1,18 +1,35 @@
-/* Global styles for IA Financeira & ERP */
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Global styles for IA Financeira & ERP */
+@layer base {
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f8f9fa;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer components {
+  /* Status classes for contracts */
+  .status-pendente {
+    @apply bg-warning-100 text-warning-800;
+  }
+  
+  .status-assinado {
+    @apply bg-success-100 text-success-800;
+  }
+  
+  .status-vencido {
+    @apply bg-danger-100 text-danger-800;
+  }
+  
+  /* Active navigation link */
+  .active {
+    @apply bg-primary-600 text-white;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {

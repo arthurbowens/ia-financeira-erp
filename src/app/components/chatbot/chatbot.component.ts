@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService, ChatMessage } from '../../services/ai.service';
+import { MarkdownPipe } from '../../pipes/markdown.pipe';
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MarkdownPipe],
   templateUrl: './chatbot.component.html',
-  styleUrls: ['./chatbot.component.scss']
 })
 export class ChatbotComponent implements OnInit {
   messages: ChatMessage[] = [];

@@ -9,7 +9,6 @@ import { CONTRATOS_MOCK, Contrato } from '../../data/mock-data';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './contratos.component.html',
-  styleUrls: ['./contratos.component.scss']
 })
 export class ContratosComponent implements OnInit {
   contratos: Contrato[] = [];
@@ -97,5 +96,48 @@ export class ContratosComponent implements OnInit {
 
   getTotalValor(): number {
     return this.contratosFiltrados.reduce((total, contrato) => total + contrato.valor, 0);
+  }
+
+  getContratosPorStatus(status: string): number {
+    return this.contratos.filter(c => c.status === status).length;
+  }
+
+  exportarContratos(): void {
+    const dados = this.contratosFiltrados.map(contrato => ({
+      'ID': contrato.id,
+      'Título': contrato.titulo,
+      'Cliente': contrato.cliente,
+      'Valor': this.formatCurrency(contrato.valor),
+      'Data Vencimento': contrato.dataVencimento,
+      'Status': contrato.status,
+      'Descrição': contrato.descricao
+    }));
+
+    const csv = this.converterParaCSV(dados);
+    this.downloadCSV(csv, 'contratos.csv');
+  }
+
+  private converterParaCSV(dados: any[]): string {
+    if (dados.length === 0) return '';
+    
+    const headers = Object.keys(dados[0]);
+    const csvContent = [
+      headers.join(','),
+      ...dados.map(row => headers.map(header => `"${row[header]}"`).join(','))
+    ].join('\n');
+    
+    return csvContent;
+  }
+
+  private downloadCSV(csv: string, filename: string): void {
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }

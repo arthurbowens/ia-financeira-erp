@@ -1,103 +1,125 @@
-<div class="contratos-container">
-  <div class="header">
-    <h1>📋 Gestão de Contratos</h1>
-    <button class="add-btn" (click)="adicionarContrato()">
-      ➕ Novo Contrato
-    </button>
-  </div>
-
-  <div class="stats-cards">
-    <div class="stat-card">
-      <div class="stat-number">{{ getTotalContratos() }}</div>
-      <div class="stat-label">Total de Contratos</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">{{ formatCurrency(getTotalValor()) }}</div>
-      <div class="stat-label">Valor Total</div>
-    </div>
-  </div>
-
-  <div class="filters">
-    <div class="filter-group">
-      <label for="statusFilter">Status:</label>
-      <select 
-        id="statusFilter" 
-        [(ngModel)]="filtroStatus"
-        class="filter-select"
-      >
-        <option value="todos">Todos</option>
-        <option value="pendente">Pendente</option>
-        <option value="assinado">Assinado</option>
-        <option value="vencido">Vencido</option>
-      </select>
-    </div>
-
-    <div class="filter-group">
-      <label for="textFilter">Buscar:</label>
-      <input 
-        id="textFilter"
-        type="text" 
-        [(ngModel)]="filtroTexto"
-        placeholder="Título ou cliente..."
-        class="filter-input"
-      >
-    </div>
-  </div>
-
-  <div class="contratos-grid">
-    <div 
-      *ngFor="let contrato of contratosFiltrados" 
-      class="contrato-card"
-      [ngClass]="getStatusClass(contrato.status)"
-    >
-      <div class="contrato-header">
-        <h3>{{ contrato.titulo }}</h3>
-        <span class="status-badge" [ngClass]="getStatusClass(contrato.status)">
-          {{ getStatusText(contrato.status) }}
-        </span>
-      </div>
-
-      <div class="contrato-info">
-        <div class="info-row">
-          <span class="label">Cliente:</span>
-          <span class="value">{{ contrato.cliente }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">Valor:</span>
-          <span class="value valor">{{ formatCurrency(contrato.valor) }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">Vencimento:</span>
-          <span class="value">{{ formatDate(contrato.dataVencimento) }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">Descrição:</span>
-          <span class="value">{{ contrato.descricao }}</span>
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4 lg:mb-0">📋 Gestão de Contratos</h1>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button 
+            (click)="exportarContratos()"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            📊 Exportar
+          </button>
+          <button 
+            (click)="adicionarContrato()"
+            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+            ➕ Novo Contrato
+          </button>
         </div>
       </div>
+      
+      <!-- Estatísticas -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-2xl font-bold text-gray-900">{{ getTotalContratos() }}</div>
+          <div class="text-sm text-gray-600">Total</div>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(getTotalValor()) }}</div>
+          <div class="text-sm text-gray-600">Valor Total</div>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-2xl font-bold text-success-600">{{ getContratosPorStatus('assinado') }}</div>
+          <div class="text-sm text-gray-600">Assinados</div>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-2xl font-bold text-warning-600">{{ getContratosPorStatus('pendente') }}</div>
+          <div class="text-sm text-gray-600">Pendentes</div>
+        </div>
+      </div>
+    </div>
 
-      <div class="contrato-actions">
-        <button 
-          class="action-btn primary"
-          (click)="assinarContrato(contrato)"
-          [disabled]="contrato.status === 'assinado'"
-        >
-          {{ contrato.status === 'assinado' ? '✅ Assinado' : '✍️ Assinar' }}
-        </button>
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="statusFilter" class="block text-sm font-medium text-gray-700 mb-2">Status:</label>
+          <select 
+            id="statusFilter" 
+            [(ngModel)]="filtroStatus"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            <option value="todos">Todos</option>
+            <option value="pendente">Pendente</option>
+            <option value="assinado">Assinado</option>
+            <option value="vencido">Vencido</option>
+          </select>
+        </div>
         
-        <button 
-          class="action-btn secondary"
-          (click)="enviarWhatsApp(contrato)"
-        >
-          📱 WhatsApp
-        </button>
+        <div>
+          <label for="textFilter" class="block text-sm font-medium text-gray-700 mb-2">Buscar:</label>
+          <input 
+            type="text" 
+            id="textFilter"
+            [(ngModel)]="filtroTexto"
+            placeholder="Título ou cliente..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+        </div>
       </div>
     </div>
 
-    <div *ngIf="contratosFiltrados.length === 0" class="no-results">
-      <div class="no-results-icon">📄</div>
-      <h3>Nenhum contrato encontrado</h3>
-      <p>Tente ajustar os filtros ou adicionar um novo contrato.</p>
+    <!-- Lista de Contratos -->
+    <div class="space-y-4">
+      <div *ngFor="let contrato of contratosFiltrados" 
+           class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex-1 mb-4 lg:mb-0">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-lg font-semibold text-gray-900">{{ contrato.titulo }}</h3>
+              <span [ngClass]="getStatusClass(contrato.status)" 
+                    class="px-3 py-1 rounded-full text-xs font-medium">
+                {{ getStatusText(contrato.status) }}
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+              <div>
+                <span class="font-medium">Cliente:</span> {{ contrato.cliente }}
+              </div>
+              <div>
+                <span class="font-medium">Valor:</span> {{ formatCurrency(contrato.valor) }}
+              </div>
+              <div>
+                <span class="font-medium">Vencimento:</span> {{ contrato.dataVencimento | date:'dd/MM/yyyy' }}
+              </div>
+              <div>
+                <span class="font-medium">WhatsApp:</span> {{ contrato.whatsapp }}
+              </div>
+            </div>
+            
+            <p class="text-gray-600 mt-3">{{ contrato.descricao }}</p>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-2 lg:ml-6">
+            <button 
+              (click)="assinarContrato(contrato)"
+              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm">
+              ✍️ Assinar
+            </button>
+            <button 
+              (click)="enviarWhatsApp(contrato)"
+              class="px-4 py-2 bg-success-600 text-white rounded-lg hover:bg-success-700 transition-colors text-sm">
+              📱 WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="contratosFiltrados.length === 0" 
+           class="text-center py-12 bg-white rounded-xl shadow-sm">
+        <div class="text-gray-400 text-6xl mb-4">📋</div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhum contrato encontrado</h3>
+        <p class="text-gray-600">Tente ajustar os filtros ou adicionar um novo contrato.</p>
+      </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles for IA Financeira & ERP */
+@layer base {
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Status classes for contracts */
+  .status-pendente {
+    @apply bg-warning-100 text-warning-800;
+  }
+  
+  .status-assinado {
+    @apply bg-success-100 text-success-800;
+  }
+  
+  .status-vencido {
+    @apply bg-danger-100 text-danger-800;
+  }
+  
+  /* Active navigation link */
+  .active {
+    @apply bg-primary-600 text-white;
+  }
+}

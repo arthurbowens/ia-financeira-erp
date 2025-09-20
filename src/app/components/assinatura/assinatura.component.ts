@@ -10,7 +10,6 @@ import { CONTRATOS_MOCK, Contrato } from '../../data/mock-data';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './assinatura.component.html',
-  styleUrls: ['./assinatura.component.scss']
 })
 export class AssinaturaComponent implements OnInit {
   contrato: Contrato | null = null;
@@ -54,25 +53,6 @@ export class AssinaturaComponent implements OnInit {
     });
   }
 
-  simularAssinaturaDigital() {
-    if (!this.contrato || !this.assinaturaDigital.trim()) return;
-
-    this.isAssinando = true;
-
-    // Simular processo de assinatura digital
-    setTimeout(() => {
-      this.assinaturaRealizada = true;
-      this.isAssinando = false;
-      
-      // Atualizar status do contrato
-      if (this.contrato) {
-        this.contrato.status = 'assinado';
-      }
-
-      // Mostrar confirmação
-      alert('Contrato assinado digitalmente com sucesso!');
-    }, 2000);
-  }
 
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('pt-BR', {
@@ -85,9 +65,6 @@ export class AssinaturaComponent implements OnInit {
     return new Date(dateString).toLocaleDateString('pt-BR');
   }
 
-  voltarParaContratos() {
-    this.router.navigate(['/contratos']);
-  }
 
   gerarHashAssinatura(): string {
     // Simular geração de hash para assinatura digital
@@ -112,5 +89,26 @@ export class AssinaturaComponent implements OnInit {
       case 'vencido': return 'Vencido';
       default: return status;
     }
+  }
+
+  simularAssinatura(): void {
+    if (!this.contrato) return;
+
+    this.isAssinando = true;
+    // Simula um atraso para a assinatura
+    setTimeout(() => {
+      this.assinaturaDigital = `Assinado por: [Seu Nome] em ${new Date().toLocaleString()}`;
+      this.assinaturaRealizada = true;
+      this.isAssinando = false;
+      // Atualiza o status do contrato mockado
+      const index = CONTRATOS_MOCK.findIndex(c => c.id === this.contrato!.id);
+      if (index !== -1) {
+        CONTRATOS_MOCK[index].status = 'assinado';
+      }
+    }, 2000);
+  }
+
+  voltarParaContratos(): void {
+    this.router.navigate(['/contratos']);
   }
 }

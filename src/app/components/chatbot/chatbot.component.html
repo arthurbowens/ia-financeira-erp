@@ -1,58 +1,78 @@
-<div class="chatbot-container">
-  <div class="chat-header">
-    <h2>🤖 IA Financeira</h2>
-    <button class="clear-btn" (click)="clearChat()" title="Limpar conversa">
-      🗑️
-    </button>
-  </div>
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm h-[calc(100vh-3rem)] flex flex-col">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-900">🤖 IA Financeira</h2>
+        <button 
+          (click)="clearChat()" 
+          title="Limpar conversa"
+          class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          🗑️
+        </button>
+      </div>
 
-  <div class="chat-messages" #chatContainer>
-    <div 
-      *ngFor="let message of messages" 
-      class="message"
-      [ngClass]="{'user-message': message.role === 'user', 'ai-message': message.role === 'assistant'}"
-    >
-      <div class="message-content">
-        <div class="message-header">
-          <span class="sender">
-            {{ message.role === 'user' ? 'Você' : 'IA Financeira' }}
-          </span>
-          <span class="timestamp">
-            {{ message.timestamp | date:'HH:mm' }}
-          </span>
+      <!-- Messages -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-4" #chatContainer>
+        <div 
+          *ngFor="let message of messages" 
+          class="flex"
+          [ngClass]="{'justify-end': message.role === 'user', 'justify-start': message.role === 'assistant'}"
+        >
+          <div 
+            class="max-w-3xl px-4 py-3 rounded-2xl"
+            [ngClass]="{
+              'bg-primary-600 text-white': message.role === 'user',
+              'bg-gray-100 text-gray-900': message.role === 'assistant'
+            }"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium opacity-75">
+                {{ message.role === 'user' ? 'Você' : 'IA Financeira' }}
+              </span>
+              <span class="text-xs opacity-75">
+                {{ message.timestamp | date:'HH:mm' }}
+              </span>
+            </div>
+            <div class="prose prose-sm max-w-none" [innerHTML]="message.content | markdown"></div>
+          </div>
         </div>
-        <div class="message-text" [innerHTML]="message.content"></div>
+
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="flex justify-start">
+          <div class="max-w-3xl px-4 py-3 rounded-2xl bg-gray-100 text-gray-900">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium opacity-75">IA Financeira</span>
+            </div>
+            <div class="flex space-x-1">
+              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="p-6 border-t border-gray-200">
+        <div class="flex gap-3">
+          <textarea
+            [(ngModel)]="newMessage"
+            (keypress)="onKeyPress($event)"
+            placeholder="Digite sua mensagem aqui..."
+            [disabled]="isLoading"
+            rows="2"
+            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+          ></textarea>
+          <button 
+            (click)="sendMessage()" 
+            [disabled]="!newMessage.trim() || isLoading"
+            class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {{ isLoading ? '⏳' : '📤' }}
+          </button>
+        </div>
       </div>
     </div>
-
-    <div *ngIf="isLoading" class="message ai-message">
-      <div class="message-content">
-        <div class="message-header">
-          <span class="sender">IA Financeira</span>
-        </div>
-        <div class="typing-indicator">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="chat-input">
-    <textarea
-      [(ngModel)]="newMessage"
-      (keypress)="onKeyPress($event)"
-      placeholder="Digite sua mensagem aqui..."
-      [disabled]="isLoading"
-      rows="2"
-    ></textarea>
-    <button 
-      (click)="sendMessage()" 
-      [disabled]="!newMessage.trim() || isLoading"
-      class="send-btn"
-    >
-      {{ isLoading ? '⏳' : '📤' }}
-    </button>
   </div>
 </div>

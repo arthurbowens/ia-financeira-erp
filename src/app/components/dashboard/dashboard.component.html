@@ -1,110 +1,174 @@
-<div class="dashboard-container">
-  <div class="header">
-    <h1>📊 Dashboard Financeiro</h1>
-    <div class="last-update">
-      Última atualização: {{ currentDate | date:'dd/MM/yyyy HH:mm' }}
-    </div>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card receita">
-      <div class="stat-icon">💰</div>
-      <div class="stat-content">
-        <div class="stat-value">{{ formatCurrency(dados.receitas) }}</div>
-        <div class="stat-label">Receitas</div>
-      </div>
-    </div>
-
-    <div class="stat-card despesas">
-      <div class="stat-icon">💸</div>
-      <div class="stat-content">
-        <div class="stat-value">{{ formatCurrency(dados.despesas) }}</div>
-        <div class="stat-label">Despesas</div>
-      </div>
-    </div>
-
-    <div class="stat-card lucro" [ngClass]="getStatusClass()">
-      <div class="stat-icon">📈</div>
-      <div class="stat-content">
-        <div class="stat-value">{{ formatCurrency(dados.lucro) }}</div>
-        <div class="stat-label">Lucro</div>
-        <div class="stat-percentage">{{ getMargemLucro() }}</div>
-      </div>
-    </div>
-
-    <div class="stat-card contratos">
-      <div class="stat-icon">📋</div>
-      <div class="stat-content">
-        <div class="stat-value">{{ dados.contratosAtivos }}</div>
-        <div class="stat-label">Contratos Ativos</div>
-        <div class="stat-sub">{{ dados.contratosPendentes }} pendentes</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="charts-grid">
-    <div class="chart-container">
-      <div class="chart-header">
-        <h3>📈 Receita Mensal</h3>
-        <div class="chart-actions">
-          <button class="chart-btn" (click)="criarGraficoReceitas()">🔄</button>
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2 sm:mb-0">📊 Dashboard Financeiro</h1>
+        <div class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+          Última atualização: {{ currentDate | date:'dd/MM/yyyy HH:mm' }}
         </div>
       </div>
-      <div class="chart-wrapper">
-        <canvas id="receitaChart"></canvas>
-      </div>
     </div>
 
-    <div class="chart-container">
-      <div class="chart-header">
-        <h3>🥧 Despesas por Categoria</h3>
-        <div class="chart-actions">
-          <button class="chart-btn" (click)="criarGraficoDespesas()">🔄</button>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Receitas -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-success-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">💰</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(dados.receitas) }}</div>
+            <div class="text-sm text-gray-600">Receitas</div>
+            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
+              +{{ dados.indicadores.crescimentoReceita }}%
+            </div>
+          </div>
         </div>
       </div>
-      <div class="chart-wrapper">
-        <canvas id="despesasChart"></canvas>
-      </div>
-    </div>
-  </div>
 
-  <div class="ai-analysis-section">
-    <div class="analysis-header">
-      <h3>🤖 Análise Inteligente da IA</h3>
-      <button class="refresh-btn" (click)="analisarDadosFinanceiros()" [disabled]="isAnalisando">
-        {{ isAnalisando ? '⏳' : '🔄' }}
-      </button>
-    </div>
-    
-    <div class="analysis-content">
-      <div *ngIf="isAnalisando" class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Analisando dados financeiros com IA...</p>
+      <!-- Despesas -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-warning-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">💸</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(dados.despesas) }}</div>
+            <div class="text-sm text-gray-600">Despesas</div>
+            <div class="text-xs text-gray-500 mt-1">{{ getMargemDespesas() }}</div>
+          </div>
+        </div>
       </div>
-      
-      <div *ngIf="analiseIA && !isAnalisando" class="analysis-text">
-        <p>{{ analiseIA }}</p>
-      </div>
-    </div>
-  </div>
 
-  <div class="quick-actions">
-    <h3>⚡ Ações Rápidas</h3>
-    <div class="actions-grid">
-      <a class="action-card" routerLink="/contratos">
-        <div class="action-icon">📋</div>
-        <div class="action-text">Gerenciar Contratos</div>
-      </a>
-      
-      <a class="action-card" routerLink="/chat">
-        <div class="action-icon">💬</div>
-        <div class="action-text">Chat com IA</div>
-      </a>
-      
-      <button class="action-card" (click)="analisarDadosFinanceiros()">
-        <div class="action-icon">🔍</div>
-        <div class="action-text">Análise Detalhada</div>
-      </button>
+      <!-- Lucro -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-primary-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">📈</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(dados.lucro) }}</div>
+            <div class="text-sm text-gray-600">Lucro Líquido</div>
+            <div class="text-xs text-primary-600 bg-primary-50 px-2 py-1 rounded-full mt-1 inline-block">
+              {{ dados.margemLiquida }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contratos -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">📋</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ dados.contratosAtivos }}</div>
+            <div class="text-sm text-gray-600">Contratos Ativos</div>
+            <div class="text-xs text-gray-500 mt-1">{{ dados.contratosPendentes }} pendentes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROI -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">🎯</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ dados.roi }}%</div>
+            <div class="text-sm text-gray-600">ROI</div>
+            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
+              Excelente
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eficiência -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">⚡</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ dados.indicadores.eficienciaOperacional }}%</div>
+            <div class="text-sm text-gray-600">Eficiência</div>
+            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
+              Ótima
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Satisfação -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-pink-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">😊</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ dados.indicadores.satisfacaoCliente }}%</div>
+            <div class="text-sm text-gray-600">Satisfação</div>
+            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
+              Excelente
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Produtividade -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+        <div class="flex items-center">
+          <div class="text-3xl mr-4">📊</div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-gray-900">{{ dados.indicadores.produtividade }}%</div>
+            <div class="text-sm text-gray-600">Produtividade</div>
+            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
+              +56.7%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Gráfico de Receitas -->
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">📈 Receita Mensal</h3>
+          <button 
+            (click)="criarGraficoReceitas()"
+            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            🔄
+          </button>
+        </div>
+        <div class="h-64">
+          <canvas id="receitaChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico de Despesas -->
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">🥧 Despesas por Categoria</h3>
+          <button 
+            (click)="criarGraficoDespesas()"
+            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            🔄
+          </button>
+        </div>
+        <div class="h-64">
+          <canvas id="despesasChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Ações Rápidas -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">⚡ Ações Rápidas</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a routerLink="/contratos" 
+           class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors group">
+          <div class="text-2xl mr-3 group-hover:scale-110 transition-transform">📋</div>
+          <div class="font-medium text-gray-900">Gerenciar Contratos</div>
+        </a>
+        
+        <a routerLink="/chat" 
+           class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors group">
+          <div class="text-2xl mr-3 group-hover:scale-110 transition-transform">💬</div>
+          <div class="font-medium text-gray-900">Chat com IA</div>
+        </a>
+        
+      </div>
     </div>
   </div>
 </div>
