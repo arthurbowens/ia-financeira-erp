@@ -29,4 +29,17 @@
   .active {
     @apply bg-primary-600 text-white;
   }
+
+  /* Mobile menu animations */
+  .mobile-menu-enter {
+    @apply transform transition-all duration-300 ease-in-out;
+  }
+
+  .mobile-menu-enter-active {
+    @apply opacity-100 translate-y-0;
+  }
+
+  .mobile-menu-enter-from {
+    @apply opacity-0 -translate-y-2;
+  }
 }
