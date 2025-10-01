@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mediaNovosContratosUnidades3m: number = 0;
   mediaCustoFixo: number = 0;
   mediaCustoVariavel: number = 0;
+  mediaCustoEstrategico: number = 0;
   
   // Filtro de mês
   mesSelecionado: string = '';
@@ -40,6 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.calcularMediasContratosUltimos3Meses();
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
+    this.calcularMediaCustoEstrategico();
     
     if (isPlatformBrowser(this.platformId)) {
       this.criarGraficoReceitas();
@@ -255,6 +257,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.mediaCustoVariavel = totalCustosVariaveis / 6; // média mensal em R$
   }
 
+  private calcularMediaCustoEstrategico(): void {
+    // Dados mock por mês para custos estratégicos
+    const custosEstrategicosPorMes: {[key: string]: number} = {
+      '2025-10': 42000,
+      '2025-09': 38000,
+      '2025-08': 35000,
+      '2025-07': 32000,
+      '2025-06': 28000,
+      '2025-05': 25000,
+      '2025-04': 22000,
+      '2025-03': 20000,
+      '2025-02': 18000,
+      '2025-01': 15000
+    };
+
+    // Usa o valor do mês selecionado ou calcula média dos últimos 6 meses
+    const mesSelecionado = this.mesSelecionado;
+    if (custosEstrategicosPorMes[mesSelecionado]) {
+      this.mediaCustoEstrategico = custosEstrategicosPorMes[mesSelecionado];
+    } else {
+      // Fallback: média dos últimos 6 meses
+      const valores = Object.values(custosEstrategicosPorMes);
+      const total = valores.reduce((acc, valor) => acc + valor, 0);
+      this.mediaCustoEstrategico = total / valores.length;
+    }
+  }
+
   private inicializarFiltroMes(): void {
     // Gera lista dos 12 meses de 2025
     this.mesesDisponiveis = [];
@@ -287,6 +316,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.calcularMediasContratosUltimos3Meses();
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
+    this.calcularMediaCustoEstrategico();
     
     // Atualiza os gráficos
     if (isPlatformBrowser(this.platformId)) {
