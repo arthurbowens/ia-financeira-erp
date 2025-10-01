@@ -95,12 +95,10 @@ export class AssinaturaComponent implements OnInit {
     if (!this.contrato) return;
 
     this.isAssinando = true;
-    // Simula um atraso para a assinatura
     setTimeout(() => {
       this.assinaturaDigital = `Assinado por: [Seu Nome] em ${new Date().toLocaleString()}`;
       this.assinaturaRealizada = true;
       this.isAssinando = false;
-      // Atualiza o status do contrato mockado
       const index = CONTRATOS_MOCK.findIndex(c => c.id === this.contrato!.id);
       if (index !== -1) {
         CONTRATOS_MOCK[index].status = 'assinado';
