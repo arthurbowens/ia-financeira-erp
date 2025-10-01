@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { DADOS_FINANCEIROS_MOCK, DadosFinanceiros } from '../../data/mock-data';
+import { DADOS_FINANCEIROS_MOCK, DadosFinanceiros, CONTRATOS_MOCK, Contrato } from '../../data/mock-data';
 
 Chart.register(...registerables);
 
@@ -17,6 +17,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   receitaChart: Chart | null = null;
   despesasChart: Chart | null = null;
   currentDate: Date = new Date();
+  mediaNovosContratosReais3m: number = 0;
+  mediaNovosContratosUnidades3m: number = 0;
+  mediaCustoFixo: number = 0;
+  mediaCustoVariavel: number = 0;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object
@@ -27,6 +31,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.criarGraficoReceitas();
       this.criarGraficoDespesas();
     }
+    this.calcularMediasContratosUltimos3Meses();
+    this.calcularMediaCustoFixo();
+    this.calcularMediaCustoVariavel();
   }
 
   ngOnDestroy() {
@@ -173,5 +180,51 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getStatusClass(): string {
     return `status-${this.getStatusLucro()}`;
+  }
+
+  private calcularMediasContratosUltimos3Meses(): void {
+    // Dados mock simulando novos contratos dos últimos 3 meses
+    const dadosMockUltimos3Meses = [
+      { mes: 'Dezembro 2023', valor: 32000, quantidade: 2 }, // 2 contratos de R$ 16.000 cada
+      { mes: 'Janeiro 2024', valor: 68000, quantidade: 3 },  // 3 contratos de R$ 22.667 cada
+      { mes: 'Fevereiro 2024', valor: 45000, quantidade: 2 } // 2 contratos de R$ 22.500 cada
+    ];
+
+    // Calcula as médias
+    const totalValor = dadosMockUltimos3Meses.reduce((acc, mes) => acc + mes.valor, 0);
+    const totalQuantidade = dadosMockUltimos3Meses.reduce((acc, mes) => acc + mes.quantidade, 0);
+
+    this.mediaNovosContratosReais3m = totalValor / 3; // média mensal em R$
+    this.mediaNovosContratosUnidades3m = totalQuantidade / 3; // média mensal em unidades
+  }
+
+  private calcularMediaCustoFixo(): void {
+    // Dados mock simulando custos fixos dos últimos 6 meses
+    const custosFixosUltimos6Meses = [
+      { mes: 'Setembro 2023', valor: 28000 },
+      { mes: 'Outubro 2023', valor: 29000 },
+      { mes: 'Novembro 2023', valor: 30000 },
+      { mes: 'Dezembro 2023', valor: 32000 },
+      { mes: 'Janeiro 2024', valor: 31000 },
+      { mes: 'Fevereiro 2024', valor: 33000 }
+    ];
+
+    const totalCustosFixos = custosFixosUltimos6Meses.reduce((acc, mes) => acc + mes.valor, 0);
+    this.mediaCustoFixo = totalCustosFixos / 6; // média mensal em R$
+  }
+
+  private calcularMediaCustoVariavel(): void {
+    // Dados mock simulando custos variáveis dos últimos 6 meses
+    const custosVariaveisUltimos6Meses = [
+      { mes: 'Setembro 2023', valor: 12000 },
+      { mes: 'Outubro 2023', valor: 15000 },
+      { mes: 'Novembro 2023', valor: 18000 },
+      { mes: 'Dezembro 2023', valor: 14000 },
+      { mes: 'Janeiro 2024', valor: 16000 },
+      { mes: 'Fevereiro 2024', valor: 19000 }
+    ];
+
+    const totalCustosVariaveis = custosVariaveisUltimos6Meses.reduce((acc, mes) => acc + mes.valor, 0);
+    this.mediaCustoVariavel = totalCustosVariaveis / 6; // média mensal em R$
   }
 }

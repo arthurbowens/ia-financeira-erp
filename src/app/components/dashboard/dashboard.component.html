@@ -58,54 +58,49 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
+
+      <!-- Média de Novos Contratos (R$) - últimos 3 meses -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-indigo-500">
         <div class="flex items-center">
-          <div class="text-2xl mr-2">🎯</div>
+          <div class="text-2xl mr-2">🧾</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dados.roi }}%</div>
-            <div class="text-sm text-gray-600">ROI</div>
-            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
-              Excelente
-            </div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaNovosContratosReais3m) }}</div>
+            <div class="text-sm text-gray-600">Média de Novos Contratos (R$)</div>
+            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+      <!-- Média de Novos Contratos (Unid) - últimos 3 meses -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-cyan-500">
         <div class="flex items-center">
-          <div class="text-2xl mr-2">⚡</div>
+          <div class="text-2xl mr-2">📄</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dados.indicadores.eficienciaOperacional }}%</div>
-            <div class="text-sm text-gray-600">Eficiência</div>
-            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
-              Ótima
-            </div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ mediaNovosContratosUnidades3m | number:'1.0-1' }}</div>
+            <div class="text-sm text-gray-600">Média de Novos Contratos (Unid)</div>
+            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-pink-500">
+      <!-- Média Custo Fixo (R$) -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-500">
         <div class="flex items-center">
-          <div class="text-2xl mr-2">😊</div>
+          <div class="text-2xl mr-2">🏢</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dados.indicadores.satisfacaoCliente }}%</div>
-            <div class="text-sm text-gray-600">Satisfação</div>
-            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
-              Excelente
-            </div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoFixo) }}</div>
+            <div class="text-sm text-gray-600">Média Custo Fixo (R$)</div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+      <!-- Média Custo Variável (R$) -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
         <div class="flex items-center">
           <div class="text-2xl mr-2">📊</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dados.indicadores.produtividade }}%</div>
-            <div class="text-sm text-gray-600">Produtividade</div>
-            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
-              +56.7%
-            </div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoVariavel) }}</div>
+            <div class="text-sm text-gray-600">Média Custo Variável (R$)</div>
           </div>
         </div>
       </div>
