@@ -14,7 +14,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">💰</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(dados.receitas) }}</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dados.receitas) }}</div>
             <div class="text-sm text-gray-600">Receitas</div>
             <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
               +{{ dados.indicadores.crescimentoReceita }}%
@@ -27,7 +27,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">💸</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(dados.despesas) }}</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dados.despesas) }}</div>
             <div class="text-sm text-gray-600">Despesas</div>
             <div class="text-xs text-gray-500 mt-1">{{ getMargemDespesas() }}</div>
           </div>
@@ -38,7 +38,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">📈</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(dados.lucro) }}</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dados.lucro) }}</div>
             <div class="text-sm text-gray-600">Lucro Líquido</div>
             <div class="text-xs text-primary-600 bg-primary-50 px-2 py-1 rounded-full mt-1 inline-block">
               {{ dados.margemLiquida }}%
@@ -51,7 +51,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">📋</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ dados.contratosAtivos }}</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ dados.contratosAtivos }}</div>
             <div class="text-sm text-gray-600">Contratos Ativos</div>
             <div class="text-xs text-gray-500 mt-1">{{ dados.contratosPendentes }} pendentes</div>
           </div>
@@ -62,7 +62,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">🎯</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ dados.roi }}%</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ dados.roi }}%</div>
             <div class="text-sm text-gray-600">ROI</div>
             <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
               Excelente
@@ -75,7 +75,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">⚡</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ dados.indicadores.eficienciaOperacional }}%</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ dados.indicadores.eficienciaOperacional }}%</div>
             <div class="text-sm text-gray-600">Eficiência</div>
             <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
               Ótima
@@ -88,7 +88,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">😊</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ dados.indicadores.satisfacaoCliente }}%</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ dados.indicadores.satisfacaoCliente }}%</div>
             <div class="text-sm text-gray-600">Satisfação</div>
             <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
               Excelente
@@ -101,7 +101,7 @@
         <div class="flex items-center">
           <div class="text-3xl mr-4">📊</div>
           <div class="flex-1 min-w-0">
-            <div class="text-2xl font-bold text-gray-900">{{ dados.indicadores.produtividade }}%</div>
+            <div class="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{{ dados.indicadores.produtividade }}%</div>
             <div class="text-sm text-gray-600">Produtividade</div>
             <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
               +56.7%
