@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { DADOS_FINANCEIROS_MOCK, DadosFinanceiros, CONTRATOS_MOCK, Contrato } from '../../data/mock-data';
 
@@ -9,7 +10,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
@@ -21,19 +22,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mediaNovosContratosUnidades3m: number = 0;
   mediaCustoFixo: number = 0;
   mediaCustoVariavel: number = 0;
+  
+  // Filtro de mês
+  mesSelecionado: string = '';
+  mesesDisponiveis: Array<{value: string, label: string}> = [];
+  
+  // Dados filtrados por mês
+  dadosFiltrados: DadosFinanceiros = this.dados;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
+    this.inicializarFiltroMes();
+    this.filtrarDadosPorMes();
+    this.calcularMediasContratosUltimos3Meses();
+    this.calcularMediaCustoFixo();
+    this.calcularMediaCustoVariavel();
+    
     if (isPlatformBrowser(this.platformId)) {
       this.criarGraficoReceitas();
       this.criarGraficoDespesas();
     }
-    this.calcularMediasContratosUltimos3Meses();
-    this.calcularMediaCustoFixo();
-    this.calcularMediaCustoVariavel();
   }
 
   ngOnDestroy() {
@@ -51,13 +62,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const ctx = document.getElementById('receitaChart') as HTMLCanvasElement;
     if (!ctx) return;
 
+    // Destroi gráfico existente se houver
+    if (this.receitaChart) {
+      this.receitaChart.destroy();
+      this.receitaChart = null;
+    }
+
     const config: ChartConfiguration = {
       type: 'line',
       data: {
-        labels: this.dados.receitaMensal.map(item => item.mes),
+        labels: (this.dadosFiltrados?.receitaMensal || []).map(item => item.mes),
         datasets: [{
           label: 'Receita Mensal',
-          data: this.dados.receitaMensal.map(item => item.valor),
+          data: (this.dadosFiltrados?.receitaMensal || []).map(item => item.valor),
           borderColor: '#28a745',
           backgroundColor: 'rgba(40, 167, 69, 0.1)',
           borderWidth: 3,
@@ -107,12 +124,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const ctx = document.getElementById('despesasChart') as HTMLCanvasElement;
     if (!ctx) return;
 
+    // Destroi gráfico existente se houver
+    if (this.despesasChart) {
+      this.despesasChart.destroy();
+      this.despesasChart = null;
+    }
+
     const config: ChartConfiguration = {
       type: 'doughnut',
       data: {
-        labels: this.dados.despesasPorCategoria.map(item => item.categoria),
+        labels: (this.dadosFiltrados?.despesasPorCategoria || []).map(item => item.categoria),
         datasets: [{
-          data: this.dados.despesasPorCategoria.map(item => item.valor),
+          data: (this.dadosFiltrados?.despesasPorCategoria || []).map(item => item.valor),
           backgroundColor: [
             '#667eea',
             '#764ba2',
@@ -158,7 +181,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   getLucroPercentual(): number {
-    return this.dados.receitas > 0 ? (this.dados.lucro / this.dados.receitas) * 100 : 0;
+    const receitas = this.dadosFiltrados?.receitas || 0;
+    const lucro = this.dadosFiltrados?.lucro || 0;
+    return receitas > 0 ? (lucro / receitas) * 100 : 0;
   }
 
   getMargemLucro(): string {
@@ -166,7 +191,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   getMargemDespesas(): string {
-    const margem = (this.dados.despesas / this.dados.receitas) * 100;
+    const despesas = this.dadosFiltrados?.despesas || 0;
+    const receitas = this.dadosFiltrados?.receitas || 0;
+    const margem = receitas > 0 ? (despesas / receitas) * 100 : 0;
     return margem.toFixed(1) + '%';
   }
 
@@ -226,5 +253,363 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const totalCustosVariaveis = custosVariaveisUltimos6Meses.reduce((acc, mes) => acc + mes.valor, 0);
     this.mediaCustoVariavel = totalCustosVariaveis / 6; // média mensal em R$
+  }
+
+  private inicializarFiltroMes(): void {
+    // Gera lista dos 12 meses de 2025
+    this.mesesDisponiveis = [];
+    
+    // Cria lista de meses de janeiro a outubro 2025
+    const meses = [
+      { value: '2025-10', label: 'outubro 2025' },
+      { value: '2025-09', label: 'setembro 2025' },
+      { value: '2025-08', label: 'agosto 2025' },
+      { value: '2025-07', label: 'julho 2025' },
+      { value: '2025-06', label: 'junho 2025' },
+      { value: '2025-05', label: 'maio 2025' },
+      { value: '2025-04', label: 'abril 2025' },
+      { value: '2025-03', label: 'março 2025' },
+      { value: '2025-02', label: 'fevereiro 2025' },
+      { value: '2025-01', label: 'janeiro 2025' }
+    ];
+    
+    this.mesesDisponiveis = meses;
+    
+    // Define outubro 2025 como padrão (melhor mês disponível)
+    this.mesSelecionado = '2025-10';
+    console.log('Mês selecionado inicial:', this.mesSelecionado);
+  }
+
+  onMesSelecionado(): void {
+    console.log('Mês selecionado:', this.mesSelecionado);
+    // Filtra os dados baseado no mês selecionado
+    this.filtrarDadosPorMes();
+    this.calcularMediasContratosUltimos3Meses();
+    this.calcularMediaCustoFixo();
+    this.calcularMediaCustoVariavel();
+    
+    // Atualiza os gráficos
+    if (isPlatformBrowser(this.platformId)) {
+      this.criarGraficoReceitas();
+      this.criarGraficoDespesas();
+    }
+  }
+
+  private filtrarDadosPorMes(): void {
+    // Dados mock para 10 meses de 2025 (janeiro a outubro) com valores diferentes
+    const dadosPorMes: {[key: string]: DadosFinanceiros} = {
+      '2025-10': {
+        receitas: 400000,
+        despesas: 130000,
+        lucro: 270000,
+        contratosAtivos: 7,
+        contratosPendentes: 3,
+        contratosVencidos: 1,
+        margemBruta: 67.5,
+        margemLiquida: 67.5,
+        roi: 207.7,
+        receitaMensal: [
+          { mes: 'Ago', valor: 36000 },
+          { mes: 'Set', valor: 38000 },
+          { mes: 'Out', valor: 40000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 70000 },
+          { categoria: 'Tecnologia', valor: 22000 },
+          { categoria: 'Marketing', valor: 18000 },
+          { categoria: 'Consultoria', valor: 13000 },
+          { categoria: 'Outros', valor: 7000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 38.5,
+          eficienciaOperacional: 90.2,
+          satisfacaoCliente: 96.9,
+          produtividade: 172.4
+        }
+      },
+      '2025-09': {
+        receitas: 380000,
+        despesas: 125000,
+        lucro: 255000,
+        contratosAtivos: 6,
+        contratosPendentes: 4,
+        contratosVencidos: 2,
+        margemBruta: 67.1,
+        margemLiquida: 67.1,
+        roi: 204.0,
+        receitaMensal: [
+          { mes: 'Jul', valor: 34000 },
+          { mes: 'Ago', valor: 36000 },
+          { mes: 'Set', valor: 38000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 68000 },
+          { categoria: 'Tecnologia', valor: 20000 },
+          { categoria: 'Marketing', valor: 17000 },
+          { categoria: 'Consultoria', valor: 12000 },
+          { categoria: 'Outros', valor: 8000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 35.7,
+          eficienciaOperacional: 88.6,
+          satisfacaoCliente: 95.8,
+          produtividade: 168.1
+        }
+      },
+      '2025-08': {
+        receitas: 350000,
+        despesas: 120000,
+        lucro: 230000,
+        contratosAtivos: 6,
+        contratosPendentes: 5,
+        contratosVencidos: 2,
+        margemBruta: 65.7,
+        margemLiquida: 65.7,
+        roi: 191.7,
+        receitaMensal: [
+          { mes: 'Jun', valor: 32000 },
+          { mes: 'Jul', valor: 34000 },
+          { mes: 'Ago', valor: 35000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 65000 },
+          { categoria: 'Tecnologia', valor: 18000 },
+          { categoria: 'Marketing', valor: 15000 },
+          { categoria: 'Consultoria', valor: 12000 },
+          { categoria: 'Outros', valor: 10000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 32.1,
+          eficienciaOperacional: 86.4,
+          satisfacaoCliente: 94.2,
+          produtividade: 162.8
+        }
+      },
+      '2025-07': {
+        receitas: 320000,
+        despesas: 110000,
+        lucro: 210000,
+        contratosAtivos: 5,
+        contratosPendentes: 6,
+        contratosVencidos: 3,
+        margemBruta: 65.6,
+        margemLiquida: 65.6,
+        roi: 190.9,
+        receitaMensal: [
+          { mes: 'Mai', valor: 30000 },
+          { mes: 'Jun', valor: 32000 },
+          { mes: 'Jul', valor: 32000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 60000 },
+          { categoria: 'Tecnologia', valor: 17000 },
+          { categoria: 'Marketing', valor: 14000 },
+          { categoria: 'Consultoria', valor: 11000 },
+          { categoria: 'Outros', valor: 8000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 28.5,
+          eficienciaOperacional: 84.1,
+          satisfacaoCliente: 92.6,
+          produtividade: 157.3
+        }
+      },
+      '2025-06': {
+        receitas: 280000,
+        despesas: 100000,
+        lucro: 180000,
+        contratosAtivos: 5,
+        contratosPendentes: 7,
+        contratosVencidos: 4,
+        margemBruta: 64.3,
+        margemLiquida: 64.3,
+        roi: 180.0,
+        receitaMensal: [
+          { mes: 'Abr', valor: 26000 },
+          { mes: 'Mai', valor: 28000 },
+          { mes: 'Jun', valor: 28000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 55000 },
+          { categoria: 'Tecnologia', valor: 15000 },
+          { categoria: 'Marketing', valor: 13000 },
+          { categoria: 'Consultoria', valor: 10000 },
+          { categoria: 'Outros', valor: 7000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 24.8,
+          eficienciaOperacional: 81.7,
+          satisfacaoCliente: 90.9,
+          produtividade: 151.6
+        }
+      },
+      '2025-05': {
+        receitas: 250000,
+        despesas: 90000,
+        lucro: 160000,
+        contratosAtivos: 4,
+        contratosPendentes: 8,
+        contratosVencidos: 5,
+        margemBruta: 64.0,
+        margemLiquida: 64.0,
+        roi: 177.8,
+        receitaMensal: [
+          { mes: 'Mar', valor: 23000 },
+          { mes: 'Abr', valor: 25000 },
+          { mes: 'Mai', valor: 25000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 50000 },
+          { categoria: 'Tecnologia', valor: 13000 },
+          { categoria: 'Marketing', valor: 12000 },
+          { categoria: 'Consultoria', valor: 9000 },
+          { categoria: 'Outros', valor: 6000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 21.2,
+          eficienciaOperacional: 79.2,
+          satisfacaoCliente: 89.1,
+          produtividade: 145.9
+        }
+      },
+      '2025-04': {
+        receitas: 220000,
+        despesas: 80000,
+        lucro: 140000,
+        contratosAtivos: 4,
+        contratosPendentes: 9,
+        contratosVencidos: 6,
+        margemBruta: 63.6,
+        margemLiquida: 63.6,
+        roi: 175.0,
+        receitaMensal: [
+          { mes: 'Fev', valor: 20000 },
+          { mes: 'Mar', valor: 22000 },
+          { mes: 'Abr', valor: 22000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 45000 },
+          { categoria: 'Tecnologia', valor: 12000 },
+          { categoria: 'Marketing', valor: 11000 },
+          { categoria: 'Consultoria', valor: 8000 },
+          { categoria: 'Outros', valor: 4000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 17.6,
+          eficienciaOperacional: 76.8,
+          satisfacaoCliente: 87.3,
+          produtividade: 140.2
+        }
+      },
+      '2025-03': {
+        receitas: 190000,
+        despesas: 75000,
+        lucro: 115000,
+        contratosAtivos: 3,
+        contratosPendentes: 10,
+        contratosVencidos: 7,
+        margemBruta: 60.5,
+        margemLiquida: 60.5,
+        roi: 153.3,
+        receitaMensal: [
+          { mes: 'Jan', valor: 17000 },
+          { mes: 'Fev', valor: 19000 },
+          { mes: 'Mar', valor: 19000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 40000 },
+          { categoria: 'Tecnologia', valor: 11000 },
+          { categoria: 'Marketing', valor: 10000 },
+          { categoria: 'Consultoria', valor: 8000 },
+          { categoria: 'Outros', valor: 6000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 14.1,
+          eficienciaOperacional: 74.3,
+          satisfacaoCliente: 85.4,
+          produtividade: 134.5
+        }
+      },
+      '2025-02': {
+        receitas: 160000,
+        despesas: 70000,
+        lucro: 90000,
+        contratosAtivos: 3,
+        contratosPendentes: 11,
+        contratosVencidos: 8,
+        margemBruta: 56.3,
+        margemLiquida: 56.3,
+        roi: 128.6,
+        receitaMensal: [
+          { mes: 'Dez', valor: 15000 },
+          { mes: 'Jan', valor: 16000 },
+          { mes: 'Fev', valor: 16000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 35000 },
+          { categoria: 'Tecnologia', valor: 10000 },
+          { categoria: 'Marketing', valor: 9000 },
+          { categoria: 'Consultoria', valor: 8000 },
+          { categoria: 'Outros', valor: 8000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 10.5,
+          eficienciaOperacional: 71.8,
+          satisfacaoCliente: 83.6,
+          produtividade: 128.8
+        }
+      },
+      '2025-01': {
+        receitas: 130000,
+        despesas: 65000,
+        lucro: 65000,
+        contratosAtivos: 2,
+        contratosPendentes: 12,
+        contratosVencidos: 9,
+        margemBruta: 50.0,
+        margemLiquida: 50.0,
+        roi: 100.0,
+        receitaMensal: [
+          { mes: 'Nov', valor: 12000 },
+          { mes: 'Dez', valor: 13000 },
+          { mes: 'Jan', valor: 13000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 30000 },
+          { categoria: 'Tecnologia', valor: 9000 },
+          { categoria: 'Marketing', valor: 8000 },
+          { categoria: 'Consultoria', valor: 10000 },
+          { categoria: 'Outros', valor: 8000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 6.9,
+          eficienciaOperacional: 69.2,
+          satisfacaoCliente: 81.7,
+          produtividade: 123.1
+        }
+      }
+    };
+
+    // Usa dados específicos do mês ou dados padrão
+    this.dadosFiltrados = dadosPorMes[this.mesSelecionado] || this.dados;
+    console.log('Dados filtrados para', this.mesSelecionado, ':', this.dadosFiltrados.receitas);
+    console.log('DadosFiltrados completo:', this.dadosFiltrados);
+  }
+
+  getMesAtualLabel(): string {
+    const mes = this.mesesDisponiveis.find(m => m.value === this.mesSelecionado);
+    return mes ? mes.label : 'Carregando...';
+  }
+
+  getStatusFiltro(): string {
+    const mes = this.mesesDisponiveis.find(m => m.value === this.mesSelecionado);
+    if (!mes) return 'Carregando...';
+    
+    // Simula status baseado no mês selecionado (janeiro a outubro)
+    const mesNumero = parseInt(this.mesSelecionado.split('-')[1]);
+    if (mesNumero >= 9) return 'Excelente';
+    if (mesNumero >= 6) return 'Bom';
+    if (mesNumero >= 3) return 'Regular';
+    return 'Inicial';
   }
 }

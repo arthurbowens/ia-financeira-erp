@@ -2,9 +2,40 @@
   <div class="max-w-7xl mx-auto">
     <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2 sm:mb-0">📊 Dashboard Financeiro</h1>
-        <div class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-          Última atualização: {{ currentDate | date:'dd/MM/yyyy HH:mm' }}
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2 sm:mb-0">📊 Dashboard Financeiro</h1>
+          <div class="flex items-center gap-2 mt-1">
+            <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Relatório de {{ getMesAtualLabel() }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span class="text-sm font-semibold text-gray-700">Período:</span>
+            </div>
+            <select 
+              id="mesFiltro"
+              [ngModel]="mesSelecionado" 
+              (ngModelChange)="mesSelecionado = $event; onMesSelecionado()"
+              class="bg-transparent border-0 text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[180px] hover:text-blue-600 transition-colors duration-200">
+              <option *ngFor="let mes of mesesDisponiveis" [value]="mes.value">
+                {{ mes.label }}
+              </option>
+            </select>
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Dados em tempo real"></div>
+              <span class="text-xs font-medium text-gray-600">{{ getStatusFiltro() }}</span>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>
@@ -14,11 +45,12 @@
         <div class="flex items-center">
           <div class="text-2xl mr-2">💰</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dados.receitas) }}</div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dadosFiltrados?.receitas || 0) }}</div>
             <div class="text-sm text-gray-600">Receitas</div>
             <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
-              +{{ dados.indicadores.crescimentoReceita }}%
+              +{{ dadosFiltrados?.indicadores?.crescimentoReceita || 0 }}%
             </div>
+            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
           </div>
         </div>
       </div>
@@ -27,9 +59,10 @@
         <div class="flex items-center">
           <div class="text-2xl mr-2">💸</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dados.despesas) }}</div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dadosFiltrados?.despesas || 0) }}</div>
             <div class="text-sm text-gray-600">Despesas</div>
             <div class="text-xs text-gray-500 mt-1">{{ getMargemDespesas() }}</div>
+            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
           </div>
         </div>
       </div>
@@ -38,11 +71,9 @@
         <div class="flex items-center">
           <div class="text-2xl mr-2">📈</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dados.lucro) }}</div>
-            <div class="text-sm text-gray-600">Lucro Líquido</div>
-            <div class="text-xs text-primary-600 bg-primary-50 px-2 py-1 rounded-full mt-1 inline-block">
-              {{ dados.margemLiquida }}%
-            </div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dadosFiltrados?.margemLiquida || 0 }}%</div>
+            <div class="text-sm text-gray-600">Margem de Lucro</div>
+            <div class="text-xs text-gray-500 mt-1">{{ formatCurrency(dadosFiltrados?.lucro || 0) }}</div>
           </div>
         </div>
       </div>
@@ -51,9 +82,9 @@
         <div class="flex items-center">
           <div class="text-2xl mr-2">📋</div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dados.contratosAtivos }}</div>
+            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dadosFiltrados?.contratosAtivos || 0 }}</div>
             <div class="text-sm text-gray-600">Contratos Ativos</div>
-            <div class="text-xs text-gray-500 mt-1">{{ dados.contratosPendentes }} pendentes</div>
+            <div class="text-xs text-gray-500 mt-1">{{ dadosFiltrados?.contratosPendentes || 0 }} pendentes</div>
           </div>
         </div>
       </div>
