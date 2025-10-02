@@ -23,6 +23,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mediaCustoFixo: number = 0;
   mediaCustoVariavel: number = 0;
   mediaCustoEstrategico: number = 0;
+  totalClientesAtivos: number = 0;
+  churnPercent: number = 0;
+  ltvMeses: number = 0;
+  inadimplenciaValor: number = 0;
+  inadimplenciaTaxa: number = 0;
   
   // Filtro de mês
   mesSelecionado: string = '';
@@ -42,6 +47,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
     this.calcularMediaCustoEstrategico();
+    this.calcularTotalClientesAtivos();
+    this.calcularChurnPercent();
+    this.calcularLtvMeses();
+    this.calcularInadimplencia();
+    this.calcularLtvMeses();
     
     if (isPlatformBrowser(this.platformId)) {
       this.criarGraficoReceitas();
@@ -284,6 +294,126 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  private calcularTotalClientesAtivos(): void {
+    // Dados mock por mês para total de clientes ativos
+    const clientesAtivosPorMes: {[key: string]: number} = {
+      '2025-10': 1250,
+      '2025-09': 1180,
+      '2025-08': 1120,
+      '2025-07': 1080,
+      '2025-06': 1020,
+      '2025-05': 980,
+      '2025-04': 920,
+      '2025-03': 880,
+      '2025-02': 820,
+      '2025-01': 750
+    };
+
+    // Usa o valor do mês selecionado ou calcula média dos últimos 6 meses
+    const mesSelecionado = this.mesSelecionado;
+    if (clientesAtivosPorMes[mesSelecionado]) {
+      this.totalClientesAtivos = clientesAtivosPorMes[mesSelecionado];
+    } else {
+      // Fallback: média dos últimos 6 meses
+      const valores = Object.values(clientesAtivosPorMes);
+      const total = valores.reduce((acc, valor) => acc + valor, 0);
+      this.totalClientesAtivos = total / valores.length;
+    }
+  }
+
+  private calcularChurnPercent(): void {
+    // Churn mensal mockado por mês (2025) em percentual
+    const churnPorMes: { [key: string]: number } = {
+      '2025-10': 1.8,
+      '2025-09': 2.1,
+      '2025-08': 2.3,
+      '2025-07': 2.6,
+      '2025-06': 2.9,
+      '2025-05': 3.2,
+      '2025-04': 3.5,
+      '2025-03': 3.8,
+      '2025-02': 4.1,
+      '2025-01': 4.5,
+    };
+
+    const mesSelecionado = this.mesSelecionado;
+    if (churnPorMes[mesSelecionado] !== undefined) {
+      this.churnPercent = churnPorMes[mesSelecionado];
+    } else {
+      // Fallback: média do período disponível
+      const valores = Object.values(churnPorMes);
+      const total = valores.reduce((acc, v) => acc + v, 0);
+      this.churnPercent = total / valores.length;
+    }
+  }
+
+  private calcularLtvMeses(): void {
+    // LTV em meses mockado por mês (2025)
+    const ltvPorMes: { [key: string]: number } = {
+      '2025-10': 28,
+      '2025-09': 27,
+      '2025-08': 26,
+      '2025-07': 25,
+      '2025-06': 24,
+      '2025-05': 23,
+      '2025-04': 22,
+      '2025-03': 21,
+      '2025-02': 20,
+      '2025-01': 19,
+    };
+
+    const mesSelecionado = this.mesSelecionado;
+    if (ltvPorMes[mesSelecionado] !== undefined) {
+      this.ltvMeses = ltvPorMes[mesSelecionado];
+    } else {
+      const valores = Object.values(ltvPorMes);
+      const total = valores.reduce((acc, v) => acc + v, 0);
+      this.ltvMeses = total / valores.length;
+    }
+  }
+
+  private calcularInadimplencia(): void {
+    // Mock mensal 2025: valor total de inadimplência (R$) e taxa (%)
+    const inadValorPorMes: { [key: string]: number } = {
+      '2025-10': 42000,
+      '2025-09': 45000,
+      '2025-08': 47000,
+      '2025-07': 50000,
+      '2025-06': 52000,
+      '2025-05': 54000,
+      '2025-04': 56000,
+      '2025-03': 58000,
+      '2025-02': 60000,
+      '2025-01': 62000,
+    };
+
+    const inadTaxaPorMes: { [key: string]: number } = {
+      '2025-10': 3.1,
+      '2025-09': 3.3,
+      '2025-08': 3.5,
+      '2025-07': 3.7,
+      '2025-06': 3.9,
+      '2025-05': 4.1,
+      '2025-04': 4.3,
+      '2025-03': 4.5,
+      '2025-02': 4.7,
+      '2025-01': 5.0,
+    };
+
+    const mesSelecionado = this.mesSelecionado;
+    this.inadimplenciaValor = inadValorPorMes[mesSelecionado] ?? this.inadimplenciaValor;
+    this.inadimplenciaTaxa = inadTaxaPorMes[mesSelecionado] ?? this.inadimplenciaTaxa;
+    if (this.inadimplenciaValor === 0 && this.inadimplenciaTaxa === 0) {
+      const valores = Object.values(inadValorPorMes);
+      const total = valores.reduce((acc, v) => acc + v, 0);
+      this.inadimplenciaValor = total / valores.length;
+
+      const taxas = Object.values(inadTaxaPorMes);
+      const totalTaxa = taxas.reduce((acc, v) => acc + v, 0);
+      this.inadimplenciaTaxa = totalTaxa / taxas.length;
+    }
+  }
+
   private inicializarFiltroMes(): void {
     // Gera lista dos 12 meses de 2025
     this.mesesDisponiveis = [];
@@ -317,6 +447,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
     this.calcularMediaCustoEstrategico();
+    this.calcularTotalClientesAtivos();
+    this.calcularChurnPercent();
+    this.calcularLtvMeses();
+    this.calcularInadimplencia();
     
     // Atualiza os gráficos
     if (isPlatformBrowser(this.platformId)) {
