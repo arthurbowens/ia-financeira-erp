@@ -40,169 +40,201 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-success-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">💰</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dadosFiltrados.receitas || 0) }}</div>
-            <div class="text-sm text-gray-600">Receitas</div>
-            <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
-              +{{ dadosFiltrados.indicadores?.crescimentoReceita || 0 }}%
-            </div>
-            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
-          </div>
+    <!-- Relatório Mensal (faixa de cards resumo) -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold text-center text-gray-900 mb-4">RELATÓRIO MENSAL</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
+        <!-- Receitas -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-success-500">
+          <div class="text-2xl mb-1">💰</div>
+          <div class="text-xs uppercase text-gray-500 mb-1">Receitas</div>
+          <div class="text-lg font-extrabold text-gray-900">{{ formatCurrency(dadosFiltrados.receitas || 0) }}</div>
+          <div class="text-xs text-success-600 bg-success-50 px-2 py-0.5 rounded-full mt-2 inline-block">+{{ dadosFiltrados.indicadores.crescimentoReceita || 0 }}%</div>
+          <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
         </div>
-      </div>
 
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-warning-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">💸</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dadosFiltrados.despesas || 0) }}</div>
-            <div class="text-sm text-gray-600">Despesas</div>
-            <div class="text-xs text-gray-500 mt-1">{{ getMargemDespesas() }}</div>
-            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-primary-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">📈</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dadosFiltrados.margemLiquida || 0 }}%</div>
-            <div class="text-sm text-gray-600">Margem de Lucro</div>
-            <div class="text-xs text-gray-500 mt-1">{{ formatCurrency(dadosFiltrados.lucro || 0) }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">📋</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ dadosFiltrados.contratosAtivos || 0 }}</div>
-            <div class="text-sm text-gray-600">Contratos Ativos</div>
-            <div class="text-xs text-gray-500 mt-1">{{ dadosFiltrados.contratosPendentes || 0 }} pendentes</div>
-          </div>
-        </div>
-      </div>
-
-
-      <!-- Média de Novos Contratos (R$) - últimos 3 meses -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-indigo-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">🧾</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaNovosContratosReais3m) }}</div>
-            <div class="text-sm text-gray-600">Média de Novos Contratos (R$)</div>
-            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Média de Novos Contratos (Unid) - últimos 3 meses -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-cyan-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">📄</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ mediaNovosContratosUnidades3m | number:'1.0-1' }}</div>
-            <div class="text-sm text-gray-600">Média de Novos Contratos (Unid)</div>
-            <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Média Custo Fixo (R$) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">🏢</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoFixo) }}</div>
-            <div class="text-sm text-gray-600">Média Custo Fixo (R$)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Média Custo Variável (R$) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">📊</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoVariavel) }}</div>
-            <div class="text-sm text-gray-600">Média Custo Variável (R$)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Média Custo Estratégico (R$) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-teal-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">🎯</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoEstrategico) }}</div>
-            <div class="text-sm text-gray-600">Média Custo Estratégico (R$)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Clientes Ativos (Unid) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">👥</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ totalClientesAtivos | number:'1.0-0' }}</div>
-            <div class="text-sm text-gray-600">Total Clientes Ativos (Unid)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Churn (%) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-rose-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">📉</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ churnPercent | number:'1.1-1' }}%</div>
-            <div class="text-sm text-gray-600">Churn</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- LTV (Meses) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-amber-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">📆</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ ltvMeses | number:'1.0-0' }} meses</div>
-            <div class="text-sm text-gray-600">LTV (Meses)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Inadimplência (R$) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-fuchsia-500">
-        <div class="flex items-center">
-          <div class="text-2xl mr-2">🚫</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(inadimplenciaValor || 0) }}</div>
-            <div class="text-sm text-gray-600">Inadimplência (R$)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Taxa de Inadimplência (%) -->
-      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-pink-500">
-        <div class="flex items-center">
-          <div class="mr-2 text-pink-600">
+        <!-- Despesas -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-warning-500">
+          <div class="mb-1 text-red-600">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l6 6 4-4 6 6"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h4v-4"/>
             </svg>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ inadimplenciaTaxa | number:'1.1-1' }}%</div>
-            <div class="text-sm text-gray-600">Taxa de Inadimplência</div>
+          <div class="text-xs uppercase text-gray-500 mb-1">Despesas</div>
+          <div class="text-lg font-extrabold text-gray-900">{{ formatCurrency(dadosFiltrados.despesas || 0) }}</div>
+          <div class="text-xs text-gray-500 mt-2">{{ getMargemDespesas() }}</div>
+          <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
+        </div>
+
+        <!-- Margem de Lucro -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-indigo-500">
+          <div class="text-2xl mb-1">📈</div>
+          <div class="text-xs uppercase text-gray-500 mb-1">Margem de Lucro</div>
+          <div class="text-lg font-extrabold text-gray-900">{{ dadosFiltrados.margemLiquida || 0 }}%</div>
+          <div class="text-xs text-gray-500 mt-2">{{ formatCurrency(dadosFiltrados.lucro || 0) }}</div>
+        </div>
+
+        <!-- Novos Contratos (R$) -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500">
+          <div class="text-2xl mb-1">🧾</div>
+          <div class="text-xs uppercase text-gray-500 mb-1">Novos Contratos (R$)</div>
+          <div class="text-lg font-extrabold text-gray-900">{{ formatCurrency(mediaNovosContratosReais3m) }}</div>
+        </div>
+
+        <!-- Novos Contratos (Unid) -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-cyan-500">
+          <div class="text-2xl mb-1">📄</div>
+          <div class="text-xs uppercase text-gray-500 mb-1">Novos Contratos (Unid)</div>
+          <div class="text-lg font-extrabold text-gray-900">{{ mediaNovosContratosUnidades3m | number:'1.0-1' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Coluna: Dashboard Financeiro -->
+      <div>
+        <h3 class="text-sm tracking-wider text-gray-600 font-semibold mb-3">DASHBOARD FINANCEIRO</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Receitas -->
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-success-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">💰</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dadosFiltrados.receitas || 0) }}</div>
+                <div class="text-sm text-gray-600">Receitas</div>
+                <div class="text-xs text-success-600 bg-success-50 px-2 py-1 rounded-full mt-1 inline-block">
+                  +{{ dadosFiltrados.indicadores.crescimentoReceita || 0 }}%
+                </div>
+                <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Despesas -->
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-warning-500">
+            <div class="flex items-center">
+              <div class="mr-2 text-red-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l6 6 4-4 6 6"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h4v-4"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(dadosFiltrados.despesas || 0) }}</div>
+                <div class="text-sm text-gray-600">Despesas</div>
+                <div class="text-xs text-gray-500 mt-1">{{ getMargemDespesas() }}</div>
+                <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inadimplência (R$) -->
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-fuchsia-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">🚫</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(inadimplenciaValor || 0) }}</div>
+                <div class="text-sm text-gray-600">Inadimplência (R$)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Taxa de Inadimplência (%) -->
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-pink-500">
+            <div class="flex items-center">
+              <div class="mr-2 text-pink-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ inadimplenciaTaxa | number:'1.1-1' }}%</div>
+                <div class="text-sm text-gray-600">Taxa de Inadimplência</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custo Fixo / Variável / Estratégico -->
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">🏢</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoFixo) }}</div>
+                <div class="text-sm text-gray-600">Média Custo Fixo (R$)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">📊</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoVariavel) }}</div>
+                <div class="text-sm text-gray-600">Média Custo Variável (R$)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-teal-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">🎯</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(mediaCustoEstrategico) }}</div>
+                <div class="text-sm text-gray-600">Média Custo Estratégico (R$)</div>
+              </div>
+            </div>
+          </div>
+
+           <!-- Custo Financeiro/Investimento -->
+           <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-sky-500">
+            <div class="flex items-center">
+              <div class="mr-3 text-sky-600">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sky-50">🏦</span>
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ formatCurrency(custoFinanceiroInvestimento) }}</div>
+                <div class="text-sm text-gray-600">Custo Financeiro/Investimento</div>
+                <div class="text-xs text-gray-500">Consolidado</div>
+              </div>
+            </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Coluna: Dashboard Clientes -->
+      <div>
+        <h3 class="text-sm tracking-wider text-gray-600 font-semibold mb-3">DASHBOARD CLIENTES</h3>
+        <div class="grid grid-cols-1 gap-6">
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">📋</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ totalClientesAtivos | number:'1.0-0' }}</div>
+                <div class="text-sm text-gray-600">Total Clientes Ativos (Unid)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-rose-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">📉</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ churnPercent | number:'1.1-1' }}%</div>
+                <div class="text-sm text-gray-600">Churn</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-amber-500">
+            <div class="flex items-center">
+              <div class="text-2xl mr-2">📆</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 whitespace-nowrap">{{ ltvMeses | number:'1.0-0' }} meses</div>
+                <div class="text-sm text-gray-600">LTV (Meses)</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

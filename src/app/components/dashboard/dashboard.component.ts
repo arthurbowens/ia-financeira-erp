@@ -20,6 +20,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   currentDate: Date = new Date();
   mediaNovosContratosReais3m: number = 0;
   mediaNovosContratosUnidades3m: number = 0;
+  custoFinanceiroInvestimento: number = 0;
   mediaCustoFixo: number = 0;
   mediaCustoVariavel: number = 0;
   mediaCustoEstrategico: number = 0;
@@ -47,11 +48,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
     this.calcularMediaCustoEstrategico();
+    this.calcularCustoFinanceiroInvestimento();
     this.calcularTotalClientesAtivos();
     this.calcularChurnPercent();
     this.calcularLtvMeses();
     this.calcularInadimplencia();
-    this.calcularLtvMeses();
     
     if (isPlatformBrowser(this.platformId)) {
       this.criarGraficoReceitas();
@@ -222,19 +223,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private calcularMediasContratosUltimos3Meses(): void {
-    // Dados mock simulando novos contratos dos últimos 3 meses
-    const dadosMockUltimos3Meses = [
-      { mes: 'Dezembro 2023', valor: 32000, quantidade: 2 }, // 2 contratos de R$ 16.000 cada
-      { mes: 'Janeiro 2024', valor: 68000, quantidade: 3 },  // 3 contratos de R$ 22.667 cada
-      { mes: 'Fevereiro 2024', valor: 45000, quantidade: 2 } // 2 contratos de R$ 22.500 cada
-    ];
+    // Dados mock por mês para novos contratos (2025)
+    const novosContratosPorMes: {[key: string]: {valor: number, quantidade: number}} = {
+      '2025-10': { valor: 55000, quantidade: 2.5 },
+      '2025-09': { valor: 52000, quantidade: 2.3 },
+      '2025-08': { valor: 48000, quantidade: 2.1 },
+      '2025-07': { valor: 45000, quantidade: 2.0 },
+      '2025-06': { valor: 42000, quantidade: 1.8 },
+      '2025-05': { valor: 38000, quantidade: 1.6 },
+      '2025-04': { valor: 35000, quantidade: 1.4 },
+      '2025-03': { valor: 32000, quantidade: 1.2 },
+      '2025-02': { valor: 28000, quantidade: 1.0 },
+      '2025-01': { valor: 25000, quantidade: 0.8 }
+    };
 
-    // Calcula as médias
-    const totalValor = dadosMockUltimos3Meses.reduce((acc, mes) => acc + mes.valor, 0);
-    const totalQuantidade = dadosMockUltimos3Meses.reduce((acc, mes) => acc + mes.quantidade, 0);
-
-    this.mediaNovosContratosReais3m = totalValor / 3; // média mensal em R$
-    this.mediaNovosContratosUnidades3m = totalQuantidade / 3; // média mensal em unidades
+    const mesSelecionado = this.mesSelecionado;
+    if (novosContratosPorMes[mesSelecionado]) {
+      this.mediaNovosContratosReais3m = novosContratosPorMes[mesSelecionado].valor;
+      this.mediaNovosContratosUnidades3m = novosContratosPorMes[mesSelecionado].quantidade;
+    } else {
+      // Fallback: média dos últimos 3 meses
+      const valores = Object.values(novosContratosPorMes);
+      const totalValor = valores.reduce((acc, mes) => acc + mes.valor, 0);
+      const totalQuantidade = valores.reduce((acc, mes) => acc + mes.quantidade, 0);
+      this.mediaNovosContratosReais3m = totalValor / valores.length;
+      this.mediaNovosContratosUnidades3m = totalQuantidade / valores.length;
+    }
   }
 
   private calcularMediaCustoFixo(): void {
@@ -291,6 +305,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const valores = Object.values(custosEstrategicosPorMes);
       const total = valores.reduce((acc, valor) => acc + valor, 0);
       this.mediaCustoEstrategico = total / valores.length;
+    }
+  }
+
+  private calcularCustoFinanceiroInvestimento(): void {
+    // Dados mock por mês para custo financeiro/investimento
+    const custoFinanceiroPorMes: {[key: string]: number} = {
+      '2025-10': 85000,
+      '2025-09': 78000,
+      '2025-08': 72000,
+      '2025-07': 68000,
+      '2025-06': 62000,
+      '2025-05': 58000,
+      '2025-04': 54000,
+      '2025-03': 50000,
+      '2025-02': 46000,
+      '2025-01': 42000
+    };
+
+    const mesSelecionado = this.mesSelecionado;
+    if (custoFinanceiroPorMes[mesSelecionado]) {
+      this.custoFinanceiroInvestimento = custoFinanceiroPorMes[mesSelecionado];
+    } else {
+      // Fallback: média dos meses disponíveis
+      const valores = Object.values(custoFinanceiroPorMes);
+      const total = valores.reduce((acc, valor) => acc + valor, 0);
+      this.custoFinanceiroInvestimento = total / valores.length;
     }
   }
 
@@ -447,6 +487,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
     this.calcularMediaCustoEstrategico();
+    this.calcularCustoFinanceiroInvestimento();
     this.calcularTotalClientesAtivos();
     this.calcularChurnPercent();
     this.calcularLtvMeses();
