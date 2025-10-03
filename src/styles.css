@@ -43,54 +43,54 @@
     @apply opacity-0 -translate-y-2;
   }
 
-  /* Force card sizes for production build */
-  .dashboard-card {
+  /* Force card sizes for production build - only on Vercel */
+  .vercel-production .dashboard-card {
     padding: 0.75rem !important;
     font-size: 0.75rem !important;
     min-height: auto !important;
   }
   
-  .dashboard-card .text-base {
+  .vercel-production .dashboard-card .text-base {
     font-size: 0.875rem !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
   }
   
-  .dashboard-card .text-xl {
+  .vercel-production .dashboard-card .text-xl {
     font-size: 1rem !important;
   }
   
-  .dashboard-card .text-sm {
+  .vercel-production .dashboard-card .text-sm {
     font-size: 0.625rem !important;
   }
   
-  .dashboard-card .w-5 {
+  .vercel-production .dashboard-card .w-5 {
     width: 1rem !important;
     height: 1rem !important;
   }
 
   /* Relatório Mensal cards - smaller for 5 in a row */
-  .relatorio-mensal-card {
+  .vercel-production .relatorio-mensal-card {
     padding: 0.5rem !important;
     font-size: 0.625rem !important;
     min-height: auto !important;
   }
   
-  .relatorio-mensal-card .text-base {
+  .vercel-production .relatorio-mensal-card .text-base {
     font-size: 0.75rem !important;
     font-weight: 700 !important;
     line-height: 1.1 !important;
   }
   
-  .relatorio-mensal-card .text-xl {
+  .vercel-production .relatorio-mensal-card .text-xl {
     font-size: 0.875rem !important;
   }
   
-  .relatorio-mensal-card .text-xs {
+  .vercel-production .relatorio-mensal-card .text-xs {
     font-size: 0.5rem !important;
   }
   
-  .relatorio-mensal-card .w-5 {
+  .vercel-production .relatorio-mensal-card .w-5 {
     width: 0.875rem !important;
     height: 0.875rem !important;
   }
