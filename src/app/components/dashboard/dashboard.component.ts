@@ -18,7 +18,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   receitaChart: Chart | null = null;
   despesasChart: Chart | null = null;
   currentDate: Date = new Date();
-  isVercelProduction: boolean = false;
   mediaNovosContratosReais3m: number = 0;
   mediaNovosContratosUnidades3m: number = 0;
   custoFinanceiroInvestimento: number = 0;
@@ -49,14 +48,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Detectar se está rodando no Vercel
-    if (isPlatformBrowser(this.platformId)) {
-      this.isVercelProduction = window.location.hostname.includes('vercel.app');
-      if (this.isVercelProduction) {
-        document.body.classList.add('vercel-production');
-      }
-    }
-    
     this.inicializarFiltros();
     this.filtrarDadosPorPeriodo();
     this.calcularMediasContratosUltimos3Meses();
