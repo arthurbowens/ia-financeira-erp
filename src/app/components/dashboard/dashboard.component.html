@@ -43,50 +43,50 @@
     <!-- Relatório Mensal (faixa de cards resumo) -->
     <div class="mb-8">
       <h2 class="text-xl font-bold text-center text-gray-900 mb-4">RELATÓRIO MENSAL</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
         <!-- Receitas -->
-        <div class="dashboard-card dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
-          <div class="text-xl mb-2">💰</div>
+        <div class="relatorio-mensal-card bg-white rounded-xl shadow-sm p-3 border-l-4 border-green-500">
+          <div class="text-lg mb-1">💰</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Receitas</div>
-          <div class="text-base font-bold text-gray-900">{{ formatCurrency(dadosFiltrados.receitas || 0) }}</div>
-          <div class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full mt-2 inline-block">+{{ dadosFiltrados.indicadores.crescimentoReceita || 0 }}%</div>
+          <div class="text-sm font-bold text-gray-900">{{ formatCurrency(dadosFiltrados.receitas || 0) }}</div>
+          <div class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full mt-1 inline-block">+{{ dadosFiltrados.indicadores.crescimentoReceita || 0 }}%</div>
           <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
         </div>
 
         <!-- Despesas -->
-        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
-          <div class="mb-2 text-red-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div class="relatorio-mensal-card bg-white rounded-xl shadow-sm p-3 border-l-4 border-yellow-500">
+          <div class="mb-1 text-red-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l6 6 4-4 6 6"/>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h4v-4"/>
             </svg>
           </div>
           <div class="text-xs uppercase text-gray-500 mb-1">Despesas</div>
-          <div class="text-base font-bold text-gray-900">{{ formatCurrency(dadosFiltrados.despesas || 0) }}</div>
-          <div class="text-xs text-gray-500 mt-2">{{ getMargemDespesas() }}</div>
+          <div class="text-sm font-bold text-gray-900">{{ formatCurrency(dadosFiltrados.despesas || 0) }}</div>
+          <div class="text-xs text-gray-500 mt-1">{{ getMargemDespesas() }}</div>
           <div class="text-xs text-gray-500 mt-1">Últimos 3 meses</div>
         </div>
 
         <!-- Margem de Lucro -->
-        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-indigo-500">
-          <div class="text-xl mb-2">📈</div>
+        <div class="relatorio-mensal-card bg-white rounded-xl shadow-sm p-3 border-l-4 border-indigo-500">
+          <div class="text-lg mb-1">📈</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Margem de Lucro</div>
-          <div class="text-base font-bold text-gray-900">{{ dadosFiltrados.margemLiquida || 0 }}%</div>
-          <div class="text-xs text-gray-500 mt-2">{{ formatCurrency(dadosFiltrados.lucro || 0) }}</div>
+          <div class="text-sm font-bold text-gray-900">{{ dadosFiltrados.margemLiquida || 0 }}%</div>
+          <div class="text-xs text-gray-500 mt-1">{{ formatCurrency(dadosFiltrados.lucro || 0) }}</div>
         </div>
 
         <!-- Novos Contratos (R$) -->
-        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
-          <div class="text-xl mb-2">🧾</div>
+        <div class="relatorio-mensal-card bg-white rounded-xl shadow-sm p-3 border-l-4 border-blue-500">
+          <div class="text-lg mb-1">🧾</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Novos Contratos (R$)</div>
-          <div class="text-base font-bold text-gray-900">{{ formatCurrency(mediaNovosContratosReais3m) }}</div>
+          <div class="text-sm font-bold text-gray-900">{{ formatCurrency(mediaNovosContratosReais3m) }}</div>
         </div>
 
         <!-- Novos Contratos (Unid) -->
-        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-cyan-500">
-          <div class="text-xl mb-2">📄</div>
+        <div class="relatorio-mensal-card bg-white rounded-xl shadow-sm p-3 border-l-4 border-cyan-500">
+          <div class="text-lg mb-1">📄</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Novos Contratos (Unid)</div>
-          <div class="text-base font-bold text-gray-900">{{ mediaNovosContratosUnidades3m | number:'1.0-1' }}</div>
+          <div class="text-sm font-bold text-gray-900">{{ mediaNovosContratosUnidades3m | number:'1.0-1' }}</div>
         </div>
       </div>
     </div>

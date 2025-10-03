@@ -62,4 +62,30 @@
     width: 1.25rem !important;
     height: 1.25rem !important;
   }
+
+  /* Relatório Mensal cards - smaller for 5 in a row */
+  .relatorio-mensal-card {
+    padding: 0.75rem !important;
+    font-size: 0.75rem !important;
+    min-height: auto !important;
+  }
+  
+  .relatorio-mensal-card .text-base {
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+  }
+  
+  .relatorio-mensal-card .text-xl {
+    font-size: 1rem !important;
+  }
+  
+  .relatorio-mensal-card .text-xs {
+    font-size: 0.625rem !important;
+  }
+  
+  .relatorio-mensal-card .w-5 {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
 }
