@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50 p-4">
   <div class="max-w-7xl mx-auto">
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-8">
+    <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 mb-8">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 class="text-3xl font-bold text-gray-900 mb-2 sm:mb-0">📊 Dashboard Financeiro</h1>
@@ -45,7 +45,7 @@
       <h2 class="text-xl font-bold text-center text-gray-900 mb-4">RELATÓRIO MENSAL</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         <!-- Receitas -->
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
+        <div class="dashboard-card dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
           <div class="text-xl mb-2">💰</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Receitas</div>
           <div class="text-base font-bold text-gray-900">{{ formatCurrency(dadosFiltrados.receitas || 0) }}</div>
@@ -54,7 +54,7 @@
         </div>
 
         <!-- Despesas -->
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
+        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
           <div class="mb-2 text-red-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l6 6 4-4 6 6"/>
@@ -68,7 +68,7 @@
         </div>
 
         <!-- Margem de Lucro -->
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-indigo-500">
+        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-indigo-500">
           <div class="text-xl mb-2">📈</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Margem de Lucro</div>
           <div class="text-base font-bold text-gray-900">{{ dadosFiltrados.margemLiquida || 0 }}%</div>
@@ -76,14 +76,14 @@
         </div>
 
         <!-- Novos Contratos (R$) -->
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
+        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
           <div class="text-xl mb-2">🧾</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Novos Contratos (R$)</div>
           <div class="text-base font-bold text-gray-900">{{ formatCurrency(mediaNovosContratosReais3m) }}</div>
         </div>
 
         <!-- Novos Contratos (Unid) -->
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-cyan-500">
+        <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-cyan-500">
           <div class="text-xl mb-2">📄</div>
           <div class="text-xs uppercase text-gray-500 mb-1">Novos Contratos (Unid)</div>
           <div class="text-base font-bold text-gray-900">{{ mediaNovosContratosUnidades3m | number:'1.0-1' }}</div>
@@ -97,7 +97,7 @@
         <h3 class="text-sm tracking-wider text-gray-600 font-semibold mb-3">DASHBOARD FINANCEIRO</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Receitas -->
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">💰</div>
               <div class="flex-1 min-w-0">
@@ -112,7 +112,7 @@
           </div>
 
           <!-- Despesas -->
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500">
             <div class="flex items-center">
               <div class="mr-2 text-red-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -130,7 +130,7 @@
           </div>
 
           <!-- Inadimplência (R$) -->
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-fuchsia-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-fuchsia-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">🚫</div>
               <div class="flex-1 min-w-0">
@@ -141,7 +141,7 @@
           </div>
 
           <!-- Taxa de Inadimplência (%) -->
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-pink-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-pink-500">
             <div class="flex items-center">
               <div class="mr-2 text-pink-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -157,7 +157,7 @@
           </div>
 
           <!-- Custo Fixo / Variável / Estratégico -->
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-orange-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-orange-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">🏢</div>
               <div class="flex-1 min-w-0">
@@ -167,7 +167,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-red-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-red-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">📊</div>
               <div class="flex-1 min-w-0">
@@ -177,7 +177,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-teal-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-teal-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">🎯</div>
               <div class="flex-1 min-w-0">
@@ -188,7 +188,7 @@
           </div>
 
            <!-- Custo Financeiro/Investimento -->
-           <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-sky-500">
+           <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-sky-500">
             <div class="flex items-center">
               <div class="mr-3 text-sky-600">
                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sky-50">🏦</span>
@@ -207,7 +207,7 @@
       <div>
         <h3 class="text-sm tracking-wider text-gray-600 font-semibold mb-3">DASHBOARD CLIENTES</h3>
         <div class="grid grid-cols-1 gap-4">
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">📋</div>
               <div class="flex-1 min-w-0">
@@ -217,7 +217,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-rose-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-rose-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">📉</div>
               <div class="flex-1 min-w-0">
@@ -227,7 +227,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-amber-500">
+          <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-amber-500">
             <div class="flex items-center">
               <div class="text-xl mr-2">📆</div>
               <div class="flex-1 min-w-0">
@@ -241,7 +241,7 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-      <div class="bg-white rounded-xl shadow-sm p-4">
+      <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900">📈 Receita Mensal</h3>
           <button 
@@ -255,7 +255,7 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm p-4">
+      <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900">🥧 Despesas por Categoria</h3>
           <button 
@@ -271,7 +271,7 @@
     </div>
 
 
-    <div class="bg-white rounded-xl shadow-sm p-4">
+    <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">⚡ Ações Rápidas</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <a routerLink="/contratos" 
