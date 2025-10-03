@@ -30,11 +30,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   inadimplenciaValor: number = 0;
   inadimplenciaTaxa: number = 0;
   
-  // Filtro de mês
-  mesSelecionado: string = '';
-  mesesDisponiveis: Array<{value: string, label: string}> = [];
+  // Filtro de data
+  dataInicial: string = '';
+  dataFinal: string = '';
+  tipoFiltro: 'mes' | 'trimestre' | 'ano' = 'mes';
   
-  // Dados filtrados por mês
+  // Opções de filtro
+  mesesDisponiveis: Array<{value: string, label: string}> = [];
+  trimestresDisponiveis: Array<{value: string, label: string}> = [];
+  anosDisponiveis: Array<{value: string, label: string}> = [];
+  
+  // Dados filtrados por período
   dadosFiltrados: DadosFinanceiros = this.dados;
 
   constructor(
@@ -42,8 +48,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.inicializarFiltroMes();
-    this.filtrarDadosPorMes();
+    this.inicializarFiltros();
+    this.filtrarDadosPorPeriodo();
     this.calcularMediasContratosUltimos3Meses();
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
@@ -223,7 +229,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private calcularMediasContratosUltimos3Meses(): void {
-    // Dados mock por mês para novos contratos (2025)
+    switch (this.tipoFiltro) {
+      case 'mes':
+        this.calcularContratosPorMes();
+        break;
+      case 'trimestre':
+        this.calcularContratosPorTrimestre();
+        break;
+      case 'ano':
+        this.calcularContratosPorAno();
+        break;
+    }
+  }
+
+  private calcularContratosPorMes(): void {
     const novosContratosPorMes: {[key: string]: {valor: number, quantidade: number}} = {
       '2025-10': { valor: 55000, quantidade: 2.5 },
       '2025-09': { valor: 52000, quantidade: 2.3 },
@@ -237,17 +256,54 @@ export class DashboardComponent implements OnInit, OnDestroy {
       '2025-01': { valor: 25000, quantidade: 0.8 }
     };
 
-    const mesSelecionado = this.mesSelecionado;
-    if (novosContratosPorMes[mesSelecionado]) {
-      this.mediaNovosContratosReais3m = novosContratosPorMes[mesSelecionado].valor;
-      this.mediaNovosContratosUnidades3m = novosContratosPorMes[mesSelecionado].quantidade;
+    const mesAtual = this.dataInicial.substring(0, 7);
+    if (novosContratosPorMes[mesAtual]) {
+      this.mediaNovosContratosReais3m = novosContratosPorMes[mesAtual].valor;
+      this.mediaNovosContratosUnidades3m = novosContratosPorMes[mesAtual].quantidade;
     } else {
-      // Fallback: média dos últimos 3 meses
-      const valores = Object.values(novosContratosPorMes);
-      const totalValor = valores.reduce((acc, mes) => acc + mes.valor, 0);
-      const totalQuantidade = valores.reduce((acc, mes) => acc + mes.quantidade, 0);
-      this.mediaNovosContratosReais3m = totalValor / valores.length;
-      this.mediaNovosContratosUnidades3m = totalQuantidade / valores.length;
+      this.mediaNovosContratosReais3m = 40000;
+      this.mediaNovosContratosUnidades3m = 1.8;
+    }
+  }
+
+  private calcularContratosPorTrimestre(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+    
+    const contratosPorTrimestre: {[key: string]: {valor: number, quantidade: number}} = {
+      '2025-Q4': { valor: 155000, quantidade: 6.9 }, // Out+Set+Ago
+      '2025-Q3': { valor: 135000, quantidade: 5.9 }, // Jul+Jun+Mai
+      '2025-Q2': { valor: 105000, quantidade: 4.2 }, // Abr+Mar+Fev
+      '2025-Q1': { valor: 75000, quantidade: 3.0 }   // Jan+Dez+Nov
+    };
+
+    const chaveTrimestre = `${ano}-Q${trimestre}`;
+    if (contratosPorTrimestre[chaveTrimestre]) {
+      this.mediaNovosContratosReais3m = contratosPorTrimestre[chaveTrimestre].valor;
+      this.mediaNovosContratosUnidades3m = contratosPorTrimestre[chaveTrimestre].quantidade;
+    } else {
+      this.mediaNovosContratosReais3m = 120000;
+      this.mediaNovosContratosUnidades3m = 5.0;
+    }
+  }
+
+  private calcularContratosPorAno(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    
+    const contratosPorAno: {[key: string]: {valor: number, quantidade: number}} = {
+      '2025': { valor: 470000, quantidade: 20.0 },
+      '2024': { valor: 380000, quantidade: 16.5 },
+      '2023': { valor: 280000, quantidade: 12.0 }
+    };
+
+    if (contratosPorAno[ano.toString()]) {
+      this.mediaNovosContratosReais3m = contratosPorAno[ano.toString()].valor;
+      this.mediaNovosContratosUnidades3m = contratosPorAno[ano.toString()].quantidade;
+    } else {
+      this.mediaNovosContratosReais3m = 400000;
+      this.mediaNovosContratosUnidades3m = 17.0;
     }
   }
 
@@ -282,184 +338,250 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private calcularMediaCustoEstrategico(): void {
-    // Dados mock por mês para custos estratégicos
+    switch (this.tipoFiltro) {
+      case 'mes':
+        this.calcularCustoEstrategicoPorMes();
+        break;
+      case 'trimestre':
+        this.calcularCustoEstrategicoPorTrimestre();
+        break;
+      case 'ano':
+        this.calcularCustoEstrategicoPorAno();
+        break;
+    }
+  }
+
+  private calcularCustoEstrategicoPorMes(): void {
     const custosEstrategicosPorMes: {[key: string]: number} = {
-      '2025-10': 42000,
-      '2025-09': 38000,
-      '2025-08': 35000,
-      '2025-07': 32000,
-      '2025-06': 28000,
-      '2025-05': 25000,
-      '2025-04': 22000,
-      '2025-03': 20000,
-      '2025-02': 18000,
-      '2025-01': 15000
+      '2025-10': 42000, '2025-09': 38000, '2025-08': 35000, '2025-07': 32000,
+      '2025-06': 28000, '2025-05': 25000, '2025-04': 22000, '2025-03': 20000,
+      '2025-02': 18000, '2025-01': 15000
     };
 
-    // Usa o valor do mês selecionado ou calcula média dos últimos 6 meses
-    const mesSelecionado = this.mesSelecionado;
-    if (custosEstrategicosPorMes[mesSelecionado]) {
-      this.mediaCustoEstrategico = custosEstrategicosPorMes[mesSelecionado];
-    } else {
-      // Fallback: média dos últimos 6 meses
-      const valores = Object.values(custosEstrategicosPorMes);
-      const total = valores.reduce((acc, valor) => acc + valor, 0);
-      this.mediaCustoEstrategico = total / valores.length;
-    }
+    const mesAtual = this.dataInicial.substring(0, 7);
+    this.mediaCustoEstrategico = custosEstrategicosPorMes[mesAtual] || 30000;
+  }
+
+  private calcularCustoEstrategicoPorTrimestre(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+    
+    const custosPorTrimestre: {[key: string]: number} = {
+      '2025-Q4': 115000, // Out+Set+Ago
+      '2025-Q3': 95000,  // Jul+Jun+Mai
+      '2025-Q2': 70000,  // Abr+Mar+Fev
+      '2025-Q1': 53000   // Jan+Dez+Nov
+    };
+
+    const chaveTrimestre = `${ano}-Q${trimestre}`;
+    this.mediaCustoEstrategico = custosPorTrimestre[chaveTrimestre] || 85000;
+  }
+
+  private calcularCustoEstrategicoPorAno(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    
+    const custosPorAno: {[key: string]: number} = {
+      '2025': 333000, '2024': 280000, '2023': 220000
+    };
+
+    this.mediaCustoEstrategico = custosPorAno[ano.toString()] || 300000;
   }
 
   private calcularCustoFinanceiroInvestimento(): void {
-    // Dados mock por mês para custo financeiro/investimento
-    const custoFinanceiroPorMes: {[key: string]: number} = {
-      '2025-10': 85000,
-      '2025-09': 78000,
-      '2025-08': 72000,
-      '2025-07': 68000,
-      '2025-06': 62000,
-      '2025-05': 58000,
-      '2025-04': 54000,
-      '2025-03': 50000,
-      '2025-02': 46000,
-      '2025-01': 42000
-    };
-
-    const mesSelecionado = this.mesSelecionado;
-    if (custoFinanceiroPorMes[mesSelecionado]) {
-      this.custoFinanceiroInvestimento = custoFinanceiroPorMes[mesSelecionado];
-    } else {
-      // Fallback: média dos meses disponíveis
-      const valores = Object.values(custoFinanceiroPorMes);
-      const total = valores.reduce((acc, valor) => acc + valor, 0);
-      this.custoFinanceiroInvestimento = total / valores.length;
+    switch (this.tipoFiltro) {
+      case 'mes':
+        this.calcularCustoFinanceiroPorMes();
+        break;
+      case 'trimestre':
+        this.calcularCustoFinanceiroPorTrimestre();
+        break;
+      case 'ano':
+        this.calcularCustoFinanceiroPorAno();
+        break;
     }
   }
 
-  private calcularTotalClientesAtivos(): void {
-    // Dados mock por mês para total de clientes ativos
-    const clientesAtivosPorMes: {[key: string]: number} = {
-      '2025-10': 1250,
-      '2025-09': 1180,
-      '2025-08': 1120,
-      '2025-07': 1080,
-      '2025-06': 1020,
-      '2025-05': 980,
-      '2025-04': 920,
-      '2025-03': 880,
-      '2025-02': 820,
-      '2025-01': 750
+  private calcularCustoFinanceiroPorMes(): void {
+    const custoFinanceiroPorMes: {[key: string]: number} = {
+      '2025-10': 85000, '2025-09': 78000, '2025-08': 72000, '2025-07': 68000,
+      '2025-06': 62000, '2025-05': 58000, '2025-04': 54000, '2025-03': 50000,
+      '2025-02': 46000, '2025-01': 42000
     };
 
-    // Usa o valor do mês selecionado ou calcula média dos últimos 6 meses
-    const mesSelecionado = this.mesSelecionado;
-    if (clientesAtivosPorMes[mesSelecionado]) {
-      this.totalClientesAtivos = clientesAtivosPorMes[mesSelecionado];
-    } else {
-      // Fallback: média dos últimos 6 meses
-      const valores = Object.values(clientesAtivosPorMes);
-      const total = valores.reduce((acc, valor) => acc + valor, 0);
-      this.totalClientesAtivos = total / valores.length;
+    const mesAtual = this.dataInicial.substring(0, 7);
+    this.custoFinanceiroInvestimento = custoFinanceiroPorMes[mesAtual] || 60000;
+  }
+
+  private calcularCustoFinanceiroPorTrimestre(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+    
+    const custosPorTrimestre: {[key: string]: number} = {
+      '2025-Q4': 235000, // Out+Set+Ago
+      '2025-Q3': 198000, // Jul+Jun+Mai
+      '2025-Q2': 164000, // Abr+Mar+Fev
+      '2025-Q1': 138000  // Jan+Dez+Nov
+    };
+
+    const chaveTrimestre = `${ano}-Q${trimestre}`;
+    this.custoFinanceiroInvestimento = custosPorTrimestre[chaveTrimestre] || 180000;
+  }
+
+  private calcularCustoFinanceiroPorAno(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    
+    const custosPorAno: {[key: string]: number} = {
+      '2025': 735000, '2024': 650000, '2023': 520000
+    };
+
+    this.custoFinanceiroInvestimento = custosPorAno[ano.toString()] || 600000;
+  }
+
+  private calcularTotalClientesAtivos(): void {
+    switch (this.tipoFiltro) {
+      case 'mes':
+        const clientesPorMes: {[key: string]: number} = {
+          '2025-10': 1250, '2025-09': 1180, '2025-08': 1120, '2025-07': 1080,
+          '2025-06': 1020, '2025-05': 980, '2025-04': 920, '2025-03': 880,
+          '2025-02': 820, '2025-01': 750
+        };
+        const mesAtual = this.dataInicial.substring(0, 7);
+        this.totalClientesAtivos = clientesPorMes[mesAtual] || 1000;
+        break;
+      case 'trimestre':
+        const dataIni = new Date(this.dataInicial);
+        const ano = dataIni.getFullYear();
+        const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+        const clientesPorTrimestre: {[key: string]: number} = {
+          '2025-Q4': 3550, '2025-Q3': 3080, '2025-Q2': 2820, '2025-Q1': 2450
+        };
+        const chaveTrimestre = `${ano}-Q${trimestre}`;
+        this.totalClientesAtivos = clientesPorTrimestre[chaveTrimestre] || 3000;
+        break;
+      case 'ano':
+        const anoAtual = new Date(this.dataInicial).getFullYear();
+        const clientesPorAno: {[key: string]: number} = {
+          '2025': 11900, '2024': 10500, '2023': 8500
+        };
+        this.totalClientesAtivos = clientesPorAno[anoAtual.toString()] || 10000;
+        break;
     }
   }
 
   private calcularChurnPercent(): void {
-    // Churn mensal mockado por mês (2025) em percentual
-    const churnPorMes: { [key: string]: number } = {
-      '2025-10': 1.8,
-      '2025-09': 2.1,
-      '2025-08': 2.3,
-      '2025-07': 2.6,
-      '2025-06': 2.9,
-      '2025-05': 3.2,
-      '2025-04': 3.5,
-      '2025-03': 3.8,
-      '2025-02': 4.1,
-      '2025-01': 4.5,
-    };
-
-    const mesSelecionado = this.mesSelecionado;
-    if (churnPorMes[mesSelecionado] !== undefined) {
-      this.churnPercent = churnPorMes[mesSelecionado];
-    } else {
-      // Fallback: média do período disponível
-      const valores = Object.values(churnPorMes);
-      const total = valores.reduce((acc, v) => acc + v, 0);
-      this.churnPercent = total / valores.length;
+    switch (this.tipoFiltro) {
+      case 'mes':
+        const churnPorMes: {[key: string]: number} = {
+          '2025-10': 1.8, '2025-09': 2.1, '2025-08': 2.3, '2025-07': 2.6,
+          '2025-06': 2.9, '2025-05': 3.2, '2025-04': 3.5, '2025-03': 3.8,
+          '2025-02': 4.1, '2025-01': 4.5
+        };
+        const mesAtual = this.dataInicial.substring(0, 7);
+        this.churnPercent = churnPorMes[mesAtual] || 3.0;
+        break;
+      case 'trimestre':
+        const dataIni = new Date(this.dataInicial);
+        const ano = dataIni.getFullYear();
+        const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+        const churnPorTrimestre: {[key: string]: number} = {
+          '2025-Q4': 2.1, '2025-Q3': 2.9, '2025-Q2': 3.5, '2025-Q1': 4.1
+        };
+        const chaveTrimestre = `${ano}-Q${trimestre}`;
+        this.churnPercent = churnPorTrimestre[chaveTrimestre] || 3.2;
+        break;
+      case 'ano':
+        const anoAtual = new Date(this.dataInicial).getFullYear();
+        const churnPorAno: {[key: string]: number} = {
+          '2025': 2.6, '2024': 3.1, '2023': 3.8
+        };
+        this.churnPercent = churnPorAno[anoAtual.toString()] || 3.0;
+        break;
     }
   }
 
   private calcularLtvMeses(): void {
-    // LTV em meses mockado por mês (2025)
-    const ltvPorMes: { [key: string]: number } = {
-      '2025-10': 28,
-      '2025-09': 27,
-      '2025-08': 26,
-      '2025-07': 25,
-      '2025-06': 24,
-      '2025-05': 23,
-      '2025-04': 22,
-      '2025-03': 21,
-      '2025-02': 20,
-      '2025-01': 19,
-    };
-
-    const mesSelecionado = this.mesSelecionado;
-    if (ltvPorMes[mesSelecionado] !== undefined) {
-      this.ltvMeses = ltvPorMes[mesSelecionado];
-    } else {
-      const valores = Object.values(ltvPorMes);
-      const total = valores.reduce((acc, v) => acc + v, 0);
-      this.ltvMeses = total / valores.length;
+    switch (this.tipoFiltro) {
+      case 'mes':
+        const ltvPorMes: {[key: string]: number} = {
+          '2025-10': 28, '2025-09': 27, '2025-08': 26, '2025-07': 25,
+          '2025-06': 24, '2025-05': 23, '2025-04': 22, '2025-03': 21,
+          '2025-02': 20, '2025-01': 19
+        };
+        const mesAtual = this.dataInicial.substring(0, 7);
+        this.ltvMeses = ltvPorMes[mesAtual] || 24;
+        break;
+      case 'trimestre':
+        const dataIni = new Date(this.dataInicial);
+        const ano = dataIni.getFullYear();
+        const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+        const ltvPorTrimestre: {[key: string]: number} = {
+          '2025-Q4': 27, '2025-Q3': 24, '2025-Q2': 21, '2025-Q1': 20
+        };
+        const chaveTrimestre = `${ano}-Q${trimestre}`;
+        this.ltvMeses = ltvPorTrimestre[chaveTrimestre] || 23;
+        break;
+      case 'ano':
+        const anoAtual = new Date(this.dataInicial).getFullYear();
+        const ltvPorAno: {[key: string]: number} = {
+          '2025': 25, '2024': 22, '2023': 18
+        };
+        this.ltvMeses = ltvPorAno[anoAtual.toString()] || 22;
+        break;
     }
   }
 
   private calcularInadimplencia(): void {
-    // Mock mensal 2025: valor total de inadimplência (R$) e taxa (%)
-    const inadValorPorMes: { [key: string]: number } = {
-      '2025-10': 42000,
-      '2025-09': 45000,
-      '2025-08': 47000,
-      '2025-07': 50000,
-      '2025-06': 52000,
-      '2025-05': 54000,
-      '2025-04': 56000,
-      '2025-03': 58000,
-      '2025-02': 60000,
-      '2025-01': 62000,
-    };
-
-    const inadTaxaPorMes: { [key: string]: number } = {
-      '2025-10': 3.1,
-      '2025-09': 3.3,
-      '2025-08': 3.5,
-      '2025-07': 3.7,
-      '2025-06': 3.9,
-      '2025-05': 4.1,
-      '2025-04': 4.3,
-      '2025-03': 4.5,
-      '2025-02': 4.7,
-      '2025-01': 5.0,
-    };
-
-    const mesSelecionado = this.mesSelecionado;
-    this.inadimplenciaValor = inadValorPorMes[mesSelecionado] ?? this.inadimplenciaValor;
-    this.inadimplenciaTaxa = inadTaxaPorMes[mesSelecionado] ?? this.inadimplenciaTaxa;
-    if (this.inadimplenciaValor === 0 && this.inadimplenciaTaxa === 0) {
-      const valores = Object.values(inadValorPorMes);
-      const total = valores.reduce((acc, v) => acc + v, 0);
-      this.inadimplenciaValor = total / valores.length;
-
-      const taxas = Object.values(inadTaxaPorMes);
-      const totalTaxa = taxas.reduce((acc, v) => acc + v, 0);
-      this.inadimplenciaTaxa = totalTaxa / taxas.length;
+    switch (this.tipoFiltro) {
+      case 'mes':
+        const inadValorPorMes: {[key: string]: number} = {
+          '2025-10': 42000, '2025-09': 45000, '2025-08': 47000, '2025-07': 50000,
+          '2025-06': 52000, '2025-05': 54000, '2025-04': 56000, '2025-03': 58000,
+          '2025-02': 60000, '2025-01': 62000
+        };
+        const inadTaxaPorMes: {[key: string]: number} = {
+          '2025-10': 3.1, '2025-09': 3.3, '2025-08': 3.5, '2025-07': 3.7,
+          '2025-06': 3.9, '2025-05': 4.1, '2025-04': 4.3, '2025-03': 4.5,
+          '2025-02': 4.7, '2025-01': 5.0
+        };
+        const mesAtual = this.dataInicial.substring(0, 7);
+        this.inadimplenciaValor = inadValorPorMes[mesAtual] || 50000;
+        this.inadimplenciaTaxa = inadTaxaPorMes[mesAtual] || 4.0;
+        break;
+      case 'trimestre':
+        const dataIni = new Date(this.dataInicial);
+        const ano = dataIni.getFullYear();
+        const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+        const inadValorPorTrimestre: {[key: string]: number} = {
+          '2025-Q4': 134000, '2025-Q3': 149000, '2025-Q2': 164000, '2025-Q1': 180000
+        };
+        const inadTaxaPorTrimestre: {[key: string]: number} = {
+          '2025-Q4': 3.3, '2025-Q3': 3.8, '2025-Q2': 4.3, '2025-Q1': 4.7
+        };
+        const chaveTrimestre = `${ano}-Q${trimestre}`;
+        this.inadimplenciaValor = inadValorPorTrimestre[chaveTrimestre] || 150000;
+        this.inadimplenciaTaxa = inadTaxaPorTrimestre[chaveTrimestre] || 4.0;
+        break;
+      case 'ano':
+        const anoAtual = new Date(this.dataInicial).getFullYear();
+        const inadValorPorAno: {[key: string]: number} = {
+          '2025': 627000, '2024': 580000, '2023': 520000
+        };
+        const inadTaxaPorAno: {[key: string]: number} = {
+          '2025': 3.9, '2024': 4.2, '2023': 4.8
+        };
+        this.inadimplenciaValor = inadValorPorAno[anoAtual.toString()] || 600000;
+        this.inadimplenciaTaxa = inadTaxaPorAno[anoAtual.toString()] || 4.0;
+        break;
     }
   }
 
-  private inicializarFiltroMes(): void {
-    // Gera lista dos 12 meses de 2025
-    this.mesesDisponiveis = [];
-    
-    // Cria lista de meses de janeiro a outubro 2025
-    const meses = [
+  private inicializarFiltros(): void {
+    // Inicializa meses
+    this.mesesDisponiveis = [
       { value: '2025-10', label: 'outubro 2025' },
       { value: '2025-09', label: 'setembro 2025' },
       { value: '2025-08', label: 'agosto 2025' },
@@ -471,18 +593,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { value: '2025-02', label: 'fevereiro 2025' },
       { value: '2025-01', label: 'janeiro 2025' }
     ];
-    
-    this.mesesDisponiveis = meses;
-    
-    // Define outubro 2025 como padrão (melhor mês disponível)
-    this.mesSelecionado = '2025-10';
-    console.log('Mês selecionado inicial:', this.mesSelecionado);
+
+    // Inicializa trimestres
+    this.trimestresDisponiveis = [
+      { value: '2025-Q4', label: '4º Trimestre 2025' },
+      { value: '2025-Q3', label: '3º Trimestre 2025' },
+      { value: '2025-Q2', label: '2º Trimestre 2025' },
+      { value: '2025-Q1', label: '1º Trimestre 2025' }
+    ];
+
+    // Inicializa anos
+    this.anosDisponiveis = [
+      { value: '2025', label: '2025' },
+      { value: '2024', label: '2024' },
+      { value: '2023', label: '2023' }
+    ];
+
+    // Define valores padrão
+    this.dataInicial = '2025-10-01';
+    this.dataFinal = '2025-10-31';
+    this.tipoFiltro = 'mes';
   }
 
-  onMesSelecionado(): void {
-    console.log('Mês selecionado:', this.mesSelecionado);
-    // Filtra os dados baseado no mês selecionado
-    this.filtrarDadosPorMes();
+  onFiltroAlterado(): void {
+    console.log('Filtro alterado:', { tipoFiltro: this.tipoFiltro, dataInicial: this.dataInicial, dataFinal: this.dataFinal });
+    this.filtrarDadosPorPeriodo();
     this.calcularMediasContratosUltimos3Meses();
     this.calcularMediaCustoFixo();
     this.calcularMediaCustoVariavel();
@@ -500,7 +635,80 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  onTipoFiltroAlterado(): void {
+    // Ajusta as datas baseado no tipo de filtro
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    
+    switch (this.tipoFiltro) {
+      case 'mes':
+        this.dataInicial = `${ano}-${String(hoje.getMonth() + 1).padStart(2, '0')}-01`;
+        this.dataFinal = `${ano}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${new Date(ano, hoje.getMonth() + 1, 0).getDate()}`;
+        break;
+      case 'trimestre':
+        const trimestre = Math.ceil((hoje.getMonth() + 1) / 3);
+        const mesInicial = (trimestre - 1) * 3 + 1;
+        const mesFinal = trimestre * 3;
+        this.dataInicial = `${ano}-${String(mesInicial).padStart(2, '0')}-01`;
+        this.dataFinal = `${ano}-${String(mesFinal).padStart(2, '0')}-${new Date(ano, mesFinal, 0).getDate()}`;
+        break;
+      case 'ano':
+        this.dataInicial = `${ano}-01-01`;
+        this.dataFinal = `${ano}-12-31`;
+        break;
+    }
+    
+    this.onFiltroAlterado();
+  }
+
+  getTrimestreSelecionado(): string {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+    return `${ano}-Q${trimestre}`;
+  }
+
+  getAnoSelecionado(): string {
+    const dataIni = new Date(this.dataInicial);
+    return dataIni.getFullYear().toString();
+  }
+
+  selecionarTrimestre(trimestreValue: string): void {
+    const [ano, q] = trimestreValue.split('-Q');
+    const trimestre = parseInt(q);
+    
+    // Calcula datas do trimestre
+    const mesInicial = (trimestre - 1) * 3 + 1;
+    const mesFinal = trimestre * 3;
+    
+    this.dataInicial = `${ano}-${String(mesInicial).padStart(2, '0')}-01`;
+    this.dataFinal = `${ano}-${String(mesFinal).padStart(2, '0')}-${new Date(parseInt(ano), mesFinal, 0).getDate()}`;
+    
+    this.onFiltroAlterado();
+  }
+
+  selecionarAno(anoValue: string): void {
+    this.dataInicial = `${anoValue}-01-01`;
+    this.dataFinal = `${anoValue}-12-31`;
+    this.onFiltroAlterado();
+  }
+
+  private filtrarDadosPorPeriodo(): void {
+    switch (this.tipoFiltro) {
+      case 'mes':
+        this.filtrarDadosPorMes();
+        break;
+      case 'trimestre':
+        this.filtrarDadosPorTrimestre();
+        break;
+      case 'ano':
+        this.filtrarDadosPorAno();
+        break;
+    }
+  }
+
   private filtrarDadosPorMes(): void {
+    const mesAtual = this.dataInicial.substring(0, 7); // YYYY-MM
     // Dados mock para 10 meses de 2025 (janeiro a outubro) com valores diferentes
     const dadosPorMes: {[key: string]: DadosFinanceiros} = {
       '2025-10': {
@@ -796,25 +1004,289 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
 
     // Usa dados específicos do mês ou dados padrão
-    this.dadosFiltrados = dadosPorMes[this.mesSelecionado] || this.dados;
-    console.log('Dados filtrados para', this.mesSelecionado, ':', this.dadosFiltrados.receitas);
-    console.log('DadosFiltrados completo:', this.dadosFiltrados);
+    this.dadosFiltrados = dadosPorMes[mesAtual] || this.dados;
+    console.log('Dados filtrados para', mesAtual, ':', this.dadosFiltrados.receitas);
   }
 
-  getMesAtualLabel(): string {
-    const mes = this.mesesDisponiveis.find(m => m.value === this.mesSelecionado);
-    return mes ? mes.label : 'Carregando...';
+  private filtrarDadosPorTrimestre(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+    
+    // Dados mock para trimestres (agregação de 3 meses)
+    const dadosPorTrimestre: {[key: string]: DadosFinanceiros} = {
+      '2025-Q4': {
+        receitas: 400000 + 380000 + 350000, // Out+Set+Ago
+        despesas: 130000 + 125000 + 120000,
+        lucro: 270000 + 255000 + 230000,
+        contratosAtivos: 7,
+        contratosPendentes: 3,
+        contratosVencidos: 1,
+        margemBruta: 67.5,
+        margemLiquida: 67.5,
+        roi: 207.7,
+        receitaMensal: [
+          { mes: 'Ago', valor: 35000 },
+          { mes: 'Set', valor: 38000 },
+          { mes: 'Out', valor: 40000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 203000 },
+          { categoria: 'Tecnologia', valor: 60000 },
+          { categoria: 'Marketing', valor: 50000 },
+          { categoria: 'Consultoria', valor: 37000 },
+          { categoria: 'Outros', valor: 25000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 38.5,
+          eficienciaOperacional: 90.2,
+          satisfacaoCliente: 96.9,
+          produtividade: 172.4
+        }
+      },
+      '2025-Q3': {
+        receitas: 350000 + 320000 + 280000, // Jul+Jun+Mai
+        despesas: 120000 + 110000 + 100000,
+        lucro: 230000 + 210000 + 180000,
+        contratosAtivos: 6,
+        contratosPendentes: 4,
+        contratosVencidos: 2,
+        margemBruta: 65.7,
+        margemLiquida: 65.7,
+        roi: 191.7,
+        receitaMensal: [
+          { mes: 'Mai', valor: 25000 },
+          { mes: 'Jun', valor: 28000 },
+          { mes: 'Jul', valor: 32000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 180000 },
+          { categoria: 'Tecnologia', valor: 50000 },
+          { categoria: 'Marketing', valor: 42000 },
+          { categoria: 'Consultoria', valor: 33000 },
+          { categoria: 'Outros', valor: 25000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 32.1,
+          eficienciaOperacional: 86.4,
+          satisfacaoCliente: 94.2,
+          produtividade: 162.8
+        }
+      },
+      '2025-Q2': {
+        receitas: 280000 + 250000 + 220000, // Abr+Mar+Fev
+        despesas: 100000 + 90000 + 80000,
+        lucro: 180000 + 160000 + 140000,
+        contratosAtivos: 5,
+        contratosPendentes: 5,
+        contratosVencidos: 3,
+        margemBruta: 64.3,
+        margemLiquida: 64.3,
+        roi: 180.0,
+        receitaMensal: [
+          { mes: 'Fev', valor: 16000 },
+          { mes: 'Mar', valor: 19000 },
+          { mes: 'Abr', valor: 22000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 150000 },
+          { categoria: 'Tecnologia', valor: 40000 },
+          { categoria: 'Marketing', valor: 36000 },
+          { categoria: 'Consultoria', valor: 27000 },
+          { categoria: 'Outros', valor: 15000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 24.8,
+          eficienciaOperacional: 81.7,
+          satisfacaoCliente: 90.9,
+          produtividade: 151.6
+        }
+      },
+      '2025-Q1': {
+        receitas: 220000 + 190000 + 160000, // Jan+Dez+Nov (2024)
+        despesas: 80000 + 75000 + 70000,
+        lucro: 140000 + 115000 + 90000,
+        contratosAtivos: 4,
+        contratosPendentes: 6,
+        contratosVencidos: 4,
+        margemBruta: 63.6,
+        margemLiquida: 63.6,
+        roi: 175.0,
+        receitaMensal: [
+          { mes: 'Nov', valor: 12000 },
+          { mes: 'Dez', valor: 15000 },
+          { mes: 'Jan', valor: 16000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 120000 },
+          { categoria: 'Tecnologia', valor: 32000 },
+          { categoria: 'Marketing', valor: 29000 },
+          { categoria: 'Consultoria', valor: 26000 },
+          { categoria: 'Outros', valor: 18000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 17.6,
+          eficienciaOperacional: 76.8,
+          satisfacaoCliente: 87.3,
+          produtividade: 140.2
+        }
+      }
+    };
+
+    const chaveTrimestre = `${ano}-Q${trimestre}`;
+    this.dadosFiltrados = dadosPorTrimestre[chaveTrimestre] || this.dados;
+    console.log('Dados filtrados para trimestre', chaveTrimestre, ':', this.dadosFiltrados.receitas);
+  }
+
+  private filtrarDadosPorAno(): void {
+    const dataIni = new Date(this.dataInicial);
+    const ano = dataIni.getFullYear();
+    
+    // Dados mock para anos (agregação de 12 meses)
+    const dadosPorAno: {[key: string]: DadosFinanceiros} = {
+      '2025': {
+        receitas: 4000000, // Agregação de todos os meses
+        despesas: 1300000,
+        lucro: 2700000,
+        contratosAtivos: 8,
+        contratosPendentes: 2,
+        contratosVencidos: 1,
+        margemBruta: 67.5,
+        margemLiquida: 67.5,
+        roi: 207.7,
+        receitaMensal: [
+          { mes: 'Jan', valor: 13000 },
+          { mes: 'Fev', valor: 16000 },
+          { mes: 'Mar', valor: 19000 },
+          { mes: 'Abr', valor: 22000 },
+          { mes: 'Mai', valor: 25000 },
+          { mes: 'Jun', valor: 28000 },
+          { mes: 'Jul', valor: 32000 },
+          { mes: 'Ago', valor: 35000 },
+          { mes: 'Set', valor: 38000 },
+          { mes: 'Out', valor: 40000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 700000 },
+          { categoria: 'Tecnologia', valor: 200000 },
+          { categoria: 'Marketing', valor: 180000 },
+          { categoria: 'Consultoria', valor: 150000 },
+          { categoria: 'Outros', valor: 70000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 38.5,
+          eficienciaOperacional: 90.2,
+          satisfacaoCliente: 96.9,
+          produtividade: 172.4
+        }
+      },
+      '2024': {
+        receitas: 2800000,
+        despesas: 900000,
+        lucro: 1900000,
+        contratosAtivos: 6,
+        contratosPendentes: 4,
+        contratosVencidos: 3,
+        margemBruta: 67.9,
+        margemLiquida: 67.9,
+        roi: 211.1,
+        receitaMensal: [
+          { mes: 'Jan', valor: 20000 },
+          { mes: 'Fev', valor: 22000 },
+          { mes: 'Mar', valor: 24000 },
+          { mes: 'Abr', valor: 26000 },
+          { mes: 'Mai', valor: 28000 },
+          { mes: 'Jun', valor: 30000 },
+          { mes: 'Jul', valor: 32000 },
+          { mes: 'Ago', valor: 34000 },
+          { mes: 'Set', valor: 36000 },
+          { mes: 'Out', valor: 38000 },
+          { mes: 'Nov', valor: 40000 },
+          { mes: 'Dez', valor: 42000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 500000 },
+          { categoria: 'Tecnologia', valor: 150000 },
+          { categoria: 'Marketing', valor: 120000 },
+          { categoria: 'Consultoria', valor: 100000 },
+          { categoria: 'Outros', valor: 30000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 25.0,
+          eficienciaOperacional: 85.0,
+          satisfacaoCliente: 92.0,
+          produtividade: 160.0
+        }
+      },
+      '2023': {
+        receitas: 2000000,
+        despesas: 700000,
+        lucro: 1300000,
+        contratosAtivos: 4,
+        contratosPendentes: 6,
+        contratosVencidos: 5,
+        margemBruta: 65.0,
+        margemLiquida: 65.0,
+        roi: 185.7,
+        receitaMensal: [
+          { mes: 'Jan', valor: 15000 },
+          { mes: 'Fev', valor: 16000 },
+          { mes: 'Mar', valor: 17000 },
+          { mes: 'Abr', valor: 18000 },
+          { mes: 'Mai', valor: 19000 },
+          { mes: 'Jun', valor: 20000 },
+          { mes: 'Jul', valor: 21000 },
+          { mes: 'Ago', valor: 22000 },
+          { mes: 'Set', valor: 23000 },
+          { mes: 'Out', valor: 24000 },
+          { mes: 'Nov', valor: 25000 },
+          { mes: 'Dez', valor: 26000 }
+        ],
+        despesasPorCategoria: [
+          { categoria: 'Salários', valor: 400000 },
+          { categoria: 'Tecnologia', valor: 120000 },
+          { categoria: 'Marketing', valor: 100000 },
+          { categoria: 'Consultoria', valor: 60000 },
+          { categoria: 'Outros', valor: 20000 }
+        ],
+        indicadores: {
+          crescimentoReceita: 15.0,
+          eficienciaOperacional: 80.0,
+          satisfacaoCliente: 88.0,
+          produtividade: 140.0
+        }
+      }
+    };
+
+    this.dadosFiltrados = dadosPorAno[ano.toString()] || this.dados;
+    console.log('Dados filtrados para ano', ano, ':', this.dadosFiltrados.receitas);
+  }
+
+  getPeriodoAtualLabel(): string {
+    const dataIni = new Date(this.dataInicial);
+    const dataFim = new Date(this.dataFinal);
+    
+    switch (this.tipoFiltro) {
+      case 'mes':
+        return dataIni.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      case 'trimestre':
+        const trimestre = Math.ceil((dataIni.getMonth() + 1) / 3);
+        return `${trimestre}º Trimestre ${dataIni.getFullYear()}`;
+      case 'ano':
+        return dataIni.getFullYear().toString();
+      default:
+        return 'Carregando...';
+    }
   }
 
   getStatusFiltro(): string {
-    const mes = this.mesesDisponiveis.find(m => m.value === this.mesSelecionado);
-    if (!mes) return 'Carregando...';
+    const dataIni = new Date(this.dataInicial);
+    const mes = dataIni.getMonth() + 1;
     
-    // Simula status baseado no mês selecionado (janeiro a outubro)
-    const mesNumero = parseInt(this.mesSelecionado.split('-')[1]);
-    if (mesNumero >= 9) return 'Excelente';
-    if (mesNumero >= 6) return 'Bom';
-    if (mesNumero >= 3) return 'Regular';
+    // Simula status baseado no mês selecionado
+    if (mes >= 9) return 'Excelente';
+    if (mes >= 6) return 'Bom';
+    if (mes >= 3) return 'Regular';
     return 'Inicial';
   }
 }
