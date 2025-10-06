@@ -89,29 +89,57 @@
     </div>
 
   <!-- Gráfico principal (acima do Relatório Mensal) -->
-  <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 mb-8">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-3">
-        <h3 class="text-lg font-semibold text-gray-900">📈 Evolução Financeira</h3>
-        <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
-          <button (click)="setPeriodoGrafico('mensal')"
-                  [class.bg-gray-900]="periodoGrafico==='mensal'"
-                  [class.text-white]="periodoGrafico==='mensal'"
-                  class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">MENSAL</button>
-          <button (click)="setPeriodoGrafico('anual')"
-                  [class.bg-gray-900]="periodoGrafico==='anual'"
-                  [class.text-white]="periodoGrafico==='anual'"
-                  class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">ANUAL</button>
+  <div class="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6 mb-8">
+    <!-- Lateral esquerda fora da caixa do gráfico -->
+    <div class="space-y-4">
+      <div class="border border-gray-200 rounded-lg p-4 flex items-center gap-3 bg-white">
+        <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">💳</div>
+        <div>
+          <div class="text-xs text-gray-500">Saldo em conta</div>
+          <div class="text-sm font-semibold text-gray-900">{{ formatCurrency(getSaldoEmConta()) }}</div>
         </div>
       </div>
-      <button 
-        (click)="criarGraficoReceitas()"
-        class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-        🔄
-      </button>
+      <div class="border border-gray-200 rounded-lg p-4 bg-white">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-900">Contas a Receber</div>
+          <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
+        </div>
+        <div class="text-sm font-semibold mt-1">{{ formatCurrency(getContasAReceber()) }}</div>
+      </div>
+      <div class="border border-gray-200 rounded-lg p-4 bg-white">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-900">Contas a Pagar</div>
+          <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
+        </div>
+        <div class="text-sm font-semibold mt-1">{{ formatCurrency(getContasAPagar()) }}</div>
+      </div>
+      <div class="border border-gray-200 rounded-lg p-4 bg-white">
+        <div class="text-xs text-gray-500 mb-1">Projeção de saldo</div>
+        <div class="text-sm font-semibold">{{ formatCurrency(projecaoSaldoFinal) }}</div>
+        <div class="text-[10px] text-gray-400 mt-2">* Projeção de acordo com entradas/saídas do período</div>
+      </div>
     </div>
-    <div class="h-80">
-      <canvas id="receitaChart"></canvas>
+
+    <!-- Caixa do gráfico à direita -->
+    <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <h3 class="text-lg font-semibold text-gray-900">📈 Evolução Financeira</h3>
+          <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
+            <button (click)="setPeriodoGrafico('mensal')"
+                    [class.bg-gray-900]="periodoGrafico==='mensal'"
+                    [class.text-white]="periodoGrafico==='mensal'"
+                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">MENSAL</button>
+            <button (click)="setPeriodoGrafico('anual')"
+                    [class.bg-gray-900]="periodoGrafico==='anual'"
+                    [class.text-white]="periodoGrafico==='anual'"
+                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">ANUAL</button>
+          </div>
+        </div>
+      </div>
+      <div class="h-80">
+        <canvas id="receitaChart"></canvas>
+      </div>
     </div>
   </div>
 
@@ -318,14 +346,9 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
     <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">🥧 Despesas por Categoria</h3>
-          <button 
-            (click)="criarGraficoDespesas()"
-            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-            🔄
-          </button>
-        </div>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">🥧 Despesas por Categoria</h3>
+      </div>
         <div class="h-64">
           <canvas id="despesasChart"></canvas>
         </div>

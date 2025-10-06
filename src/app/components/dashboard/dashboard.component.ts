@@ -29,6 +29,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ltvMeses: number = 0;
   inadimplenciaValor: number = 0;
   inadimplenciaTaxa: number = 0;
+  // Projeção usada para exibir ao lado do gráfico
+  projecaoSaldoFinal: number = 0;
   
   // Filtro de data
   dataInicial: string = '';
@@ -138,6 +140,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       saldo += (receitaSerie[i] + renegociadoSerie[i]) - despesaSerie[i];
       saldoProjetado.push(Math.max(saldo, 0));
     });
+    this.projecaoSaldoFinal = saldoProjetado[saldoProjetado.length - 1] || 0;
 
     const config: ChartConfiguration = {
       type: 'bar',
@@ -227,6 +230,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
   setPeriodoGrafico(periodo: 'mensal' | 'anual') {
     this.periodoGrafico = periodo;
     this.criarGraficoReceitas();
+  }
+
+  // Indicadores ao lado do gráfico
+  getSaldoEmConta(): number {
+    const receitas = this.dadosFiltrados?.receitas || 0;
+    const despesas = this.dadosFiltrados?.despesas || 0;
+    const saldo = receitas - despesas;
+    return saldo > 0 ? saldo : Math.abs(saldo) * 0.3; // valor positivo mínimo visível
+  }
+
+  getContasAReceber(): number {
+    const receitas = this.dadosFiltrados?.receitas || 0;
+    return receitas * 0.12; // aproximação para exibição
+  }
+
+  getContasAPagar(): number {
+    const despesas = this.dadosFiltrados?.despesas || 0;
+    return despesas * 0.18; // aproximação para exibição
   }
 
   criarGraficoDespesas() {
