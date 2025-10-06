@@ -34,6 +34,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   dataInicial: string = '';
   dataFinal: string = '';
   tipoFiltro: 'mes' | 'trimestre' | 'ano' = 'mes';
+  // Controle específico do gráfico principal
+  periodoGrafico: 'mensal' | 'anual' = 'mensal';
   
   // Opções de filtro
   mesesDisponiveis: Array<{value: string, label: string}> = [];
@@ -87,46 +89,131 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.receitaChart = null;
     }
 
+    // Dados do gráfico (mensal: dias; anual: meses)
+    const labels: string[] = this.periodoGrafico === 'mensal'
+      ? Array.from({ length: 31 }, (_, i) => String(i + 1))
+      : ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    let receitaSerie: number[] = [];
+    let renegociadoSerie: number[] = [];
+    let despesaSerie: number[] = [];
+
+    if (this.periodoGrafico === 'mensal') {
+      // Diários 1..31
+      receitaSerie = labels.map((_, i) => {
+        const d = i + 1;
+        if (d % 7 === 2) return 26000;
+        if (d % 5 === 3) return 12000;
+        if (d % 3 === 0) return 6000;
+        return 0;
+      });
+      renegociadoSerie = labels.map((_, i) => {
+        const d = i + 1;
+        if (d % 9 === 4) return 5000;
+        if (d % 13 === 8) return 4000;
+        return 0;
+      });
+      despesaSerie = labels.map((_, i) => {
+        const d = i + 1;
+        if (d === 6) return 70000;
+        if (d === 15) return 48000;
+        if (d === 21) return 16000;
+        if (d === 30) return 20000;
+        if (d % 10 === 0) return 9000;
+        if (d % 4 === 0) return 6000;
+        if (d % 2 === 0) return 3000;
+        return 0;
+      });
+    } else {
+      // Mensal por mês (12)
+      receitaSerie = [13000,16000,19000,22000,25000,28000,32000,35000,38000,40000,42000,45000];
+      renegociadoSerie = [2000,3000,0,4000,0,5000,0,3000,0,4000,0,6000];
+      despesaSerie = [8000,9000,11000,12000,13000,14000,15000,16000,17000,20000,15000,18000];
+    }
+
+    // Saldo projetado acumulado
+    const saldoProjetado: number[] = [];
+    let saldo = this.periodoGrafico === 'mensal' ? 95000 : 50000;
+    labels.forEach((_, i) => {
+      saldo += (receitaSerie[i] + renegociadoSerie[i]) - despesaSerie[i];
+      saldoProjetado.push(Math.max(saldo, 0));
+    });
+
     const config: ChartConfiguration = {
-      type: 'line',
+      type: 'bar',
       data: {
-        labels: (this.dadosFiltrados?.receitaMensal || []).map(item => item.mes),
-        datasets: [{
-          label: 'Receita Mensal',
-          data: (this.dadosFiltrados?.receitaMensal || []).map(item => item.valor),
-          borderColor: '#28a745',
-          backgroundColor: 'rgba(40, 167, 69, 0.1)',
-          borderWidth: 3,
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#28a745',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          pointRadius: 6
-        }]
+        labels,
+        datasets: [
+          {
+            label: 'Receita',
+            data: receitaSerie,
+            backgroundColor: '#2ecc71',
+            borderColor: '#2ecc71',
+            borderWidth: 0,
+          },
+          {
+            label: 'Renegociado',
+            data: renegociadoSerie,
+            backgroundColor: '#f1c40f',
+            borderColor: '#f1c40f',
+            borderWidth: 0,
+          },
+          {
+            label: 'Despesa',
+            data: despesaSerie,
+            backgroundColor: '#e74c3c',
+            borderColor: '#e74c3c',
+            borderWidth: 0,
+          },
+          {
+            type: 'line',
+            label: 'Saldo total projetado no período',
+            data: saldoProjetado,
+            borderColor: '#3498db',
+            backgroundColor: 'transparent',
+            borderWidth: 3,
+            borderDash: [6, 6],
+            pointBackgroundColor: '#3498db',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 3,
+            tension: 0.35,
+            yAxisID: 'y'
+          }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          title: {
-            display: true,
-            text: 'Evolução da Receita Mensal',
-            font: {
-              size: 16,
-              weight: 'bold'
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 20
             }
           },
-          legend: {
-            display: false
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const label = ctx.dataset.label || '';
+                const v = ctx.parsed.y ?? ctx.raw;
+                return `${label}: ${this.formatCurrency(Number(v || 0))}`;
+              }
+            }
           }
         },
         scales: {
+          x: {
+            grid: { display: false },
+            title: { display: true, text: 'Dias' }
+          },
           y: {
             beginAtZero: true,
             ticks: {
-              callback: function(value) {
-                return 'R$ ' + value.toLocaleString('pt-BR');
+              callback: (value: number | string) => {
+                const n = typeof value === 'string' ? parseFloat(value) : value;
+                return 'R$ ' + Number(n).toLocaleString('pt-BR');
               }
             }
           }
@@ -135,6 +222,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
 
     this.receitaChart = new Chart(ctx, config);
+  }
+
+  setPeriodoGrafico(periodo: 'mensal' | 'anual') {
+    this.periodoGrafico = periodo;
+    this.criarGraficoReceitas();
   }
 
   criarGraficoDespesas() {

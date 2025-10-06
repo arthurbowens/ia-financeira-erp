@@ -88,7 +88,34 @@
       </div>
     </div>
 
-    <!-- Relatório Mensal (faixa de cards resumo) -->
+  <!-- Gráfico principal (acima do Relatório Mensal) -->
+  <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <h3 class="text-lg font-semibold text-gray-900">📈 Evolução Financeira</h3>
+        <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
+          <button (click)="setPeriodoGrafico('mensal')"
+                  [class.bg-gray-900]="periodoGrafico==='mensal'"
+                  [class.text-white]="periodoGrafico==='mensal'"
+                  class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">MENSAL</button>
+          <button (click)="setPeriodoGrafico('anual')"
+                  [class.bg-gray-900]="periodoGrafico==='anual'"
+                  [class.text-white]="periodoGrafico==='anual'"
+                  class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">ANUAL</button>
+        </div>
+      </div>
+      <button 
+        (click)="criarGraficoReceitas()"
+        class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+        🔄
+      </button>
+    </div>
+    <div class="h-80">
+      <canvas id="receitaChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Relatório Mensal (faixa de cards resumo) -->
     <div class="mb-8">
       <h2 class="text-xl font-bold text-center text-gray-900 mb-4">RELATÓRIO MENSAL</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
@@ -289,22 +316,8 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-      <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">📈 Receita Mensal</h3>
-          <button 
-            (click)="criarGraficoReceitas()"
-            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-            🔄
-          </button>
-        </div>
-        <div class="h-64">
-          <canvas id="receitaChart"></canvas>
-        </div>
-      </div>
-
-      <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+    <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900">🥧 Despesas por Categoria</h3>
           <button 
