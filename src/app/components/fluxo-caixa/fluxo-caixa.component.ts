@@ -15,9 +15,9 @@ import { FormsModule } from '@angular/forms';
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div class="flex items-center gap-3">
             <div class="text-2xl">💼</div>
-            <h1 class="text-2xl font-bold text-gray-900">Fluxo de Caixa</h1>
+            <h1 class="text-2xl font-bold text-gray-900 whitespace-nowrap">Demonstrativo de Fluxo de Caixa</h1>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap justify-end w-full sm:w-auto">
             <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
               <button (click)="setVisao('diario')"
                       [class.bg-gray-900]="visao==='diario'"
@@ -32,7 +32,7 @@ import { FormsModule } from '@angular/forms';
                    [ngModel]="mesSelecionado"
                    (ngModelChange)="onMesAlterado($event)"
                    class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-300" />
-            <div class="hidden md:flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap min-w-0">
               <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
                 <option>Empresa</option>
               </select>
@@ -45,7 +45,7 @@ import { FormsModule } from '@angular/forms';
               <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
                 <option>Classificação</option>
               </select>
-              <button type="button" class="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm">
+              <button type="button" class="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm shrink-0">
                 <span>Aplicar</span>
               </button>
             </div>
