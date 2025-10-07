@@ -18,6 +18,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   receitaChart: Chart | null = null;
   despesasChart: Chart | null = null;
   currentDate: Date = new Date();
+  graficoExpandido: boolean = false;
   mediaNovosContratosReais3m: number = 0;
   mediaNovosContratosUnidades3m: number = 0;
   custoFinanceiroInvestimento: number = 0;
@@ -230,6 +231,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   setPeriodoGrafico(periodo: 'mensal' | 'anual') {
     this.periodoGrafico = periodo;
     this.criarGraficoReceitas();
+  }
+
+  toggleExpandirGrafico(): void {
+    this.graficoExpandido = !this.graficoExpandido;
+    // Recria o gráfico para garantir redimensionamento correto após mudança de altura
+    if (isPlatformBrowser(this.platformId)) {
+      this.criarGraficoReceitas();
+    }
   }
 
   // Indicadores ao lado do gráfico

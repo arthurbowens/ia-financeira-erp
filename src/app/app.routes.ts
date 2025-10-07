@@ -23,6 +23,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/assinatura/assinatura.component').then(m => m.AssinaturaComponent)
   },
   {
+    path: 'fluxo-caixa',
+    loadComponent: () => import('./components/fluxo-caixa/fluxo-caixa.component').then(m => m.FluxoCaixaComponent)
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }
