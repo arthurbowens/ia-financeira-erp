@@ -32,15 +32,44 @@ import { FormsModule } from '@angular/forms';
                    [ngModel]="mesSelecionado"
                    (ngModelChange)="onMesAlterado($event)"
                    class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-300" />
+            <div class="hidden md:flex items-center gap-2">
+              <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+                <option>Empresa</option>
+              </select>
+              <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+                <option>Conta</option>
+              </select>
+              <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+                <option>Tipos</option>
+              </select>
+              <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+                <option>Classificação</option>
+              </select>
+              <button type="button" class="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm">
+                <span>Aplicar</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Placeholder do conteúdo futuro -->
-      <div class="bg-white rounded-xl shadow-sm p-6 text-center">
-        <p class="text-gray-600">Cabeçalho inicial do Fluxo de Caixa pronto. Em seguida adicionaremos filtros e tabela.</p>
-        <div class="mt-6">
-          <a routerLink="/dashboard" class="text-sm font-semibold text-primary-600 hover:underline">Voltar ao Dashboard</a>
+      <div class="bg-white rounded-xl shadow-sm p-4">
+        <h2 class="text-xl font-bold text-gray-900 text-center mb-4">Receitas e Despesas</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Parcela</th>
+                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Tipo</th>
+                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Venc.</th>
+                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Comp.</th>
+                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Cliente/Fornecedor</th>
+                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Categoria</th>
+                <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Valor (R$)</th>
+              </tr>
+            </thead>
+          </table>
         </div>
       </div>
     </div>
