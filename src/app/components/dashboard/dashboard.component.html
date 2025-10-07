@@ -13,7 +13,78 @@
             </div>
           </div>
         </div>
-      
+        <div class="flex flex-col sm:flex-row sm:flex-wrap lg:items-center gap-3 sm:gap-4 lg:gap-5 mt-2 sm:mt-0">
+          <!-- Filtro de Tipo -->
+          <div class="flex items-center gap-2 sm:gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 w-full sm:w-auto text-[12px] sm:text-sm">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+              </svg>
+              <span class="text-sm font-semibold text-gray-700">Tipo:</span>
+            </div>
+            <select 
+              [ngModel]="tipoFiltro" 
+              (ngModelChange)="tipoFiltro = $event; onTipoFiltroAlterado()"
+              class="bg-transparent border-0 text-[12px] sm:text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[100px] sm:min-w-[120px] hover:text-blue-600 transition-colors duration-200">
+              <option value="mes">Mês</option>
+              <option value="trimestre">Trimestre</option>
+              <option value="ano">Ano</option>
+            </select>
+          </div>
+
+          <!-- Filtro de Período (Dinâmico) -->
+          <div class="flex items-center gap-2 sm:gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 w-full sm:w-auto text-[12px] sm:text-sm">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span class="text-sm font-semibold text-gray-700">Período:</span>
+            </div>
+            
+            <!-- Mês: Mostra datas -->
+            <div *ngIf="tipoFiltro === 'mes'" class="flex items-center gap-2">
+              <input 
+                type="date"
+                [ngModel]="dataInicial" 
+                (ngModelChange)="dataInicial = $event; onFiltroAlterado()"
+                class="bg-transparent border-0 text-xs sm:text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer hover:text-blue-600 transition-colors duration-200 max-w-[140px] sm:max-w-[170px]">
+              <span class="text-gray-400">até</span>
+              <input 
+                type="date"
+                [ngModel]="dataFinal" 
+                (ngModelChange)="dataFinal = $event; onFiltroAlterado()"
+                class="bg-transparent border-0 text-xs sm:text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer hover:text-blue-600 transition-colors duration-200 max-w-[140px] sm:max-w-[170px]">
+            </div>
+
+            <!-- Trimestre: Mostra trimestres -->
+            <select 
+              *ngIf="tipoFiltro === 'trimestre'"
+              [ngModel]="getTrimestreSelecionado()" 
+              (ngModelChange)="selecionarTrimestre($event)"
+              class="bg-transparent border-0 text-[12px] sm:text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[150px] sm:min-w-[200px] hover:text-blue-600 transition-colors duration-200">
+              <option *ngFor="let trimestre of trimestresDisponiveis" [value]="trimestre.value">
+                {{ trimestre.label }}
+              </option>
+            </select>
+
+            <!-- Ano: Mostra anos -->
+            <select 
+              *ngIf="tipoFiltro === 'ano'"
+              [ngModel]="getAnoSelecionado()" 
+              (ngModelChange)="selecionarAno($event)"
+              class="bg-transparent border-0 text-[12px] sm:text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[90px] sm:min-w-[120px] hover:text-blue-600 transition-colors duration-200">
+              <option *ngFor="let ano of anosDisponiveis" [value]="ano.value">
+                {{ ano.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Dados em tempo real"></div>
+            <span class="text-xs font-medium text-gray-600">{{ getStatusFiltro() }}</span>
+          </div>
+        </div>
       </div>
       </div>
 
