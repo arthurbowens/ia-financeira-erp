@@ -21,17 +21,24 @@
   .dashboard-filters input[type="date"],
   .dashboard-filters input[type="text"],
   .dashboard-filters input[type="month"] {
-    font-size: 12px;
-    line-height: 20px;
-    height: 32px;
+    font-size: 11px;
+    line-height: 18px;
+    height: 28px;
+    min-height: 28px;
   }
+  .dashboard-filters select { min-width: 90px; }
+  .dashboard-filters input[type="date"] { max-width: 130px; }
+  .dashboard-filters svg { width: 14px; height: 14px; }
 
-  .dashboard-header { gap: 12px; }
+  .dashboard-header { gap: 10px; }
   .dashboard-title { font-size: 30px; }
   @media (min-width: 640px) { /* sm */
     .dashboard-title { font-size: 36px; }
   }
-  .filter-box { gap: 10px; }
+  .filter-box { gap: 8px; padding: 6px 10px; }
+  @media (min-width: 640px) { /* sm */
+    .filter-box { padding: 10px 16px; }
+  }
   /* Status classes for contracts */
   .status-pendente {
     @apply bg-yellow-100 text-yellow-800;
