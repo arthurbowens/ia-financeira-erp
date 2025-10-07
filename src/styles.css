@@ -35,7 +35,7 @@
 
   /* Ajuste fino para telas Retina (ex.: MacBooks) em produção */
   @media (min-resolution: 2dppx) {
-    .dashboard-title { font-size: 28px; }
+    .dashboard-title { font-size: 24px; }
     .dashboard-header { gap: 10px; }
     .filter-box { gap: 8px; }
     .dashboard-filters select,
