@@ -1,0 +1,67 @@
+<div class="min-h-screen bg-gray-50 p-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Cabeçalho -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="text-2xl">💼</div>
+          <h1 class="text-2xl font-bold text-gray-900 whitespace-nowrap">Demonstrativo de Fluxo de Caixa</h1>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap justify-end w-full sm:w-auto">
+          <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
+            <button (click)="setVisao('diario')"
+                    [class.bg-gray-900]="visao==='diario'"
+                    [class.text-white]="visao==='diario'"
+                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">Diário</button>
+            <button (click)="setVisao('mensal')"
+                    [class.bg-gray-900]="visao==='mensal'"
+                    [class.text-white]="visao==='mensal'"
+                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">Mensal</button>
+          </div>
+          <input type="month"
+                 [ngModel]="mesSelecionado"
+                 (ngModelChange)="onMesAlterado($event)"
+                 class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-300" />
+          <div class="flex items-center gap-2 flex-wrap min-w-0">
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+              <option>Empresa</option>
+            </select>
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+              <option>Conta</option>
+            </select>
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+              <option>Tipos</option>
+            </select>
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
+              <option>Classificação</option>
+            </select>
+            <button type="button" class="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm shrink-0">
+              <span>Aplicar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Placeholder do conteúdo futuro -->
+    <div class="bg-white rounded-xl shadow-sm p-4">
+      <h2 class="text-xl font-bold text-gray-900 text-center mb-4">Receitas e Despesas</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Parcela</th>
+              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Tipo</th>
+              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Venc.</th>
+              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Comp.</th>
+              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Cliente/Fornecedor</th>
+              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Categoria</th>
+              <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Valor (R$)</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
