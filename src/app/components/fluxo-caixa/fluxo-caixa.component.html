@@ -12,31 +12,31 @@
             <button (click)="setVisao('diario')"
                     [class.bg-gray-900]="visao==='diario'"
                     [class.text-white]="visao==='diario'"
-                    class="px-3 py-1 text-xs sm:text-sm font-semibold hover:bg-gray-100">Diário</button>
+                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">Diário</button>
             <button (click)="setVisao('mensal')"
                     [class.bg-gray-900]="visao==='mensal'"
                     [class.text-white]="visao==='mensal'"
-                    class="px-3 py-1 text-xs sm:text-sm font-semibold hover:bg-gray-100">Mensal</button>
+                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">Mensal</button>
           </div>
           <input type="month"
                  [ngModel]="mesSelecionado"
                  (ngModelChange)="onMesAlterado($event)"
-                 class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs sm:text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-300 max-w-[150px] sm:max-w-[180px]" />
+                 class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-300" />
           <div class="flex items-center gap-2 flex-wrap min-w-0">
-            <select class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs sm:text-sm text-gray-900 h-9 min-w-[110px]">
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
               <option>Empresa</option>
             </select>
-            <select class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs sm:text-sm text-gray-900 h-9 min-w-[110px]">
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
               <option>Conta</option>
             </select>
-            <select class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs sm:text-sm text-gray-900 h-9 min-w-[110px]">
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
               <option>Tipos</option>
             </select>
-            <select class="bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs sm:text-sm text-gray-900 h-9 min-w-[130px]">
+            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
               <option>Classificação</option>
             </select>
-            <button type="button" class="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-2 rounded-lg text-xs sm:text-sm shrink-0 h-9">
-              <span class="leading-none">Aplicar</span>
+            <button type="button" class="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm shrink-0">
+              <span>Aplicar</span>
             </button>
           </div>
         </div>
