@@ -1,9 +1,9 @@
 <div class="min-h-screen bg-gray-50 p-4">
   <div class="max-w-7xl mx-auto">
     <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div class="dashboard-header flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-0 whitespace-nowrap">📊 Dashboard Financeiro</h1>
+          <h1 class="dashboard-title text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-0 whitespace-nowrap">📊 Dashboard Financeiro</h1>
           <div class="flex items-center gap-2 mt-1">
             <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +15,7 @@
         </div>
         <div class="dashboard-filters flex flex-col sm:flex-row sm:flex-wrap lg:items-center gap-3 sm:gap-4 lg:gap-5 mt-2 sm:mt-0">
           <!-- Filtro de Tipo -->
-          <div class="flex items-center gap-2 sm:gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 w-full sm:w-auto text-[12px] sm:text-sm">
+          <div class="filter-box flex items-center gap-2 sm:gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 w-full sm:w-auto text-[12px] sm:text-sm">
             <div class="flex items-center gap-2">
               <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
@@ -33,7 +33,7 @@
           </div>
 
           <!-- Filtro de Período (Dinâmico) -->
-          <div class="flex items-center gap-2 sm:gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 w-full sm:w-auto text-[12px] sm:text-sm">
+          <div class="filter-box flex items-center gap-2 sm:gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 sm:px-4 sm:py-3 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 w-full sm:w-auto text-[12px] sm:text-sm">
             <div class="flex items-center gap-2">
               <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>

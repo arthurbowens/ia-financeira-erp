@@ -21,10 +21,17 @@
   .dashboard-filters input[type="date"],
   .dashboard-filters input[type="text"],
   .dashboard-filters input[type="month"] {
-    font-size: 12px; /* garante consistência no Vercel */
-    line-height: 1.25rem; /* 20px */
+    font-size: 12px;
+    line-height: 20px;
     height: 32px;
   }
+
+  .dashboard-header { gap: 12px; }
+  .dashboard-title { font-size: 30px; }
+  @media (min-width: 640px) { /* sm */
+    .dashboard-title { font-size: 36px; }
+  }
+  .filter-box { gap: 10px; }
   /* Status classes for contracts */
   .status-pendente {
     @apply bg-yellow-100 text-yellow-800;
