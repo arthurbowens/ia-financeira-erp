@@ -16,6 +16,11 @@
                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
               📊 Dashboard
             </a>
+            <a routerLink="/fluxo-caixa"
+               routerLinkActive="active"
+               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              💼 DFC
+            </a>
             <a routerLink="/chat" 
                routerLinkActive="active"
                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
@@ -55,6 +60,13 @@
              class="text-gray-300 hover:text-white hover:bg-slate-600 block px-3 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center">
             <span class="text-xl mr-3">📊</span>
             <span>Dashboard</span>
+          </a>
+          <a routerLink="/fluxo-caixa"
+             (click)="closeMobileMenu()"
+             routerLinkActive="active"
+             class="text-gray-300 hover:text-white hover:bg-slate-600 block px-3 py-3 rounded-md text-base font-medium transition-all duration-200 flex items-center">
+            <span class="text-xl mr-3">💼</span>
+            <span>DFC</span>
           </a>
           <a routerLink="/chat" 
              (click)="closeMobileMenu()"
