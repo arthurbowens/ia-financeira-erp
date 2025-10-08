@@ -41,19 +41,62 @@
               <span class="text-sm font-semibold text-gray-700">Período:</span>
             </div>
             
-            <!-- Mês: Mostra datas -->
-            <div *ngIf="tipoFiltro === 'mes'" class="flex items-center gap-2">
-              <input 
-                type="date"
-                [ngModel]="dataInicial" 
-                (ngModelChange)="dataInicial = $event; onFiltroAlterado()"
-                class="bg-transparent border-0 text-xs sm:text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer hover:text-blue-600 transition-colors duration-200 max-w-[140px] sm:max-w-[170px]">
-              <span class="text-gray-400">até</span>
-              <input 
-                type="date"
-                [ngModel]="dataFinal" 
-                (ngModelChange)="dataFinal = $event; onFiltroAlterado()"
-                class="bg-transparent border-0 text-xs sm:text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none cursor-pointer hover:text-blue-600 transition-colors duration-200 max-w-[140px] sm:max-w-[170px]">
+            <!-- Mês: Seletor de intervalo (duas datas) -->
+            <div *ngIf="tipoFiltro === 'mes'" class="relative">
+              <button type="button"
+                      (click)="toggleRangePicker()"
+                      class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium text-gray-900 shadow-sm hover:bg-gray-50">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>{{ (dataInicial | date:'dd/MM/yyyy') || '-' }} – {{ (dataFinal | date:'dd/MM/yyyy') || '-' }}</span>
+              </button>
+
+              <!-- Popover Calendário -->
+              <div *ngIf="mostrarRangePicker" class="absolute z-50 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl p-3 w-[320px]">
+                <div class="flex items-center justify-between mb-2">
+                  <button type="button" (click)="prevMonth()" class="p-1 rounded hover:bg-gray-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <div class="text-sm font-semibold text-gray-900">{{ getMonthYearLabel() }}</div>
+                  <button type="button" (click)="nextMonth()" class="p-1 rounded hover:bg-gray-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-7 text-[11px] text-gray-500 mb-1">
+                  <div class="text-center">dom</div>
+                  <div class="text-center">seg</div>
+                  <div class="text-center">ter</div>
+                  <div class="text-center">qua</div>
+                  <div class="text-center">qui</div>
+                  <div class="text-center">sex</div>
+                  <div class="text-center">sáb</div>
+                </div>
+
+                <div class="grid grid-cols-7 gap-1">
+                  <ng-container *ngFor="let d of calendarDays">
+                    <button type="button"
+                            [disabled]="!d.inCurrentMonth"
+                            (click)="onSelectDate(d.dateStr)"
+                            (mouseenter)="onHoverDate(d.dateStr)"
+                            (mouseleave)="onHoverDate(null)"
+                            [class.opacity-40]="!d.inCurrentMonth"
+                            [class.bg-blue-600]="isStart(d.dateStr) || isEnd(d.dateStr)"
+                            [class.text-white]="isStart(d.dateStr) || isEnd(d.dateStr)"
+                            [class.bg-blue-50]="isBetween(d.dateStr)"
+                            class="text-sm text-gray-900 rounded-lg py-1.5 hover:bg-blue-100 disabled:cursor-not-allowed">
+                      {{ d.day }}
+                    </button>
+                  </ng-container>
+                </div>
+
+                <div class="flex items-center justify-between mt-3">
+                  <button type="button" (click)="clearRange()" class="text-xs text-gray-600 hover:underline">Limpar</button>
+                  <div class="flex gap-2">
+                    <button type="button" (click)="cancelRangePicker()" class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50">Cancelar</button>
+                    <button type="button" (click)="applyRangePicker()" class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700">Aplicar</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Trimestre: Mostra trimestres -->
