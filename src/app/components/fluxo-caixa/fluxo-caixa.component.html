@@ -1,105 +1,16 @@
 <div class="min-h-screen bg-gray-50 p-4">
   <div class="max-w-7xl mx-auto">
-    <!-- Cabeçalho -->
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="text-2xl">💼</div>
-          <h1 class="text-2xl font-bold text-gray-900 whitespace-nowrap">Demonstrativo de Fluxo de Caixa</h1>
-        </div>
-        <div class="flex items-center gap-2 flex-wrap justify-end w-full sm:w-auto">
-          <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
-            <button (click)="setVisao('diario')"
-                    [class.bg-gray-900]="visao==='diario'"
-                    [class.text-white]="visao==='diario'"
-                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">Diário</button>
-            <button (click)="setVisao('mensal')"
-                    [class.bg-gray-900]="visao==='mensal'"
-                    [class.text-white]="visao==='mensal'"
-                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">Mensal</button>
-          </div>
-          <input type="month"
-                 [ngModel]="mesSelecionado"
-                 (ngModelChange)="onMesAlterado($event)"
-                 class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-300" />
-          <div class="flex items-center gap-2 flex-wrap min-w-0">
-            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
-              <option>Empresa</option>
-            </select>
-            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
-              <option>Conta</option>
-            </select>
-            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
-              <option>Tipos</option>
-            </select>
-            <select class="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900">
-              <option>Classificação</option>
-            </select>
-            <button type="button" class="inline-flex items-center gap-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm shrink-0">
-              <span>Aplicar</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Placeholder do conteúdo futuro -->
-    <div class="bg-white rounded-xl shadow-sm p-4">
-      <h2 class="text-xl font-bold text-gray-900 text-center mb-4">Receitas e Despesas</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Parcela</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Tipo</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Venc.</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Comp.</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Cliente/Fornecedor</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Categoria</th>
-              <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Valor (R$)</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let transacao of transacoes" class="hover:bg-gray-50">
-              <td class="px-4 py-3 text-sm">
-                <div class="relative inline-flex items-center group">
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 select-none">
-                    <span class="text-lg">{{ transacao.parcela }}</span>
-                  </span>
-                  <div class="absolute left-0 top-full mt-2 w-64 p-3 rounded-lg border border-gray-200 bg-white shadow-xl opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
-                    <div class="text-sm font-semibold text-gray-900 mb-1">
-                      {{ transacao.parcela === '∞' ? 'Parcela com repetição' : 'Parcela programada' }}
-                    </div>
-                    <div class="text-xs text-gray-600">
-                      {{ transacao.parcela === '∞' ? 'Sem prazo para acabar' : 'Ciclo definido: ' + transacao.parcela }}
-                    </div>
-                    <div class="absolute -top-1 left-4 w-2 h-2 bg-white border-l border-t border-gray-200 rotate-45"></div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      [class.bg-red-100]="transacao.tipo === 'DESPESA'"
-                      [class.text-red-800]="transacao.tipo === 'DESPESA'"
-                      [class.bg-green-100]="transacao.tipo === 'RECEITA'"
-                      [class.text-green-800]="transacao.tipo === 'RECEITA'">
-                  {{ transacao.tipo }}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm text-gray-900">{{ transacao.dataVencimento }}</td>
-              <td class="px-4 py-3 text-sm text-gray-900">{{ transacao.dataCompensacao }}</td>
-              <td class="px-4 py-3 text-sm">
-                <div class="font-medium text-gray-900">{{ transacao.clienteFornecedor }}</div>
-                <div class="text-gray-500 text-xs">{{ transacao.descricao }}</div>
-              </td>
-              <td class="px-4 py-3 text-sm text-gray-900">{{ transacao.categoria }}</td>
-              <td class="px-4 py-3 text-sm text-right font-medium text-gray-900">
-                {{ formatCurrency(transacao.valor) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+      <div class="text-6xl mb-4">🚧</div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">DFC em Desenvolvimento</h1>
+      <p class="text-lg text-gray-600 mb-6">O Demonstrativo de Fluxo de Caixa está sendo criado e estará disponível em breve.</p>
+      <a routerLink="/dashboard" 
+         class="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Voltar ao Dashboard
+      </a>
     </div>
   </div>
 </div>
