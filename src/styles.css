@@ -17,6 +17,11 @@
 }
 
 @layer components {
+  /* Footer links: remover sublinhado e azul padrão */
+  footer a { @apply no-underline text-gray-600; }
+  footer a:hover { @apply text-gray-900; }
+  footer a:visited { @apply text-gray-600; }
+
   .dashboard-filters select,
   .dashboard-filters input[type="date"],
   .dashboard-filters input[type="text"],
@@ -63,6 +68,11 @@
   /* Active navigation link */
   .active {
     @apply bg-blue-600 text-white;
+  }
+
+  /* KPI cards: altura e padding padronizados */
+  .kpi-card {
+    @apply p-3 min-h-[88px];
   }
 
   /* Mobile menu animations */

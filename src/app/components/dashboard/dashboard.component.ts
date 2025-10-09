@@ -475,6 +475,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return margem.toFixed(1) + '%';
   }
 
+  // Médias para cards do Dashboard Financeiro
+  getMediaReceitas(): number {
+    const serie = this.dadosFiltrados?.receitaMensal || [];
+    if (Array.isArray(serie) && serie.length > 0) {
+      const total = serie.reduce((acc, item: any) => acc + (Number(item?.valor) || 0), 0);
+      return total / serie.length;
+    }
+    // Fallback por tipo de período
+    if (this.tipoFiltro === 'ano') return (this.dadosFiltrados?.receitas || 0) / 12;
+    if (this.tipoFiltro === 'trimestre') return (this.dadosFiltrados?.receitas || 0) / 3;
+    return (this.dadosFiltrados?.receitas || 0) / 3;
+  }
+
+  getMediaDespesas(): number {
+    // Não temos série de despesa por mês em todos os cenários; aproximamos por período
+    if (this.tipoFiltro === 'ano') return (this.dadosFiltrados?.despesas || 0) / 12;
+    if (this.tipoFiltro === 'trimestre') return (this.dadosFiltrados?.despesas || 0) / 3;
+    return (this.dadosFiltrados?.despesas || 0) / 3;
+  }
+
   getStatusLucro(): string {
     const percentual = this.getLucroPercentual();
     if (percentual >= 20) return 'excelente';
@@ -869,8 +889,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ];
 
     // Define valores padrão
-    this.dataInicial = '2025-10-01';
-    this.dataFinal = '2025-10-31';
+    this.dataInicial = '';
+    this.dataFinal = '';
     this.tipoFiltro = 'mes';
   }
 

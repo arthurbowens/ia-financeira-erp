@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 export class AppComponent {
   title = 'ia-financeira-erp';
   isMobileMenuOpen = false;
+  currentYear: number = new Date().getFullYear();
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;

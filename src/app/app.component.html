@@ -1,11 +1,11 @@
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50 flex flex-col">
   <nav class="bg-slate-800 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
         <div class="flex items-center">
           <a routerLink="/dashboard" class="text-white text-xl font-bold hover:text-primary-300 transition-colors">
-            🤖 Star Target
+            Star Target
           </a>
         </div>
 
@@ -87,7 +87,23 @@
     </div>
   </nav>
 
-  <main class="min-h-screen">
+  <main class="flex-1">
 <router-outlet />
   </main>
-</div>
+
+<!-- Footer global (em todas as telas, não fixo) -->
+<footer class="bg-white border-t border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between text-sm">
+    <div class="flex items-center gap-2 text-gray-700">
+      <span class="font-semibold text-gray-900">Star Target</span>
+      <span class="text-gray-300">•</span>
+      <span>© {{ currentYear }} Todos os direitos reservados</span>
+    </div>
+    <nav class="hidden sm:flex items-center gap-4 text-gray-600">
+      <a routerLink="/dashboard" class="no-underline hover:text-gray-900 visited:text-gray-600">Dashboard</a>
+      <a routerLink="/movimentacoes" class="no-underline hover:text-gray-900 visited:text-gray-600">Movimentações</a>
+      <a routerLink="/fluxo-caixa" class="no-underline hover:text-gray-900 visited:text-gray-600">DFC</a>
+      <a routerLink="/contratos" class="no-underline hover:text-gray-900 visited:text-gray-600">Contratos</a>
+    </nav>
+  </div>
+</footer>

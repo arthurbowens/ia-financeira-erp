@@ -27,6 +27,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/fluxo-caixa/fluxo-caixa.component').then(m => m.FluxoCaixaComponent)
   },
   {
+    path: 'movimentacoes',
+    loadComponent: () => import('./components/movimentacoes/movimentacoes.component').then(m => m.MovimentacoesComponent)
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }
