@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-gray-50 p-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header do Relatório -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Relatório Financeiro</h1>
+          <p class="text-gray-600 text-sm">Análise detalhada dos dados financeiros</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout com cards à esquerda e gráfico à direita -->
+    <div class="grid grid-cols-1 lg:grid-cols-[300px_1fr] items-start gap-6 mb-8">
+      <!-- Lateral esquerda - Cards de resumo -->
+      <div class="space-y-4">
+        <div class="border border-gray-200 rounded-lg p-4 flex items-center gap-3 bg-white">
+          <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">💳</div>
+          <div>
+            <div class="text-xs text-gray-500">Saldo em conta</div>
+            <div class="text-sm font-semibold text-gray-900">{{ formatCurrency(160000) }}</div>
+          </div>
+        </div>
+        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-900">Contas a Receber</div>
+            <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
+          </div>
+          <div class="text-sm font-semibold mt-1">{{ formatCurrency(29400) }}</div>
+        </div>
+        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-900">Contas a Pagar</div>
+            <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
+          </div>
+          <div class="text-sm font-semibold mt-1">{{ formatCurrency(15300) }}</div>
+        </div>
+        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+          <div class="text-xs text-gray-500 mb-1">Projeção de saldo</div>
+          <div class="text-sm font-semibold">{{ formatCurrency(126000) }}</div>
+          <div class="text-[10px] text-gray-400 mt-2">* Projeção de acordo com entradas/saídas do período</div>
+        </div>
+      </div>
+
+      <!-- Caixa do gráfico à direita -->
+      <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <h3 class="text-lg font-semibold text-gray-900">📈 Evolução Financeira</h3>
+            <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
+              <button (click)="setPeriodoGrafico('mensal')"
+                      [class.bg-gray-900]="periodoGrafico==='mensal'"
+                      [class.text-white]="periodoGrafico==='mensal'"
+                      class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">MENSAL</button>
+              <button (click)="setPeriodoGrafico('anual')"
+                      [class.bg-gray-900]="periodoGrafico==='anual'"
+                      [class.text-white]="periodoGrafico==='anual'"
+                      class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">ANUAL</button>
+            </div>
+          </div>
+          <a routerLink="/movimentacoes"
+             class="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path></svg>
+            Movimentações
+          </a>
+        </div>
+        <div class="h-72">
+          <canvas id="receitaChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

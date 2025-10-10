@@ -1,19 +1,19 @@
 <div class="min-h-screen bg-gray-50 p-4">
   <div class="max-w-7xl mx-auto">
-    <div class="dashboard-card bg-white rounded-xl shadow-sm p-4 mb-8">
-      <div class="dashboard-header flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 class="dashboard-title text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-0 whitespace-nowrap">📊 Dashboard Financeiro</h1>
-          <div class="flex items-center gap-2 mt-1">
-            <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-              </svg>
-              <span *ngIf="getPeriodoAtualLabel() !== 'Invalid Date'">Relatório de {{ getPeriodoAtualLabel() }}</span>
-            </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Dashboard Financeiro</h1>
+            <p class="text-gray-600 text-sm" *ngIf="getPeriodoAtualLabel() !== 'Invalid Date'">Relatório de {{ getPeriodoAtualLabel() }}</p>
           </div>
         </div>
-        <div class="dashboard-filters flex flex-col sm:flex-row sm:flex-wrap lg:items-center gap-3 sm:gap-4 lg:gap-5 mt-2 sm:mt-0">
+        <div class="dashboard-filters flex flex-col sm:flex-row sm:flex-wrap lg:items-center gap-3 sm:gap-4 lg:gap-5">
           <!-- Filtro de Tipo -->
           <select 
             [ngModel]="tipoFiltro" 
@@ -113,65 +113,6 @@
       </div>
       </div>
 
-  <!-- Gráfico principal (acima do Relatório Mensal) -->
-  <div class="grid grid-cols-1 lg:grid-cols-[300px_1fr] items-start gap-6 mb-8">
-    <!-- Lateral esquerda fora da caixa do gráfico -->
-    <div class="space-y-4">
-      <div class="border border-gray-200 rounded-lg p-4 flex items-center gap-3 bg-white">
-        <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">💳</div>
-        <div>
-          <div class="text-xs text-gray-500">Saldo em conta</div>
-          <div class="text-sm font-semibold text-gray-900">{{ formatCurrency(getSaldoEmConta()) }}</div>
-        </div>
-      </div>
-      <div class="border border-gray-200 rounded-lg p-4 bg-white">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-900">Contas a Receber</div>
-          <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
-        </div>
-        <div class="text-sm font-semibold mt-1">{{ formatCurrency(getContasAReceber()) }}</div>
-      </div>
-      <div class="border border-gray-200 rounded-lg p-4 bg-white">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-900">Contas a Pagar</div>
-          <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
-        </div>
-        <div class="text-sm font-semibold mt-1">{{ formatCurrency(getContasAPagar()) }}</div>
-      </div>
-      <div class="border border-gray-200 rounded-lg p-4 bg-white">
-        <div class="text-xs text-gray-500 mb-1">Projeção de saldo</div>
-        <div class="text-sm font-semibold">{{ formatCurrency(projecaoSaldoFinal) }}</div>
-        <div class="text-[10px] text-gray-400 mt-2">* Projeção de acordo com entradas/saídas do período</div>
-      </div>
-    </div>
-
-    <!-- Caixa do gráfico à direita -->
-    <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <h3 class="text-lg font-semibold text-gray-900">📈 Evolução Financeira</h3>
-          <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
-            <button (click)="setPeriodoGrafico('mensal')"
-                    [class.bg-gray-900]="periodoGrafico==='mensal'"
-                    [class.text-white]="periodoGrafico==='mensal'"
-                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">MENSAL</button>
-            <button (click)="setPeriodoGrafico('anual')"
-                    [class.bg-gray-900]="periodoGrafico==='anual'"
-                    [class.text-white]="periodoGrafico==='anual'"
-                    class="px-4 py-1 text-sm font-semibold hover:bg-gray-100">ANUAL</button>
-          </div>
-        </div>
-        <a routerLink="/movimentacoes"
-           class="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path></svg>
-          Movimentações
-        </a>
-      </div>
-      <div class="h-80">
-        <canvas id="receitaChart"></canvas>
-      </div>
-    </div>
-  </div>
 
   <!-- Botão acima move a navegação para a tela de Movimentações (/movimentacoes). A seção abaixo foi removida. -->
 

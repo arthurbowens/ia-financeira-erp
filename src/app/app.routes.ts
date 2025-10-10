@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   {
+    path: 'relatorio',
+    loadComponent: () => import('./components/relatorio/relatorio.component').then(m => m.RelatorioComponent)
+  },
+  {
     path: 'chat',
     loadComponent: () => import('./components/chatbot/chatbot.component').then(m => m.ChatbotComponent)
   },
