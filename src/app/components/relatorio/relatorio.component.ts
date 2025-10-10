@@ -94,7 +94,25 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     ],
     31: [
       { tipo: 'RECEITA', cliente: 'Cliente L', descricao: 'Pagamento DE Cliente L', categoria: 'Vendas', valor: 5000, dia: 31 }
-    ]
+    ],
+    // Dias sem movimentações para testar a mensagem
+    5: [],
+    7: [],
+    11: [],
+    12: [],
+    13: [],
+    14: [],
+    16: [],
+    17: [],
+    19: [],
+    20: [],
+    22: [],
+    25: [],
+    26: [],
+    27: [],
+    28: [],
+    29: [],
+    30: []
   };
 
   // Estado para controle de filtro por dia

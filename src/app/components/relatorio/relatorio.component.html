@@ -307,13 +307,24 @@
 
             <!-- Mensagem quando não há movimentações no dia selecionado -->
             <tr *ngIf="diaSelecionado && movimentacoesFiltradas.length === 0" class="hover:bg-gray-50">
-              <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                <div class="flex flex-col items-center gap-2">
-                  <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                  </svg>
-                  <p class="text-lg font-medium">Nenhuma movimentação encontrada</p>
-                  <p class="text-sm">Não há transações registradas para o dia {{ diaSelecionado }} de outubro</p>
+              <td colspan="7" class="px-4 py-12 text-center text-gray-500">
+                <div class="flex flex-col items-center gap-3">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-xl font-semibold text-gray-700 mb-1">Nenhuma movimentação encontrada</p>
+                    <p class="text-sm text-gray-500">Não há transações registradas para o dia {{ diaSelecionado }} de outubro de 2024</p>
+                  </div>
+                  <button (click)="limparFiltroDia()" 
+                          class="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-all duration-200 border border-blue-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Ver todas as movimentações
+                  </button>
                 </div>
               </td>
             </tr>
