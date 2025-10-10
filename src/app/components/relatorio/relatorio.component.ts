@@ -50,50 +50,61 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     saldoProjetado: [5000, 8000, 12000, 10000, 10000, -5000, -5000, 1000, 8000, 8000, 8000, 8000, 8000, 8000, 8000, 4000, 4000, 4000, 4000, 4000, 4000, -4000, 5000, 15000, 15000, 15000, 15000, 15000, 15000, 15000, 20000]
   };
 
+  // Dados anuais do gráfico
+  chartDataAnual = {
+    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+    receita: [45000, 52000, 48000, 55000, 60000, 58000, 62000, 65000, 70000, 75000, 68000, 72000],
+    despesa: [35000, 40000, 38000, 42000, 45000, 48000, 50000, 52000, 55000, 58000, 53000, 56000],
+    renegociado: [5000, 3000, 4000, 6000, 5000, 7000, 8000, 6000, 9000, 10000, 8000, 9000],
+    saldoProjetado: [10000, 15000, 20000, 25000, 30000, 25000, 20000, 25000, 30000, 35000, 40000, 45000]
+  };
+
   // Dados mockados das movimentações por dia
   movimentacoesPorDia: { [key: number]: any[] } = {
     1: [
-      { tipo: 'RECEITA', cliente: 'Cliente A', descricao: 'Pagamento DE Cliente A', categoria: 'Vendas', valor: 5000, dia: 1 }
+      { tipo: 'RECEITA', cliente: 'Cliente A', descricao: 'Pagamento DE Cliente A', categoria: 'Vendas', valor: 5000, dia: 1, empresa: 'empresa1', conta: 'conta1' }
     ],
     2: [
-      { tipo: 'RECEITA', cliente: 'Cliente B', descricao: 'Pagamento DE Cliente B', categoria: 'Vendas', valor: 3000, dia: 2 }
+      { tipo: 'RECEITA', cliente: 'Cliente B', descricao: 'Pagamento DE Cliente B', categoria: 'Vendas', valor: 3000, dia: 2, empresa: 'empresa2', conta: 'conta2' }
     ],
     3: [
-      { tipo: 'RECEITA', cliente: 'Cliente C', descricao: 'Pagamento DE Cliente C', categoria: 'Vendas', valor: 4000, dia: 3 }
+      { tipo: 'RECEITA', cliente: 'Cliente C', descricao: 'Pagamento DE Cliente C', categoria: 'Vendas', valor: 4000, dia: 3, empresa: 'empresa1', conta: 'conta1' }
     ],
     4: [
-      { tipo: 'RENEGOCIAÇÃO', cliente: 'Cliente D', descricao: 'Renegociação DE Cliente D', categoria: 'Vendas', valor: 2000, dia: 4 }
+      { tipo: 'RENEGOCIAÇÃO', cliente: 'Cliente D', descricao: 'Renegociação DE Cliente D', categoria: 'Vendas', valor: 2000, dia: 4, empresa: 'empresa3', conta: 'conta3' }
     ],
     6: [
-      { tipo: 'DESPESA', cliente: 'Fornecedor X', descricao: 'Pagamento DO(A) Fornecedor X', categoria: 'Operacional', valor: 15000, dia: 6 }
+      { tipo: 'DESPESA', cliente: 'Fornecedor X', descricao: 'Pagamento DO(A) Fornecedor X', categoria: 'Operacional', valor: 15000, dia: 6, empresa: 'empresa1', conta: 'conta1' }
     ],
     8: [
-      { tipo: 'RECEITA', cliente: 'Cliente E', descricao: 'Pagamento DE Cliente E', categoria: 'Vendas', valor: 6000, dia: 8 }
+      { tipo: 'RECEITA', cliente: 'Cliente E', descricao: 'Pagamento DE Cliente E', categoria: 'Vendas', valor: 6000, dia: 8, empresa: 'empresa2', conta: 'conta2' }
     ],
     9: [
-      { tipo: 'RECEITA', cliente: 'Cliente F', descricao: 'Pagamento DE Cliente F', categoria: 'Vendas', valor: 7000, dia: 9 }
+      { tipo: 'RECEITA', cliente: 'Cliente F', descricao: 'Pagamento DE Cliente F', categoria: 'Vendas', valor: 7000, dia: 9, empresa: 'empresa1', conta: 'conta1' }
     ],
     10: [
-      { tipo: 'RENEGOCIAÇÃO', cliente: 'Cliente G', descricao: 'Renegociação DE Cliente G', categoria: 'Vendas', valor: 1500, dia: 10 }
+      { tipo: 'RENEGOCIAÇÃO', cliente: 'Cliente G', descricao: 'Renegociação DE Cliente G', categoria: 'Vendas', valor: 1500, dia: 10, empresa: 'empresa2', conta: 'conta2' }
     ],
     15: [
-      { tipo: 'DESPESA', cliente: 'Fornecedor Y', descricao: 'Pagamento DO(A) Fornecedor Y', categoria: 'Operacional', valor: 12000, dia: 15 },
-      { tipo: 'RECEITA', cliente: 'Cliente H', descricao: 'Pagamento DE Cliente H', categoria: 'Vendas', valor: 8000, dia: 15 }
+      { tipo: 'DESPESA', cliente: 'Fornecedor Y', descricao: 'Pagamento DO(A) Fornecedor Y', categoria: 'Operacional', valor: 12000, dia: 15, empresa: 'empresa1', conta: 'conta1' },
+      { tipo: 'RECEITA', cliente: 'Cliente H', descricao: 'Pagamento DE Cliente H', categoria: 'Vendas', valor: 8000, dia: 15, empresa: 'empresa3', conta: 'conta3' },
+      { tipo: 'RECEITA', cliente: 'Cliente Hoje', descricao: 'Pagamento DE Cliente Hoje', categoria: 'Vendas', valor: 2500, dia: 15, empresa: 'empresa2', conta: 'conta2' },
+      { tipo: 'DESPESA', cliente: 'Fornecedor Hoje', descricao: 'Pagamento DO(A) Fornecedor Hoje', categoria: 'Operacional', valor: 1800, dia: 15, empresa: 'empresa1', conta: 'conta1' }
     ],
     18: [
-      { tipo: 'RENEGOCIAÇÃO', cliente: 'Cliente I', descricao: 'Renegociação DE Cliente I', categoria: 'Vendas', valor: 3000, dia: 18 }
+      { tipo: 'RENEGOCIAÇÃO', cliente: 'Cliente I', descricao: 'Renegociação DE Cliente I', categoria: 'Vendas', valor: 3000, dia: 18, empresa: 'empresa1', conta: 'conta1' }
     ],
     21: [
-      { tipo: 'DESPESA', cliente: 'Fornecedor Z', descricao: 'Pagamento DO(A) Fornecedor Z', categoria: 'Operacional', valor: 8000, dia: 21 }
+      { tipo: 'DESPESA', cliente: 'Fornecedor Z', descricao: 'Pagamento DO(A) Fornecedor Z', categoria: 'Operacional', valor: 8000, dia: 21, empresa: 'empresa2', conta: 'conta2' }
     ],
     23: [
-      { tipo: 'RECEITA', cliente: 'Cliente J', descricao: 'Pagamento DE Cliente J', categoria: 'Vendas', valor: 9000, dia: 23 }
+      { tipo: 'RECEITA', cliente: 'Cliente J', descricao: 'Pagamento DE Cliente J', categoria: 'Vendas', valor: 9000, dia: 23, empresa: 'empresa3', conta: 'conta3' }
     ],
     24: [
-      { tipo: 'RECEITA', cliente: 'Cliente K', descricao: 'Pagamento DE Cliente K', categoria: 'Vendas', valor: 10000, dia: 24 }
+      { tipo: 'RECEITA', cliente: 'Cliente K', descricao: 'Pagamento DE Cliente K', categoria: 'Vendas', valor: 10000, dia: 24, empresa: 'empresa1', conta: 'conta1' }
     ],
     31: [
-      { tipo: 'RECEITA', cliente: 'Cliente L', descricao: 'Pagamento DE Cliente L', categoria: 'Vendas', valor: 5000, dia: 31 }
+      { tipo: 'RECEITA', cliente: 'Cliente L', descricao: 'Pagamento DE Cliente L', categoria: 'Vendas', valor: 5000, dia: 31, empresa: 'empresa2', conta: 'conta2' }
     ],
     // Dias sem movimentações para testar a mensagem
     5: [],
@@ -119,6 +130,36 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
   diaSelecionado: number | null = null;
   movimentacoesFiltradas: any[] = [];
 
+  // Filtros funcionais
+  filtros = {
+    empresa: '',
+    conta: '',
+    tipo: '',
+    periodo: 'diario' // 'diario' ou 'mensal'
+  };
+
+  // Opções para os selects
+  empresas = [
+    { value: '', label: 'Todas as Empresas' },
+    { value: 'empresa1', label: 'Empresa Alpha Ltda' },
+    { value: 'empresa2', label: 'Beta Corporation' },
+    { value: 'empresa3', label: 'Gamma Solutions' }
+  ];
+
+  contas = [
+    { value: '', label: 'Todas as Contas' },
+    { value: 'conta1', label: 'Conta Corrente - Banco A' },
+    { value: 'conta2', label: 'Poupança - Banco A' },
+    { value: 'conta3', label: 'Conta Corrente - Banco B' }
+  ];
+
+  tipos = [
+    { value: '', label: 'Todos os Tipos' },
+    { value: 'RECEITA', label: 'Receita' },
+    { value: 'DESPESA', label: 'Despesa' },
+    { value: 'RENEGOCIAÇÃO', label: 'Renegociação' }
+  ];
+
   ngOnInit() {
     this.visibleMonth = new Date();
     this.buildCalendar();
@@ -138,14 +179,16 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     const ctx = document.getElementById('receitaChart') as HTMLCanvasElement;
     if (!ctx) return;
 
+    const dados = this.periodoGrafico === 'anual' ? this.chartDataAnual : this.chartData;
+
     this.receitaChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: this.chartData.labels,
+        labels: dados.labels,
         datasets: [
           {
             label: 'Receita',
-            data: this.chartData.receita,
+            data: dados.receita,
             backgroundColor: 'rgba(34, 197, 94, 0.8)',
             borderColor: 'rgba(34, 197, 94, 1)',
             borderWidth: 1,
@@ -153,7 +196,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Despesa',
-            data: this.chartData.despesa,
+            data: dados.despesa,
             backgroundColor: 'rgba(239, 68, 68, 0.8)',
             borderColor: 'rgba(239, 68, 68, 1)',
             borderWidth: 1,
@@ -161,7 +204,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Renegociado',
-            data: this.chartData.renegociado,
+            data: dados.renegociado,
             backgroundColor: 'rgba(234, 179, 8, 0.8)',
             borderColor: 'rgba(234, 179, 8, 1)',
             borderWidth: 1,
@@ -169,7 +212,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Saldo total projetado no período',
-            data: this.chartData.saldoProjetado,
+            data: dados.saldoProjetado,
             backgroundColor: 'transparent',
             borderColor: 'rgba(59, 130, 246, 1)',
             borderWidth: 2,
@@ -213,7 +256,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             title: {
               display: true,
-              text: 'Dias'
+              text: this.periodoGrafico === 'anual' ? 'Meses' : 'Dias'
             }
           }
         },
@@ -234,8 +277,29 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setPeriodoGrafico(periodo: 'mensal' | 'anual') {
     this.periodoGrafico = periodo;
-    // Aqui você pode implementar a lógica para alterar os dados do gráfico
-    // baseado no período selecionado
+    this.atualizarGrafico();
+  }
+
+  atualizarGrafico(): void {
+    if (this.receitaChart) {
+      const dados = this.periodoGrafico === 'anual' ? this.chartDataAnual : this.chartData;
+      
+      this.receitaChart.data.labels = dados.labels;
+      this.receitaChart.data.datasets[0].data = dados.receita;
+      this.receitaChart.data.datasets[1].data = dados.despesa;
+      this.receitaChart.data.datasets[2].data = dados.renegociado;
+      this.receitaChart.data.datasets[3].data = dados.saldoProjetado;
+      
+      // Atualizar título do eixo X usando notação de colchetes
+      if (this.receitaChart.options.scales && this.receitaChart.options.scales['x']) {
+        const xScale = this.receitaChart.options.scales['x'] as any;
+        if (xScale.title) {
+          xScale.title.text = this.periodoGrafico === 'anual' ? 'Meses' : 'Dias';
+        }
+      }
+      
+      this.receitaChart.update();
+    }
   }
 
   formatCurrency(value: number): string {
@@ -261,7 +325,69 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     Object.values(this.movimentacoesPorDia).forEach(movimentacoes => {
       todas.push(...movimentacoes);
     });
-    return todas.sort((a, b) => b.dia - a.dia); // Ordena por dia decrescente
+    return this.aplicarFiltros(todas).sort((a, b) => b.dia - a.dia); // Ordena por dia decrescente
+  }
+
+  // Métodos para filtros funcionais
+  aplicarFiltros(movimentacoes: any[]): any[] {
+    return movimentacoes.filter(mov => {
+      const filtroEmpresa = !this.filtros.empresa || mov.empresa === this.filtros.empresa;
+      const filtroConta = !this.filtros.conta || mov.conta === this.filtros.conta;
+      const filtroTipo = !this.filtros.tipo || mov.tipo === this.filtros.tipo;
+      const filtroPeriodo = this.aplicarFiltroPeriodo(mov);
+      
+      return filtroEmpresa && filtroConta && filtroTipo && filtroPeriodo;
+    });
+  }
+
+  aplicarFiltroPeriodo(movimentacao: any): boolean {
+    if (this.filtros.periodo === 'diario') {
+      // No modo diário, mostra apenas movimentações do dia selecionado no gráfico ou do dia atual
+      if (this.diaSelecionado) {
+        return movimentacao.dia === this.diaSelecionado;
+      } else {
+        // Se não há dia selecionado, mostra apenas movimentações de hoje
+        const hoje = new Date().getDate();
+        return movimentacao.dia === hoje;
+      }
+    } else if (this.filtros.periodo === 'mensal') {
+      // No modo mensal, mostra todas as movimentações do mês
+      return true;
+    }
+    return true;
+  }
+
+  onFiltroChange(): void {
+    // Aplica os filtros automaticamente quando qualquer filtro muda
+    if (this.diaSelecionado) {
+      this.movimentacoesFiltradas = this.aplicarFiltros(this.movimentacoesPorDia[this.diaSelecionado] || []);
+    }
+    // Os filtros também afetam a visualização de todas as movimentações
+    // A lógica é aplicada no método getTodasMovimentacoes()
+  }
+
+  aplicarFiltrosManualmente(): void {
+    this.onFiltroChange();
+  }
+
+  limparFiltros(): void {
+    this.filtros = {
+      empresa: '',
+      conta: '',
+      tipo: '',
+      periodo: 'diario'
+    };
+    this.onFiltroChange();
+  }
+
+  onPeriodoChange(periodo: 'diario' | 'mensal'): void {
+    this.filtros.periodo = periodo;
+    this.onFiltroChange();
+  }
+
+  getEmpresaLabel(empresaValue: string): string {
+    const empresa = this.empresas.find(e => e.value === empresaValue);
+    return empresa ? empresa.label : 'N/A';
   }
 
   // ===== Date Range Picker Helpers =====

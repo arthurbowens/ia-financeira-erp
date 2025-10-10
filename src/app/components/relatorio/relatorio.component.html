@@ -81,7 +81,10 @@
           </div>
           <div>
             <h2 class="text-xl font-bold text-gray-900">Movimentações da Conta</h2>
-            <p class="text-gray-600 text-sm" *ngIf="!diaSelecionado">Histórico completo de transações</p>
+            <p class="text-gray-600 text-sm" *ngIf="!diaSelecionado">
+              <span *ngIf="filtros.periodo === 'diario'">Movimentações de hoje</span>
+              <span *ngIf="filtros.periodo === 'mensal'">Histórico completo do mês</span>
+            </p>
             <p class="text-gray-600 text-sm" *ngIf="diaSelecionado">Movimentações do dia {{ diaSelecionado }} de outubro</p>
           </div>
         </div>
@@ -103,8 +106,18 @@
           <!-- Período -->
           <div class="flex items-center gap-2">
             <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
-              <button class="px-4 py-1.5 text-sm font-semibold bg-gray-900 text-white">Diário</button>
-              <button class="px-4 py-1.5 text-sm font-semibold hover:bg-gray-100">Mensal</button>
+              <button (click)="onPeriodoChange('diario')"
+                      [class.bg-gray-900]="filtros.periodo === 'diario'"
+                      [class.text-white]="filtros.periodo === 'diario'"
+                      [class.bg-white]="filtros.periodo !== 'diario'"
+                      [class.text-gray-700]="filtros.periodo !== 'diario'"
+                      class="px-4 py-1.5 text-sm font-semibold hover:bg-gray-100 transition-colors duration-200">Diário</button>
+              <button (click)="onPeriodoChange('mensal')"
+                      [class.bg-gray-900]="filtros.periodo === 'mensal'"
+                      [class.text-white]="filtros.periodo === 'mensal'"
+                      [class.bg-white]="filtros.periodo !== 'mensal'"
+                      [class.text-gray-700]="filtros.periodo !== 'mensal'"
+                      class="px-4 py-1.5 text-sm font-semibold hover:bg-gray-100 transition-colors duration-200">Mensal</button>
             </div>
             <div class="relative">
               <button type="button"
@@ -166,40 +179,41 @@
 
           <!-- Filtros Avançados -->
           <div class="flex items-center gap-3 flex-wrap">
-            <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
+            <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
               </svg>
-              <select class="bg-transparent border-0 text-sm text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[130px]">
-                <option value="">Todas as Empresas</option>
-                <option value="empresa1">Empresa 1</option>
-                <option value="empresa2">Empresa 2</option>
+              <select [(ngModel)]="filtros.empresa" 
+                      (ngModelChange)="onFiltroChange()"
+                      class="bg-transparent border-0 text-sm text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[160px]">
+                <option *ngFor="let empresa of empresas" [value]="empresa.value">{{ empresa.label }}</option>
               </select>
             </div>
             
-            <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
+            <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
               </svg>
-              <select class="bg-transparent border-0 text-sm text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[110px]">
-                <option value="">Todas as Contas</option>
-                <option value="conta1">Conta Corrente</option>
-                <option value="conta2">Poupança</option>
+              <select [(ngModel)]="filtros.conta" 
+                      (ngModelChange)="onFiltroChange()"
+                      class="bg-transparent border-0 text-sm text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[140px]">
+                <option *ngFor="let conta of contas" [value]="conta.value">{{ conta.label }}</option>
               </select>
             </div>
             
-            <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
+            <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
               </svg>
-              <select class="bg-transparent border-0 text-sm text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[100px]">
-                <option value="">Todos os Tipos</option>
-                <option value="receita">Receita</option>
-                <option value="despesa">Despesa</option>
+              <select [(ngModel)]="filtros.tipo" 
+                      (ngModelChange)="onFiltroChange()"
+                      class="bg-transparent border-0 text-sm text-gray-900 focus:ring-0 focus:outline-none cursor-pointer min-w-[120px]">
+                <option *ngFor="let tipo of tipos" [value]="tipo.value">{{ tipo.label }}</option>
               </select>
             </div>
             
             <button type="button" 
+                    (click)="aplicarFiltrosManualmente()"
                     class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
@@ -208,6 +222,7 @@
             </button>
             
             <button type="button" 
+                    (click)="limparFiltros()"
                     class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all duration-200 border border-gray-300">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -227,13 +242,14 @@
               <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Venc.</th>
               <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Data Comp.</th>
               <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Cliente/Fornecedor</th>
+              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Empresa</th>
               <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Categoria</th>
               <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Valor (R$)</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <!-- Mostrar movimentações filtradas por dia ou todas -->
-            <ng-container *ngIf="diaSelecionado && movimentacoesFiltradas.length > 0; else todasMovimentacoes">
+            <!-- Mostrar movimentações filtradas por dia -->
+            <ng-container *ngIf="diaSelecionado && movimentacoesFiltradas.length > 0">
               <tr *ngFor="let mov of movimentacoesFiltradas" class="hover:bg-gray-50">
                 <td class="px-4 py-3 text-sm">
                   <div class="relative inline-flex items-center group">
@@ -259,6 +275,7 @@
                   <div class="font-medium text-gray-900">{{ mov.cliente }}</div>
                   <div class="text-gray-500 text-xs">{{ mov.descricao }}</div>
                 </td>
+                <td class="px-4 py-3 text-sm text-gray-900">{{ getEmpresaLabel(mov.empresa) }}</td>
                 <td class="px-4 py-3 text-sm text-gray-900">{{ mov.categoria }}</td>
                 <td class="px-4 py-3 text-sm text-right font-medium"
                     [class.text-red-600]="mov.tipo === 'DESPESA'"
@@ -269,7 +286,8 @@
               </tr>
             </ng-container>
 
-            <ng-template #todasMovimentacoes>
+            <!-- Mostrar todas as movimentações quando nenhum dia está selecionado -->
+            <ng-container *ngIf="!diaSelecionado">
               <tr *ngFor="let mov of getTodasMovimentacoes()" class="hover:bg-gray-50">
                 <td class="px-4 py-3 text-sm">
                   <div class="relative inline-flex items-center group">
@@ -295,6 +313,7 @@
                   <div class="font-medium text-gray-900">{{ mov.cliente }}</div>
                   <div class="text-gray-500 text-xs">{{ mov.descricao }}</div>
                 </td>
+                <td class="px-4 py-3 text-sm text-gray-900">{{ getEmpresaLabel(mov.empresa) }}</td>
                 <td class="px-4 py-3 text-sm text-gray-900">{{ mov.categoria }}</td>
                 <td class="px-4 py-3 text-sm text-right font-medium"
                     [class.text-red-600]="mov.tipo === 'DESPESA'"
@@ -303,11 +322,11 @@
                   {{ mov.tipo === 'DESPESA' ? '-' : '+' }}{{ formatCurrency(mov.valor) }}
                 </td>
               </tr>
-            </ng-template>
+            </ng-container>
 
             <!-- Mensagem quando não há movimentações no dia selecionado -->
             <tr *ngIf="diaSelecionado && movimentacoesFiltradas.length === 0" class="hover:bg-gray-50">
-              <td colspan="7" class="px-4 py-12 text-center text-gray-500">
+              <td colspan="8" class="px-4 py-12 text-center text-gray-500">
                 <div class="flex flex-col items-center gap-3">
                   <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
