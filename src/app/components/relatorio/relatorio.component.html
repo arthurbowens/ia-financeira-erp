@@ -17,35 +17,106 @@
 
     <!-- Layout com cards à esquerda e gráfico à direita -->
     <div class="grid grid-cols-1 lg:grid-cols-[300px_1fr] items-start gap-6 mb-8">
-      <!-- Lateral esquerda - Cards de resumo -->
-      <div class="space-y-4">
-        <div class="border border-gray-200 rounded-lg p-4 flex items-center gap-3 bg-white">
-          <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">💳</div>
-          <div>
-            <div class="text-xs text-gray-500">Saldo em conta</div>
-            <div class="text-sm font-semibold text-gray-900">{{ formatCurrency(160000) }}</div>
+        <!-- Lateral esquerda - Cards de resumo -->
+        <div class="space-y-4">
+          <!-- Saldo em Conta -->
+          <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-sm">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900">Saldo em Conta</h3>
+                <p class="text-xs text-gray-500">Disponível agora</p>
+              </div>
+            </div>
+            <div class="text-lg font-bold text-emerald-600 mb-1">{{ formatCurrency(160000) }}</div>
+            <div class="flex items-center gap-1 text-xs text-emerald-600">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+              <span>+12.5% vs mês anterior</span>
+            </div>
+          </div>
+
+          <!-- Contas a Receber -->
+          <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center shadow-sm">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-900">Contas a Receber</h3>
+                  <p class="text-xs text-gray-500">Pendentes de recebimento</p>
+                </div>
+              </div>
+              <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center gap-1">
+                Ver todas
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="text-lg font-bold text-blue-600 mb-1">{{ formatCurrency(29400) }}</div>
+            <div class="flex items-center gap-1 text-xs text-blue-600">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>15 transações pendentes</span>
+            </div>
+          </div>
+
+          <!-- Contas a Pagar -->
+          <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-red-500 flex items-center justify-center shadow-sm">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-900">Contas a Pagar</h3>
+                  <p class="text-xs text-gray-500">Pendentes de pagamento</p>
+                </div>
+              </div>
+              <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-red-600 hover:text-red-800 transition-colors duration-200 flex items-center gap-1">
+                Ver todas
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="text-lg font-bold text-red-600 mb-1">{{ formatCurrency(15300) }}</div>
+            <div class="flex items-center gap-1 text-xs text-red-600">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>8 vencimentos próximos</span>
+            </div>
+          </div>
+
+          <!-- Projeção de Saldo -->
+          <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-purple-500 flex items-center justify-center shadow-sm">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900">Projeção de Saldo</h3>
+                <p class="text-xs text-gray-500">Previsão do período</p>
+              </div>
+            </div>
+            <div class="text-lg font-bold text-purple-600">{{ formatCurrency(126000) }}</div>
           </div>
         </div>
-        <div class="border border-gray-200 rounded-lg p-4 bg-white">
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-900">Contas a Receber</div>
-            <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
-          </div>
-          <div class="text-sm font-semibold mt-1">{{ formatCurrency(29400) }}</div>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-4 bg-white">
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-900">Contas a Pagar</div>
-            <button type="button" (click)="$event.preventDefault()" class="text-xs font-medium text-primary-600 hover:underline">Ver todas &gt;</button>
-          </div>
-          <div class="text-sm font-semibold mt-1">{{ formatCurrency(15300) }}</div>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-4 bg-white">
-          <div class="text-xs text-gray-500 mb-1">Projeção de saldo</div>
-          <div class="text-sm font-semibold">{{ formatCurrency(126000) }}</div>
-          <div class="text-[10px] text-gray-400 mt-2">* Projeção de acordo com entradas/saídas do período</div>
-        </div>
-      </div>
 
       <!-- Caixa do gráfico à direita -->
       <div class="dashboard-card bg-white rounded-xl shadow-sm p-4">
@@ -64,7 +135,7 @@
             </div>
           </div>
         </div>
-        <div class="h-72 cursor-pointer" title="Clique em um dia para ver as movimentações">
+        <div class="h-[26.25rem] cursor-pointer" title="Clique em um dia para ver as movimentações">
           <canvas id="receitaChart"></canvas>
         </div>
       </div>
@@ -81,10 +152,7 @@
           </div>
           <div>
             <h2 class="text-xl font-bold text-gray-900">Movimentações da Conta</h2>
-            <p class="text-gray-600 text-sm" *ngIf="!diaSelecionado">
-              <span *ngIf="filtros.periodo === 'diario'">Movimentações de hoje</span>
-              <span *ngIf="filtros.periodo === 'mensal'">Histórico completo do mês</span>
-            </p>
+            <p class="text-gray-600 text-sm" *ngIf="!diaSelecionado">Histórico completo de transações</p>
             <p class="text-gray-600 text-sm" *ngIf="diaSelecionado">Movimentações do dia {{ diaSelecionado }} de outubro</p>
           </div>
         </div>
@@ -250,7 +318,7 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <!-- Mostrar movimentações filtradas por dia -->
             <ng-container *ngIf="diaSelecionado && movimentacoesFiltradas.length > 0">
-              <tr *ngFor="let mov of movimentacoesFiltradas" class="hover:bg-gray-50">
+              <tr *ngFor="let mov of getMovimentacoesPaginadas()" class="hover:bg-gray-50">
                 <td class="px-4 py-3 text-sm">
                   <div class="relative inline-flex items-center group">
                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 select-none">
@@ -288,7 +356,7 @@
 
             <!-- Mostrar todas as movimentações quando nenhum dia está selecionado -->
             <ng-container *ngIf="!diaSelecionado">
-              <tr *ngFor="let mov of getTodasMovimentacoes()" class="hover:bg-gray-50">
+              <tr *ngFor="let mov of getMovimentacoesPaginadas()" class="hover:bg-gray-50">
                 <td class="px-4 py-3 text-sm">
                   <div class="relative inline-flex items-center group">
                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 select-none">
@@ -349,6 +417,69 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Paginação -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-4 border-t border-gray-200">
+        <!-- Informações da paginação -->
+        <div class="flex items-center gap-4 text-sm text-gray-700">
+          <div class="flex items-center gap-2">
+            <span>Mostrar</span>
+            <select [(ngModel)]="itensPorPagina" 
+                    (ngModelChange)="alterarItensPorPagina($event)"
+                    class="bg-white border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+            <span>itens por página</span>
+          </div>
+          <div class="text-gray-500">
+            Mostrando {{ (paginaAtual - 1) * itensPorPagina + 1 }} até {{ Math.min(paginaAtual * itensPorPagina, totalItens) }} de {{ totalItens }} resultados
+          </div>
+        </div>
+
+        <!-- Controles de paginação -->
+        <div class="flex items-center gap-2">
+          <!-- Botão anterior -->
+          <button (click)="paginaAnterior()" 
+                  [disabled]="paginaAtual === 1"
+                  class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Anterior
+          </button>
+
+          <!-- Números das páginas -->
+          <div class="flex items-center gap-1">
+            <ng-container *ngFor="let pagina of getPaginasVisiveis()">
+              <button *ngIf="pagina !== -1" 
+                      (click)="irParaPagina(pagina)"
+                      [class.bg-blue-600]="pagina === paginaAtual"
+                      [class.text-white]="pagina === paginaAtual"
+                      [class.border-blue-600]="pagina === paginaAtual"
+                      [class.bg-white]="pagina !== paginaAtual"
+                      [class.text-gray-700]="pagina !== paginaAtual"
+                      [class.border-gray-300]="pagina !== paginaAtual"
+                      class="inline-flex items-center px-3 py-2 text-sm font-medium border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                {{ pagina }}
+              </button>
+              <span *ngIf="pagina === -1" class="px-2 text-gray-400">...</span>
+            </ng-container>
+          </div>
+
+          <!-- Botão próximo -->
+          <button (click)="proximaPagina()" 
+                  [disabled]="paginaAtual === getTotalPaginas()"
+                  class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+            Próximo
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>

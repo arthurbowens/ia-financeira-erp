@@ -50,15 +50,6 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     saldoProjetado: [5000, 8000, 12000, 10000, 10000, -5000, -5000, 1000, 8000, 8000, 8000, 8000, 8000, 8000, 8000, 4000, 4000, 4000, 4000, 4000, 4000, -4000, 5000, 15000, 15000, 15000, 15000, 15000, 15000, 15000, 20000]
   };
 
-  // Dados anuais do gráfico
-  chartDataAnual = {
-    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-    receita: [45000, 52000, 48000, 55000, 60000, 58000, 62000, 65000, 70000, 75000, 68000, 72000],
-    despesa: [35000, 40000, 38000, 42000, 45000, 48000, 50000, 52000, 55000, 58000, 53000, 56000],
-    renegociado: [5000, 3000, 4000, 6000, 5000, 7000, 8000, 6000, 9000, 10000, 8000, 9000],
-    saldoProjetado: [10000, 15000, 20000, 25000, 30000, 25000, 20000, 25000, 30000, 35000, 40000, 45000]
-  };
-
   // Dados mockados das movimentações por dia
   movimentacoesPorDia: { [key: number]: any[] } = {
     1: [
@@ -87,9 +78,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     ],
     15: [
       { tipo: 'DESPESA', cliente: 'Fornecedor Y', descricao: 'Pagamento DO(A) Fornecedor Y', categoria: 'Operacional', valor: 12000, dia: 15, empresa: 'empresa1', conta: 'conta1' },
-      { tipo: 'RECEITA', cliente: 'Cliente H', descricao: 'Pagamento DE Cliente H', categoria: 'Vendas', valor: 8000, dia: 15, empresa: 'empresa3', conta: 'conta3' },
-      { tipo: 'RECEITA', cliente: 'Cliente Hoje', descricao: 'Pagamento DE Cliente Hoje', categoria: 'Vendas', valor: 2500, dia: 15, empresa: 'empresa2', conta: 'conta2' },
-      { tipo: 'DESPESA', cliente: 'Fornecedor Hoje', descricao: 'Pagamento DO(A) Fornecedor Hoje', categoria: 'Operacional', valor: 1800, dia: 15, empresa: 'empresa1', conta: 'conta1' }
+      { tipo: 'RECEITA', cliente: 'Cliente H', descricao: 'Pagamento DE Cliente H', categoria: 'Vendas', valor: 8000, dia: 15, empresa: 'empresa3', conta: 'conta3' }
     ],
     18: [
       { tipo: 'RENEGOCIAÇÃO', cliente: 'Cliente I', descricao: 'Renegociação DE Cliente I', categoria: 'Vendas', valor: 3000, dia: 18, empresa: 'empresa1', conta: 'conta1' }
@@ -129,6 +118,11 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
   // Estado para controle de filtro por dia
   diaSelecionado: number | null = null;
   movimentacoesFiltradas: any[] = [];
+
+  // Paginação
+  paginaAtual: number = 1;
+  itensPorPagina: number = 10;
+  totalItens: number = 0;
 
   // Filtros funcionais
   filtros = {
@@ -179,16 +173,14 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     const ctx = document.getElementById('receitaChart') as HTMLCanvasElement;
     if (!ctx) return;
 
-    const dados = this.periodoGrafico === 'anual' ? this.chartDataAnual : this.chartData;
-
     this.receitaChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: dados.labels,
+        labels: this.chartData.labels,
         datasets: [
           {
             label: 'Receita',
-            data: dados.receita,
+            data: this.chartData.receita,
             backgroundColor: 'rgba(34, 197, 94, 0.8)',
             borderColor: 'rgba(34, 197, 94, 1)',
             borderWidth: 1,
@@ -196,7 +188,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Despesa',
-            data: dados.despesa,
+            data: this.chartData.despesa,
             backgroundColor: 'rgba(239, 68, 68, 0.8)',
             borderColor: 'rgba(239, 68, 68, 1)',
             borderWidth: 1,
@@ -204,7 +196,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Renegociado',
-            data: dados.renegociado,
+            data: this.chartData.renegociado,
             backgroundColor: 'rgba(234, 179, 8, 0.8)',
             borderColor: 'rgba(234, 179, 8, 1)',
             borderWidth: 1,
@@ -212,7 +204,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Saldo total projetado no período',
-            data: dados.saldoProjetado,
+            data: this.chartData.saldoProjetado,
             backgroundColor: 'transparent',
             borderColor: 'rgba(59, 130, 246, 1)',
             borderWidth: 2,
@@ -256,7 +248,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             title: {
               display: true,
-              text: this.periodoGrafico === 'anual' ? 'Meses' : 'Dias'
+              text: 'Dias'
             }
           }
         },
@@ -277,29 +269,8 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setPeriodoGrafico(periodo: 'mensal' | 'anual') {
     this.periodoGrafico = periodo;
-    this.atualizarGrafico();
-  }
-
-  atualizarGrafico(): void {
-    if (this.receitaChart) {
-      const dados = this.periodoGrafico === 'anual' ? this.chartDataAnual : this.chartData;
-      
-      this.receitaChart.data.labels = dados.labels;
-      this.receitaChart.data.datasets[0].data = dados.receita;
-      this.receitaChart.data.datasets[1].data = dados.despesa;
-      this.receitaChart.data.datasets[2].data = dados.renegociado;
-      this.receitaChart.data.datasets[3].data = dados.saldoProjetado;
-      
-      // Atualizar título do eixo X usando notação de colchetes
-      if (this.receitaChart.options.scales && this.receitaChart.options.scales['x']) {
-        const xScale = this.receitaChart.options.scales['x'] as any;
-        if (xScale.title) {
-          xScale.title.text = this.periodoGrafico === 'anual' ? 'Meses' : 'Dias';
-        }
-      }
-      
-      this.receitaChart.update();
-    }
+    // Aqui você pode implementar a lógica para alterar os dados do gráfico
+    // baseado no período selecionado
   }
 
   formatCurrency(value: number): string {
@@ -328,33 +299,91 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.aplicarFiltros(todas).sort((a, b) => b.dia - a.dia); // Ordena por dia decrescente
   }
 
+  // Métodos de paginação
+  getMovimentacoesPaginadas(): any[] {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    this.totalItens = todasMovimentacoes.length;
+    
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    
+    return todasMovimentacoes.slice(inicio, fim);
+  }
+
+  getTotalPaginas(): number {
+    return Math.ceil(this.totalItens / this.itensPorPagina);
+  }
+
+  getPaginasVisiveis(): number[] {
+    const totalPaginas = this.getTotalPaginas();
+    const paginas: number[] = [];
+    
+    if (totalPaginas <= 7) {
+      for (let i = 1; i <= totalPaginas; i++) {
+        paginas.push(i);
+      }
+    } else {
+      if (this.paginaAtual <= 4) {
+        for (let i = 1; i <= 5; i++) {
+          paginas.push(i);
+        }
+        paginas.push(-1); // Separador
+        paginas.push(totalPaginas);
+      } else if (this.paginaAtual >= totalPaginas - 3) {
+        paginas.push(1);
+        paginas.push(-1); // Separador
+        for (let i = totalPaginas - 4; i <= totalPaginas; i++) {
+          paginas.push(i);
+        }
+      } else {
+        paginas.push(1);
+        paginas.push(-1); // Separador
+        for (let i = this.paginaAtual - 1; i <= this.paginaAtual + 1; i++) {
+          paginas.push(i);
+        }
+        paginas.push(-1); // Separador
+        paginas.push(totalPaginas);
+      }
+    }
+    
+    return paginas;
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.getTotalPaginas()) {
+      this.paginaAtual = pagina;
+    }
+  }
+
+  proximaPagina(): void {
+    if (this.paginaAtual < this.getTotalPaginas()) {
+      this.paginaAtual++;
+    }
+  }
+
+  paginaAnterior(): void {
+    if (this.paginaAtual > 1) {
+      this.paginaAtual--;
+    }
+  }
+
+  alterarItensPorPagina(novosItens: number): void {
+    this.itensPorPagina = novosItens;
+    this.paginaAtual = 1; // Volta para a primeira página
+  }
+
+  // Expor Math para o template
+  Math = Math;
+
   // Métodos para filtros funcionais
   aplicarFiltros(movimentacoes: any[]): any[] {
     return movimentacoes.filter(mov => {
       const filtroEmpresa = !this.filtros.empresa || mov.empresa === this.filtros.empresa;
       const filtroConta = !this.filtros.conta || mov.conta === this.filtros.conta;
       const filtroTipo = !this.filtros.tipo || mov.tipo === this.filtros.tipo;
-      const filtroPeriodo = this.aplicarFiltroPeriodo(mov);
       
-      return filtroEmpresa && filtroConta && filtroTipo && filtroPeriodo;
+      return filtroEmpresa && filtroConta && filtroTipo;
     });
-  }
-
-  aplicarFiltroPeriodo(movimentacao: any): boolean {
-    if (this.filtros.periodo === 'diario') {
-      // No modo diário, mostra apenas movimentações do dia selecionado no gráfico ou do dia atual
-      if (this.diaSelecionado) {
-        return movimentacao.dia === this.diaSelecionado;
-      } else {
-        // Se não há dia selecionado, mostra apenas movimentações de hoje
-        const hoje = new Date().getDate();
-        return movimentacao.dia === hoje;
-      }
-    } else if (this.filtros.periodo === 'mensal') {
-      // No modo mensal, mostra todas as movimentações do mês
-      return true;
-    }
-    return true;
   }
 
   onFiltroChange(): void {
@@ -362,8 +391,6 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.diaSelecionado) {
       this.movimentacoesFiltradas = this.aplicarFiltros(this.movimentacoesPorDia[this.diaSelecionado] || []);
     }
-    // Os filtros também afetam a visualização de todas as movimentações
-    // A lógica é aplicada no método getTodasMovimentacoes()
   }
 
   aplicarFiltrosManualmente(): void {
