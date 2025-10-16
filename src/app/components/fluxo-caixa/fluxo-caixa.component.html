@@ -1,16 +1,116 @@
 <div class="min-h-screen bg-gray-50 p-4">
   <div class="max-w-7xl mx-auto">
-    <div class="bg-white rounded-xl shadow-sm p-8 text-center">
-      <div class="text-6xl mb-4">🚧</div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-4">DFC em Desenvolvimento</h1>
-      <p class="text-lg text-gray-600 mb-6">O Demonstrativo de Fluxo de Caixa está sendo criado e estará disponível em breve.</p>
-      <a routerLink="/dashboard" 
-         class="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Voltar ao Dashboard
-      </a>
+    <!-- Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Demonstrativo de Fluxo de Caixa</h1>
+        <p class="text-gray-600">Visão mensal com totais e média</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-600">Ano</label>
+          <select class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  [ngModel]="anoSelecionado" (ngModelChange)="onAnoChange($event)">
+            <option [ngValue]="2025">2025</option>
+            <option [ngValue]="2026">2026</option>
+          </select>
+        </div>
+        <div class="h-6 w-px bg-gray-200"></div>
+        <button (click)="exportarCsv()" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/></svg>
+          Exportar CSV
+        </button>
+        <button (click)="imprimir()" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium bg-gray-900 text-white rounded-md hover:bg-gray-800">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
+          Imprimir
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabela DFC -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="sticky top-0 bg-white z-10 shadow-sm">
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="px-4 py-3 text-left font-semibold text-gray-700 w-[320px] sticky left-0 bg-gray-50 border-r border-gray-200">Descrição</th>
+              <ng-container *ngFor="let m of meses">
+                <th class="px-3 py-3 text-right font-semibold text-gray-700">{{ m }}</th>
+              </ng-container>
+              <th class="px-4 py-3 text-right font-semibold text-gray-700">TOTAL</th>
+              <th class="px-4 py-3 text-right font-semibold text-gray-700">MÉDIA</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <ng-container *ngFor="let l of dfcLinhas">
+              <!-- Linhas de Seção -->
+              <tr *ngIf="l.tipo==='SECAO'" class="bg-gray-100">
+                <td class="px-4 py-2 font-semibold text-gray-800 sticky left-0 bg-gray-100 border-r border-gray-200 flex items-center gap-2" [class.pl-8]="l.nivel===1">
+                  <button *ngIf="l.nome.includes('RECEITAS')" (click)="alternarReceitas()" class="w-5 h-5 inline-flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50">
+                    <span class="text-xs">{{ expandirReceitas ? '-' : '+' }}</span>
+                  </button>
+                  <button *ngIf="l.nome.includes('DESPESAS')" (click)="alternarDespesas()" class="w-5 h-5 inline-flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50">
+                    <span class="text-xs">{{ expandirDespesas ? '-' : '+' }}</span>
+                  </button>
+                  <span>{{ l.nome }}</span>
+                </td>
+                <td class="px-3 py-2 text-right" *ngFor="let _ of meses">&nbsp;</td>
+                <td class="px-4 py-2 text-right font-semibold text-gray-800">&nbsp;</td>
+                <td class="px-4 py-2 text-right font-semibold text-gray-800">&nbsp;</td>
+              </tr>
+
+              <!-- Linhas de Receita -->
+              <tr *ngIf="(l.tipo==='RECEITA' || l.tipo==='FATURAMENTO') && isLinhaVisivel(l)" class="hover:bg-gray-50">
+                <td class="px-4 py-2 text-gray-800 sticky left-0 bg-white border-r border-gray-100" [class.pl-8]="l.nivel===1">{{ l.nome }}</td>
+                <td class="px-3 py-2 text-right text-emerald-700" *ngFor="let v of l.valores">{{ formatCurrency(v || 0) }}</td>
+                <td class="px-4 py-2 text-right font-semibold text-emerald-700">{{ formatCurrency(l.total || 0) }}</td>
+                <td class="px-4 py-2 text-right font-semibold text-emerald-700">{{ formatCurrency(l.media || 0) }}</td>
+              </tr>
+
+              <!-- Linhas de Despesa -->
+              <tr *ngIf="l.tipo==='DESPESA' && isLinhaVisivel(l)" class="hover:bg-gray-50">
+                <td class="px-4 py-2 text-gray-800 sticky left-0 bg-white border-r border-gray-100" [class.pl-8]="l.nivel===1">{{ l.nome }}</td>
+                <td class="px-3 py-2 text-right text-red-700" *ngFor="let v of l.valores">{{ formatCurrencySigned(v || 0) }}</td>
+                <td class="px-4 py-2 text-right font-semibold text-red-700">{{ formatCurrencySigned(l.total || 0) }}</td>
+                <td class="px-4 py-2 text-right font-semibold text-red-700">{{ formatCurrencySigned(l.media || 0) }}</td>
+              </tr>
+
+              <!-- Subtotais -->
+              <tr *ngIf="l.tipo==='SUBTOTAL_RECEITA'" class="bg-emerald-50 border-t border-emerald-200">
+                <td class="px-4 py-2 font-semibold text-emerald-800 sticky left-0 bg-emerald-50 border-r border-emerald-200">{{ l.nome }}</td>
+                <td class="px-3 py-2 text-right font-semibold text-emerald-800" *ngFor="let v of l.valores">{{ formatCurrency(v || 0) }}</td>
+                <td class="px-4 py-2 text-right font-bold text-emerald-800">{{ formatCurrency(l.total || 0) }}</td>
+                <td class="px-4 py-2 text-right font-bold text-emerald-800">{{ formatCurrency(l.media || 0) }}</td>
+              </tr>
+
+              <tr *ngIf="l.tipo==='SUBTOTAL_DESPESA'" class="bg-red-50 border-t border-red-200">
+                <td class="px-4 py-2 font-semibold text-red-800 sticky left-0 bg-red-50 border-r border-red-200">{{ l.nome }}</td>
+                <td class="px-3 py-2 text-right font-semibold text-red-800" *ngFor="let v of l.valores">{{ formatCurrencySigned(v || 0) }}</td>
+                <td class="px-4 py-2 text-right font-bold text-red-800">{{ formatCurrencySigned(l.total || 0) }}</td>
+                <td class="px-4 py-2 text-right font-bold text-red-800">{{ formatCurrencySigned(l.media || 0) }}</td>
+              </tr>
+
+              <!-- Resultado -->
+              <tr *ngIf="l.tipo==='RESULTADO'" class="bg-amber-50 border-t border-amber-200">
+                <td class="px-4 py-2 font-semibold text-gray-900 sticky left-0 bg-amber-50 border-r border-amber-200">{{ l.nome }}</td>
+                <td class="px-3 py-2 text-right font-semibold" 
+                    [class.text-emerald-700]="(l.valores[i] || 0) >= 0"
+                    [class.text-red-700]="(l.valores[i] || 0) < 0"
+                    *ngFor="let v of l.valores; let i = index">{{ formatCurrency(v || 0) }}</td>
+                <td class="px-4 py-2 text-right font-bold" [class.text-emerald-700]="(l.total||0) >= 0" [class.text-red-700]="(l.total||0) < 0">{{ formatCurrency(l.total || 0) }}</td>
+                <td class="px-4 py-2 text-right font-bold" [class.text-emerald-700]="(l.media||0) >= 0" [class.text-red-700]="(l.media||0) < 0">{{ formatCurrency(l.media || 0) }}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+      <!-- Legenda -->
+      <div class="flex items-center gap-6 p-4 text-xs text-gray-600 border-t border-gray-200">
+        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 bg-emerald-500 rounded"></span>Receitas</div>
+        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 bg-red-500 rounded"></span>Despesas</div>
+        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 bg-amber-500 rounded"></span>Resultado</div>
+        <div class="ml-auto text-gray-500">Valores negativos em parênteses</div>
+      </div>
     </div>
   </div>
 </div>
