@@ -39,14 +39,17 @@ export class MovimentacoesComponent {
     { value: 'financeiro', label: 'Financeiro' },
     { value: 'marketing', label: 'Marketing' },
     { value: 'rh', label: 'Recursos Humanos' },
-    { value: 'ti', label: 'Tecnologia da Informação' }
+    { value: 'ti', label: 'Tecnologia da Informação' },
+    { value: 'juridico', label: 'Jurídico' },
+    { value: 'outros', label: 'Outros' }
   ];
 
   contas = [
     { value: '', label: 'Todas as Contas' },
-    { value: 'conta1', label: 'Conta Corrente' },
-    { value: 'conta2', label: 'Poupança' },
-    { value: 'conta3', label: 'Investimentos' }
+    { value: 'corrente', label: 'Conta Corrente' },
+    { value: 'poupanca', label: 'Poupança' },
+    { value: 'investimento', label: 'Investimento' },
+    { value: 'cartao', label: 'Cartão de Crédito' }
   ];
 
   tipos = [
@@ -55,7 +58,7 @@ export class MovimentacoesComponent {
     { value: 'despesa', label: 'Despesa' }
   ];
 
-  // Mock data para movimentações
+  // Dados mock das movimentações
   movimentacoes = [
     {
       id: 1,
@@ -67,7 +70,7 @@ export class MovimentacoesComponent {
       descricao: 'Pagamento DO(A) TechCorp',
       categoria: 'operacional',
       valor: 5247.83,
-      conta: 'conta1'
+      conta: 'corrente'
     },
     {
       id: 2,
@@ -79,55 +82,79 @@ export class MovimentacoesComponent {
       descricao: 'Venda de produtos',
       categoria: 'comercial',
       valor: 15000.00,
-      conta: 'conta1'
+      conta: 'corrente'
     },
     {
       id: 3,
       parcela: '2/12',
-      tipo: 'RECEITA',
-      dataVencimento: '20/11/2025',
-      dataCompensacao: '20/11/2025',
-      clienteFornecedor: 'Cliente ABC',
-      descricao: 'Venda de produtos',
-      categoria: 'comercial',
-      valor: 15000.00,
-      conta: 'conta1'
+      tipo: 'DESPESA',
+      dataVencimento: '25/10/2025',
+      dataCompensacao: '25/10/2025',
+      clienteFornecedor: 'Fornecedor XYZ',
+      descricao: 'Compra de materiais',
+      categoria: 'operacional',
+      valor: 3200.50,
+      conta: 'corrente'
     },
     {
       id: 4,
       parcela: '∞',
       tipo: 'DESPESA',
-      dataVencimento: '01/10/2025',
-      dataCompensacao: '01/10/2025',
-      clienteFornecedor: 'Fornecedor XYZ',
-      descricao: 'Aluguel do escritório',
-      categoria: 'administrativo',
-      valor: 3500.00,
-      conta: 'conta1'
+      dataVencimento: '30/10/2025',
+      dataCompensacao: '30/10/2025',
+      clienteFornecedor: 'Empresa de Marketing',
+      descricao: 'Serviços de marketing digital',
+      categoria: 'marketing',
+      valor: 4500.00,
+      conta: 'corrente'
     },
     {
       id: 5,
-      parcela: '∞',
-      tipo: 'DESPESA',
-      dataVencimento: '05/10/2025',
-      dataCompensacao: '05/10/2025',
-      clienteFornecedor: 'Empresa de Marketing',
-      descricao: 'Campanha publicitária',
-      categoria: 'marketing',
-      valor: 2800.00,
-      conta: 'conta1'
+      parcela: '1/6',
+      tipo: 'RECEITA',
+      dataVencimento: '05/11/2025',
+      dataCompensacao: '05/11/2025',
+      clienteFornecedor: 'Cliente DEF',
+      descricao: 'Prestação de serviços',
+      categoria: 'comercial',
+      valor: 8500.00,
+      conta: 'corrente'
     },
     {
       id: 6,
-      parcela: '1/6',
+      parcela: '∞',
       tipo: 'DESPESA',
-      dataVencimento: '10/10/2025',
-      dataCompensacao: '10/10/2025',
-      clienteFornecedor: 'Consultoria TI',
-      descricao: 'Desenvolvimento de sistema',
+      dataVencimento: '10/11/2025',
+      dataCompensacao: '10/11/2025',
+      clienteFornecedor: 'Escritório de Advocacia',
+      descricao: 'Consultoria jurídica',
+      categoria: 'juridico',
+      valor: 2800.00,
+      conta: 'corrente'
+    },
+    {
+      id: 7,
+      parcela: '3/12',
+      tipo: 'DESPESA',
+      dataVencimento: '15/11/2025',
+      dataCompensacao: '15/11/2025',
+      clienteFornecedor: 'Fornecedor de TI',
+      descricao: 'Licenças de software',
       categoria: 'ti',
-      valor: 12000.00,
-      conta: 'conta1'
+      valor: 1200.00,
+      conta: 'corrente'
+    },
+    {
+      id: 8,
+      parcela: '∞',
+      tipo: 'DESPESA',
+      dataVencimento: '20/11/2025',
+      dataCompensacao: '20/11/2025',
+      clienteFornecedor: 'Empresa de RH',
+      descricao: 'Treinamento de funcionários',
+      categoria: 'rh',
+      valor: 3600.00,
+      conta: 'corrente'
     }
   ];
 
@@ -323,7 +350,7 @@ export class MovimentacoesComponent {
     }).format(value);
   }
 
-  // Helpers para labels
+  // Labels para os filtros
   getCategoriaLabel(value: string): string {
     const categoria = this.categorias.find(c => c.value === value);
     return categoria ? categoria.label : value;
