@@ -30,75 +30,75 @@
     <!-- Tabela DFC -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
+        <table class="w-full text-xs">
           <thead class="sticky top-0 bg-white z-10 shadow-sm">
             <tr class="bg-gray-50 border-b border-gray-200">
-              <th class="px-4 py-3 text-left font-semibold text-gray-700 w-[320px] sticky left-0 bg-gray-50 border-r border-gray-200">Descrição</th>
+              <th class="px-2 py-3 text-left font-semibold text-gray-700 w-[200px] sticky left-0 bg-gray-50 border-r border-gray-200">Descrição</th>
               <ng-container *ngFor="let m of meses">
-                <th class="px-3 py-3 text-right font-semibold text-gray-700">{{ m }}</th>
+                <th class="px-1 py-3 text-right font-semibold text-gray-700 w-[80px]">{{ m }}</th>
               </ng-container>
-              <th class="px-4 py-3 text-right font-semibold text-gray-700">TOTAL</th>
-              <th class="px-4 py-3 text-right font-semibold text-gray-700">MÉDIA</th>
+              <th class="px-2 py-3 text-right font-semibold text-gray-700 w-[90px]">TOTAL</th>
+              <th class="px-2 py-3 text-right font-semibold text-gray-700 w-[90px]">MÉDIA</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <ng-container *ngFor="let l of dfcLinhas">
               <!-- Linhas de Seção -->
               <tr *ngIf="l.tipo==='SECAO'" class="bg-gray-100">
-                <td class="px-4 py-2 font-semibold text-gray-800 sticky left-0 bg-gray-100 border-r border-gray-200 flex items-center gap-2" [class.pl-8]="l.nivel===1">
-                  <button *ngIf="l.nome.includes('RECEITAS')" (click)="alternarReceitas()" class="w-5 h-5 inline-flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50">
+                <td class="px-2 py-2 font-semibold text-gray-800 sticky left-0 bg-gray-100 border-r border-gray-200 flex items-center gap-1" [class.pl-4]="l.nivel===1">
+                  <button *ngIf="l.nome.includes('RECEITAS')" (click)="alternarReceitas()" class="w-4 h-4 inline-flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50">
                     <span class="text-xs">{{ expandirReceitas ? '-' : '+' }}</span>
                   </button>
-                  <button *ngIf="l.nome.includes('DESPESAS')" (click)="alternarDespesas()" class="w-5 h-5 inline-flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50">
+                  <button *ngIf="l.nome.includes('DESPESAS')" (click)="alternarDespesas()" class="w-4 h-4 inline-flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50">
                     <span class="text-xs">{{ expandirDespesas ? '-' : '+' }}</span>
                   </button>
-                  <span>{{ l.nome }}</span>
+                  <span class="text-xs">{{ l.nome }}</span>
                 </td>
-                <td class="px-3 py-2 text-right" *ngFor="let _ of meses">&nbsp;</td>
-                <td class="px-4 py-2 text-right font-semibold text-gray-800">&nbsp;</td>
-                <td class="px-4 py-2 text-right font-semibold text-gray-800">&nbsp;</td>
+                <td class="px-1 py-2 text-right" *ngFor="let _ of meses">&nbsp;</td>
+                <td class="px-2 py-2 text-right font-semibold text-gray-800">&nbsp;</td>
+                <td class="px-2 py-2 text-right font-semibold text-gray-800">&nbsp;</td>
               </tr>
 
               <!-- Linhas de Receita -->
               <tr *ngIf="(l.tipo==='RECEITA' || l.tipo==='FATURAMENTO') && isLinhaVisivel(l)" class="hover:bg-gray-50">
-                <td class="px-4 py-2 text-gray-800 sticky left-0 bg-white border-r border-gray-100" [class.pl-8]="l.nivel===1">{{ l.nome }}</td>
-                <td class="px-3 py-2 text-right text-emerald-700" *ngFor="let v of l.valores">{{ formatCurrency(v || 0) }}</td>
-                <td class="px-4 py-2 text-right font-semibold text-emerald-700">{{ formatCurrency(l.total || 0) }}</td>
-                <td class="px-4 py-2 text-right font-semibold text-emerald-700">{{ formatCurrency(l.media || 0) }}</td>
+                <td class="px-2 py-1 text-gray-800 sticky left-0 bg-white border-r border-gray-100 text-xs" [class.pl-4]="l.nivel===1">{{ l.nome }}</td>
+                <td class="px-1 py-1 text-right text-emerald-700 text-xs" *ngFor="let v of l.valores">{{ formatCurrency(v || 0) }}</td>
+                <td class="px-2 py-1 text-right font-semibold text-emerald-700 text-xs">{{ formatCurrency(l.total || 0) }}</td>
+                <td class="px-2 py-1 text-right font-semibold text-emerald-700 text-xs">{{ formatCurrency(l.media || 0) }}</td>
               </tr>
 
               <!-- Linhas de Despesa -->
               <tr *ngIf="l.tipo==='DESPESA' && isLinhaVisivel(l)" class="hover:bg-gray-50">
-                <td class="px-4 py-2 text-gray-800 sticky left-0 bg-white border-r border-gray-100" [class.pl-8]="l.nivel===1">{{ l.nome }}</td>
-                <td class="px-3 py-2 text-right text-red-700" *ngFor="let v of l.valores">{{ formatCurrencySigned(v || 0) }}</td>
-                <td class="px-4 py-2 text-right font-semibold text-red-700">{{ formatCurrencySigned(l.total || 0) }}</td>
-                <td class="px-4 py-2 text-right font-semibold text-red-700">{{ formatCurrencySigned(l.media || 0) }}</td>
+                <td class="px-2 py-1 text-gray-800 sticky left-0 bg-white border-r border-gray-100 text-xs" [class.pl-4]="l.nivel===1">{{ l.nome }}</td>
+                <td class="px-1 py-1 text-right text-red-700 text-xs" *ngFor="let v of l.valores">{{ formatCurrencySigned(v || 0) }}</td>
+                <td class="px-2 py-1 text-right font-semibold text-red-700 text-xs">{{ formatCurrencySigned(l.total || 0) }}</td>
+                <td class="px-2 py-1 text-right font-semibold text-red-700 text-xs">{{ formatCurrencySigned(l.media || 0) }}</td>
               </tr>
 
               <!-- Subtotais -->
               <tr *ngIf="l.tipo==='SUBTOTAL_RECEITA'" class="bg-emerald-50 border-t border-emerald-200">
-                <td class="px-4 py-2 font-semibold text-emerald-800 sticky left-0 bg-emerald-50 border-r border-emerald-200">{{ l.nome }}</td>
-                <td class="px-3 py-2 text-right font-semibold text-emerald-800" *ngFor="let v of l.valores">{{ formatCurrency(v || 0) }}</td>
-                <td class="px-4 py-2 text-right font-bold text-emerald-800">{{ formatCurrency(l.total || 0) }}</td>
-                <td class="px-4 py-2 text-right font-bold text-emerald-800">{{ formatCurrency(l.media || 0) }}</td>
+                <td class="px-2 py-1 font-semibold text-emerald-800 sticky left-0 bg-emerald-50 border-r border-emerald-200 text-xs">{{ l.nome }}</td>
+                <td class="px-1 py-1 text-right font-semibold text-emerald-800 text-xs" *ngFor="let v of l.valores">{{ formatCurrency(v || 0) }}</td>
+                <td class="px-2 py-1 text-right font-bold text-emerald-800 text-xs">{{ formatCurrency(l.total || 0) }}</td>
+                <td class="px-2 py-1 text-right font-bold text-emerald-800 text-xs">{{ formatCurrency(l.media || 0) }}</td>
               </tr>
 
               <tr *ngIf="l.tipo==='SUBTOTAL_DESPESA'" class="bg-red-50 border-t border-red-200">
-                <td class="px-4 py-2 font-semibold text-red-800 sticky left-0 bg-red-50 border-r border-red-200">{{ l.nome }}</td>
-                <td class="px-3 py-2 text-right font-semibold text-red-800" *ngFor="let v of l.valores">{{ formatCurrencySigned(v || 0) }}</td>
-                <td class="px-4 py-2 text-right font-bold text-red-800">{{ formatCurrencySigned(l.total || 0) }}</td>
-                <td class="px-4 py-2 text-right font-bold text-red-800">{{ formatCurrencySigned(l.media || 0) }}</td>
+                <td class="px-2 py-1 font-semibold text-red-800 sticky left-0 bg-red-50 border-r border-red-200 text-xs">{{ l.nome }}</td>
+                <td class="px-1 py-1 text-right font-semibold text-red-800 text-xs" *ngFor="let v of l.valores">{{ formatCurrencySigned(v || 0) }}</td>
+                <td class="px-2 py-1 text-right font-bold text-red-800 text-xs">{{ formatCurrencySigned(l.total || 0) }}</td>
+                <td class="px-2 py-1 text-right font-bold text-red-800 text-xs">{{ formatCurrencySigned(l.media || 0) }}</td>
               </tr>
 
               <!-- Resultado -->
               <tr *ngIf="l.tipo==='RESULTADO'" class="bg-amber-50 border-t border-amber-200">
-                <td class="px-4 py-2 font-semibold text-gray-900 sticky left-0 bg-amber-50 border-r border-amber-200">{{ l.nome }}</td>
-                <td class="px-3 py-2 text-right font-semibold" 
+                <td class="px-2 py-2 font-semibold text-gray-900 sticky left-0 bg-amber-50 border-r border-amber-200 text-xs">{{ l.nome }}</td>
+                <td class="px-1 py-2 text-right font-semibold text-xs" 
                     [class.text-emerald-700]="(l.valores[i] || 0) >= 0"
                     [class.text-red-700]="(l.valores[i] || 0) < 0"
                     *ngFor="let v of l.valores; let i = index">{{ formatCurrency(v || 0) }}</td>
-                <td class="px-4 py-2 text-right font-bold" [class.text-emerald-700]="(l.total||0) >= 0" [class.text-red-700]="(l.total||0) < 0">{{ formatCurrency(l.total || 0) }}</td>
-                <td class="px-4 py-2 text-right font-bold" [class.text-emerald-700]="(l.media||0) >= 0" [class.text-red-700]="(l.media||0) < 0">{{ formatCurrency(l.media || 0) }}</td>
+                <td class="px-2 py-2 text-right font-bold text-xs" [class.text-emerald-700]="(l.total||0) >= 0" [class.text-red-700]="(l.total||0) < 0">{{ formatCurrency(l.total || 0) }}</td>
+                <td class="px-2 py-2 text-right font-bold text-xs" [class.text-emerald-700]="(l.media||0) >= 0" [class.text-red-700]="(l.media||0) < 0">{{ formatCurrency(l.media || 0) }}</td>
               </tr>
             </ng-container>
           </tbody>
