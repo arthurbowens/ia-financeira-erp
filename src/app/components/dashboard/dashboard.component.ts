@@ -56,6 +56,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Dados filtrados por período
   dadosFiltrados: DadosFinanceiros = this.dados;
 
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
@@ -1568,4 +1569,5 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (mes >= 3) return 'Regular';
     return 'Inicial';
   }
+
 }

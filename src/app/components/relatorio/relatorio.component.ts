@@ -129,6 +129,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     empresa: '',
     conta: '',
     tipo: '',
+    categoria: '',
     periodo: 'diario' // 'diario' ou 'mensal'
   };
 
@@ -152,6 +153,20 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 'RECEITA', label: 'Receita' },
     { value: 'DESPESA', label: 'Despesa' },
     { value: 'RENEGOCIAÇÃO', label: 'Renegociação' }
+  ];
+
+  categorias = [
+    { value: '', label: 'Todas as Categorias' },
+    { value: 'Operacional', label: 'Operacional' },
+    { value: 'Administrativo', label: 'Administrativo' },
+    { value: 'Comercial', label: 'Comercial' },
+    { value: 'Financeiro', label: 'Financeiro' },
+    { value: 'Marketing', label: 'Marketing' },
+    { value: 'RH', label: 'Recursos Humanos' },
+    { value: 'TI', label: 'Tecnologia da Informação' },
+    { value: 'Jurídico', label: 'Jurídico' },
+    { value: 'Vendas', label: 'Vendas' },
+    { value: 'Outros', label: 'Outros' }
   ];
 
   ngOnInit() {
@@ -381,8 +396,9 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
       const filtroEmpresa = !this.filtros.empresa || mov.empresa === this.filtros.empresa;
       const filtroConta = !this.filtros.conta || mov.conta === this.filtros.conta;
       const filtroTipo = !this.filtros.tipo || mov.tipo === this.filtros.tipo;
+      const filtroCategoria = !this.filtros.categoria || mov.categoria === this.filtros.categoria;
       
-      return filtroEmpresa && filtroConta && filtroTipo;
+      return filtroEmpresa && filtroConta && filtroTipo && filtroCategoria;
     });
   }
 
@@ -402,6 +418,7 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
       empresa: '',
       conta: '',
       tipo: '',
+      categoria: '',
       periodo: 'diario'
     };
     this.onFiltroChange();
@@ -546,4 +563,176 @@ export class RelatorioComponent implements OnInit, AfterViewInit, OnDestroy {
     const b = start <= end ? end : start;
     return dateStr > a && dateStr < b;
   }
+
+  // Métodos para cálculos dos itens selecionados
+  getTotalReceitas(): number {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    return todasMovimentacoes
+      .filter(mov => mov.tipo === 'RECEITA')
+      .reduce((total, mov) => total + mov.valor, 0);
+  }
+
+  getTotalDespesas(): number {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    return todasMovimentacoes
+      .filter(mov => mov.tipo === 'DESPESA')
+      .reduce((total, mov) => total + mov.valor, 0);
+  }
+
+  getSaldoLiquido(): number {
+    return this.getTotalReceitas() - this.getTotalDespesas();
+  }
+
+  getTotalItens(): number {
+    // Retorna o total de itens considerando todos os filtros aplicados
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    return todasMovimentacoes.length;
+  }
+
+  // Métodos para estatísticas avançadas
+  getTotalItensPorTipo(tipo: string): number {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    return todasMovimentacoes.filter(mov => mov.tipo === tipo).length;
+  }
+
+  getTotalItensPorCategoria(categoria: string): number {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    return todasMovimentacoes.filter(mov => mov.categoria === categoria).length;
+  }
+
+  getTotalItensPorEmpresa(empresa: string): number {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    return todasMovimentacoes.filter(mov => mov.empresa === empresa).length;
+  }
+
+  getValorMedioPorTransacao(): number {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    if (todasMovimentacoes.length === 0) return 0;
+    const valorTotal = todasMovimentacoes.reduce((total, mov) => total + mov.valor, 0);
+    return valorTotal / todasMovimentacoes.length;
+  }
+
+  getMaiorTransacao(): any {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    if (todasMovimentacoes.length === 0) return null;
+    return todasMovimentacoes.reduce((maior, mov) => mov.valor > maior.valor ? mov : maior);
+  }
+
+  getMenorTransacao(): any {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    if (todasMovimentacoes.length === 0) return null;
+    return todasMovimentacoes.reduce((menor, mov) => mov.valor < menor.valor ? mov : menor);
+  }
+
+  getPercentualPorTipo(tipo: string): number {
+    const total = this.getTotalItens();
+    if (total === 0) return 0;
+    return (this.getTotalItensPorTipo(tipo) / total) * 100;
+  }
+
+  getPercentualPorEmpresa(empresa: string): number {
+    const total = this.getTotalItens();
+    if (total === 0) return 0;
+    return (this.getTotalItensPorEmpresa(empresa) / total) * 100;
+  }
+
+  getPercentualPorCategoria(categoria: string): number {
+    const total = this.getTotalItens();
+    if (total === 0) return 0;
+    return (this.getTotalItensPorCategoria(categoria) / total) * 100;
+  }
+
+  getDiasComMovimentacao(): number {
+    return Object.keys(this.movimentacoesPorDia).filter(dia => 
+      this.movimentacoesPorDia[parseInt(dia)].length > 0
+    ).length;
+  }
+
+  getDiasSemMovimentacao(): number {
+    return 31 - this.getDiasComMovimentacao();
+  }
+
+  // Métodos para exportação
+  exportarParaCSV(): void {
+    const todasMovimentacoes = this.diaSelecionado ? this.movimentacoesFiltradas : this.getTodasMovimentacoes();
+    
+    const headers = ['Parcela', 'Tipo', 'Data Venc.', 'Data Comp.', 'Cliente/Fornecedor', 'Empresa', 'Categoria', 'Valor (R$)'];
+    const csvContent = [
+      headers.join(','),
+      ...todasMovimentacoes.map(mov => [
+        '∞',
+        mov.tipo,
+        `${mov.dia}/10/2024`,
+        `${mov.dia}/10/2024`,
+        `"${mov.cliente}"`,
+        `"${this.getEmpresaLabel(mov.empresa)}"`,
+        mov.categoria,
+        mov.valor.toFixed(2).replace('.', ',')
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `movimentacoes_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  exportarParaPDF(): void {
+    // Implementação básica para PDF (seria necessário uma biblioteca como jsPDF)
+    console.log('Exportação para PDF - funcionalidade a ser implementada');
+    alert('Funcionalidade de exportação para PDF será implementada em breve!');
+  }
+
+  // Métodos para análise de tendências
+  getTendenciaReceitas(): 'crescimento' | 'queda' | 'estavel' {
+    // Lógica simplificada - em um sistema real, compararia com períodos anteriores
+    const receitas = this.getTotalReceitas();
+    if (receitas > 50000) return 'crescimento';
+    if (receitas < 30000) return 'queda';
+    return 'estavel';
+  }
+
+  getIndicadorPerformance(): number {
+    // Score de 0 a 100 baseado em vários fatores
+    const totalItens = this.getTotalItens();
+    const saldoLiquido = this.getSaldoLiquido();
+    const diasComMovimentacao = this.getDiasComMovimentacao();
+    
+    let score = 0;
+    
+    // Score baseado no número de transações (0-30 pontos)
+    score += Math.min(totalItens * 2, 30);
+    
+    // Score baseado no saldo líquido (0-40 pontos)
+    if (saldoLiquido > 0) {
+      score += Math.min(saldoLiquido / 1000, 40);
+    }
+    
+    // Score baseado na atividade (0-30 pontos)
+    score += Math.min(diasComMovimentacao * 1.5, 30);
+    
+    return Math.round(Math.min(score, 100));
+  }
+
+  // Labels para os filtros
+  getCategoriaLabel(value: string): string {
+    const categoria = this.categorias.find(c => c.value === value);
+    return categoria ? categoria.label : value;
+  }
+
+  getContaLabel(value: string): string {
+    const conta = this.contas.find(c => c.value === value);
+    return conta ? conta.label : value;
+  }
+
+  getTipoLabel(value: string): string {
+    const tipo = this.tipos.find(t => t.value === value);
+    return tipo ? tipo.label : value;
+  }
+
 }

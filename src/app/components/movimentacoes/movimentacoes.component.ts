@@ -159,11 +159,16 @@ export class MovimentacoesComponent {
   ];
 
   // Movimentações filtradas
-  movimentacoesFiltradas = [...this.movimentacoes];
+  movimentacoesFiltradas: any[] = [];
 
   constructor() {
     this.visibleMonth = new Date();
     this.buildCalendar();
+    // Inicializa as movimentações filtradas após definir os dados
+    this.movimentacoesFiltradas = [...this.movimentacoes];
+    console.log('Categorias disponíveis:', this.categorias);
+    console.log('Movimentações:', this.movimentacoes);
+    console.log('Movimentações filtradas:', this.movimentacoesFiltradas);
   }
 
   // ===== Date Range Picker Helpers =====
