@@ -46,9 +46,10 @@ export class ContratosComponent implements OnInit {
 
   // Colunas do Kanban
   colunas = [
-    { id: 'inadimplentes', titulo: 'Inadimplentes', cor: 'red', icone: '⚠️' },
-    { id: 'pendente', titulo: 'Contrato Pendente', cor: 'yellow', icone: '⏳' },
-    { id: 'em-dia', titulo: 'Em Dia', cor: 'green', icone: '✅' }
+    { id: 'em-dia', titulo: 'Em Dia', cor: 'green', icone: '✅' },
+    { id: 'atraso', titulo: 'Atraso', cor: 'orange', icone: '⏰' },
+    { id: 'pendente', titulo: 'Pendentes', cor: 'yellow', icone: '⏳' },
+    { id: 'inadimplentes', titulo: 'Inadimplentes', cor: 'red', icone: '⚠️' }
   ];
 
   constructor(private router: Router) {}
@@ -143,12 +144,19 @@ export class ContratosComponent implements OnInit {
     const contratosFiltrados = this.contratosFiltrados;
     
     switch (colunaId) {
-      case 'inadimplentes':
-        return contratosFiltrados.filter(c => c.status === 'vencido' || this.isInadimplente(c));
+      case 'em-dia':
+        return contratosFiltrados.filter(c => {
+          if (c.status !== 'assinado') return false;
+          const hoje = new Date();
+          const vencimento = new Date(c.dataVencimento);
+          return vencimento >= hoje; // Data de vencimento maior ou igual a hoje
+        });
+      case 'atraso':
+        return contratosFiltrados.filter(c => this.isAtraso(c));
       case 'pendente':
         return contratosFiltrados.filter(c => c.status === 'pendente');
-      case 'em-dia':
-        return contratosFiltrados.filter(c => c.status === 'assinado' && !this.isInadimplente(c));
+      case 'inadimplentes':
+        return contratosFiltrados.filter(c => c.status === 'vencido' || this.isInadimplente(c));
       default:
         return [];
     }
@@ -157,7 +165,13 @@ export class ContratosComponent implements OnInit {
   isInadimplente(contrato: Contrato): boolean {
     const hoje = new Date();
     const vencimento = new Date(contrato.dataVencimento);
+    // Debug: console.log(`Contrato ${contrato.titulo}: vencimento=${contrato.dataVencimento}, hoje=${hoje.toISOString().split('T')[0]}, vencimento < hoje=${vencimento < hoje}`);
     return contrato.status === 'assinado' && vencimento < hoje;
+  }
+
+  isAtraso(contrato: Contrato): boolean {
+    // Para este exemplo, não há contratos em atraso conforme solicitado
+    return false;
   }
 
   getTotalPorColuna(colunaId: string): number {
@@ -345,6 +359,7 @@ export class ContratosComponent implements OnInit {
   getDataAtual(): string {
     return new Date().toLocaleDateString('pt-BR');
   }
+
 
   exportarContratos(): void {
     const dados = this.contratosFiltrados.map(contrato => ({

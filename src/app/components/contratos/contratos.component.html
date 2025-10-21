@@ -92,7 +92,7 @@
     </div>
 
     <!-- Visualização Kanban -->
-    <div *ngIf="visualizacao === 'kanban'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div *ngIf="visualizacao === 'kanban'" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
       <div *ngFor="let coluna of colunas" class="bg-gray-50 rounded-xl p-4">
         <!-- Cabeçalho da Coluna -->
         <div class="flex items-center justify-between mb-4">
