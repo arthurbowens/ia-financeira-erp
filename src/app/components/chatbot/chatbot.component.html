@@ -1,71 +1,152 @@
-<div class="min-h-screen bg-gray-50 p-6">
-  <div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-xl shadow-sm h-[calc(100vh-3rem)] flex flex-col">
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-900">🤖 IA Financeira</h2>
-        <button 
-          (click)="clearChat()" 
-          title="Limpar conversa"
-          class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-          🗑️
-        </button>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl h-[calc(100vh-3rem)] flex flex-col overflow-hidden">
+      <!-- Header Profissional -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-white">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold">Assistente Financeiro IA</h2>
+              <p class="text-blue-100 text-sm">Sua consultora especializada em gestão empresarial</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span class="text-sm text-blue-100">Online</span>
+            <button 
+              (click)="clearChat()" 
+              title="Nova conversa"
+              class="p-2 text-blue-100 hover:text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all duration-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-6 space-y-4" #chatContainer>
+      <!-- Área de Mensagens -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6" #chatContainer>
         <div 
           *ngFor="let message of messages" 
           class="flex"
           [ngClass]="{'justify-end': message.role === 'user', 'justify-start': message.role === 'assistant'}"
         >
           <div 
-            class="max-w-3xl px-4 py-3 rounded-2xl"
+            class="max-w-4xl px-6 py-4 rounded-2xl shadow-sm"
             [ngClass]="{
-              'bg-primary-600 text-white': message.role === 'user',
-              'bg-gray-100 text-gray-900': message.role === 'assistant'
+              'bg-gradient-to-r from-blue-600 to-indigo-600 text-white ml-12': message.role === 'user',
+              'bg-gray-50 text-gray-900 mr-12 border border-gray-200': message.role === 'assistant'
             }"
           >
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium opacity-75">
-                {{ message.role === 'user' ? 'Você' : 'IA Financeira' }}
-              </span>
-              <span class="text-xs opacity-75">
-                {{ message.timestamp | date:'HH:mm' }}
-              </span>
+            <!-- Cabeçalho da Mensagem -->
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center"
+                   [ngClass]="{
+                     'bg-white bg-opacity-20': message.role === 'user',
+                     'bg-blue-100': message.role === 'assistant'
+                   }">
+                <svg *ngIf="message.role === 'user'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <svg *ngIf="message.role === 'assistant'" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <span class="text-sm font-semibold">
+                  {{ message.role === 'user' ? 'Você' : 'Assistente Financeiro' }}
+                </span>
+                <span class="text-xs ml-2 opacity-75">
+                  {{ message.timestamp | date:'HH:mm' }}
+                </span>
+              </div>
             </div>
-            <div class="prose prose-sm max-w-none" [innerHTML]="message.content | markdown"></div>
+            
+            <!-- Conteúdo da Mensagem -->
+            <div class="prose prose-sm max-w-none" 
+                 [ngClass]="{
+                   'prose-invert': message.role === 'user',
+                   'prose-gray': message.role === 'assistant'
+                 }"
+                 [innerHTML]="message.content | markdown">
+            </div>
           </div>
         </div>
 
+        <!-- Indicador de Carregamento -->
         <div *ngIf="isLoading" class="flex justify-start">
-          <div class="max-w-3xl px-4 py-3 rounded-2xl bg-gray-100 text-gray-900">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium opacity-75">IA Financeira</span>
+          <div class="max-w-4xl px-6 py-4 rounded-2xl bg-gray-50 text-gray-900 mr-12 border border-gray-200 shadow-sm">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="text-sm font-semibold">Assistente Financeiro</span>
+                <span class="text-xs ml-2 text-gray-500">Digitando...</span>
+              </div>
             </div>
-            <div class="flex space-x-1">
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="flex items-center gap-2">
+              <div class="flex space-x-1">
+                <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+              </div>
+              <span class="text-sm text-gray-600">Analisando sua consulta...</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="p-6 border-t border-gray-200">
-        <div class="flex gap-3">
-          <textarea
-            [(ngModel)]="newMessage"
-            (keypress)="onKeyPress($event)"
-            placeholder="Digite sua mensagem aqui..."
-            [disabled]="isLoading"
-            rows="2"
-            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
-          ></textarea>
+      <!-- Área de Input Profissional -->
+      <div class="bg-gray-50 border-t border-gray-200 p-6">
+        <div class="flex gap-4">
+          <div class="flex-1 relative">
+            <textarea
+              [(ngModel)]="newMessage"
+              (keypress)="onKeyPress($event)"
+              placeholder="Descreva sua consulta financeira ou empresarial..."
+              [disabled]="isLoading"
+              rows="3"
+              class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none shadow-sm transition-all duration-200"
+            ></textarea>
+            <div class="absolute right-3 top-3 text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+          </div>
           <button 
             (click)="sendMessage()" 
             [disabled]="!newMessage.trim() || isLoading"
-            class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg flex items-center gap-2 font-medium"
           >
-            {{ isLoading ? '⏳' : '📤' }}
+            <svg *ngIf="!isLoading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+            <svg *ngIf="isLoading" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isLoading ? 'Enviando...' : 'Enviar' }}
+          </button>
+        </div>
+        
+        <!-- Sugestões Rápidas -->
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button 
+            *ngFor="let suggestion of quickSuggestions"
+            (click)="selectSuggestion(suggestion)"
+            [disabled]="isLoading"
+            class="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-full hover:bg-blue-50 hover:border-blue-300 transition-colors disabled:opacity-50">
+            {{ suggestion }}
           </button>
         </div>
       </div>

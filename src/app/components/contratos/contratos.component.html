@@ -38,33 +38,124 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm p-4 lg:p-6 mb-4 lg:mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label for="statusFilter" class="block text-sm font-medium text-gray-700 mb-2">Status:</label>
-          <select 
-            id="statusFilter" 
-            [(ngModel)]="filtroStatus"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-            <option value="todos">Todos</option>
-            <option value="pendente">Pendente</option>
-            <option value="assinado">Assinado</option>
-            <option value="vencido">Vencido</option>
-          </select>
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+        <div class="flex flex-col sm:flex-row gap-4 flex-1">
+          <div class="flex-1">
+            <label for="statusFilter" class="block text-sm font-medium text-gray-700 mb-2">Status:</label>
+            <select 
+              id="statusFilter" 
+              [(ngModel)]="filtroStatus"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              <option value="todos">Todos</option>
+              <option value="pendente">Pendente</option>
+              <option value="assinado">Assinado</option>
+              <option value="vencido">Vencido</option>
+            </select>
+          </div>
+          
+          <div class="flex-1">
+            <label for="textFilter" class="block text-sm font-medium text-gray-700 mb-2">Buscar:</label>
+            <input 
+              type="text" 
+              id="textFilter"
+              [(ngModel)]="filtroTexto"
+              placeholder="Título ou cliente..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          </div>
         </div>
-        
-        <div>
-          <label for="textFilter" class="block text-sm font-medium text-gray-700 mb-2">Buscar:</label>
-          <input 
-            type="text" 
-            id="textFilter"
-            [(ngModel)]="filtroTexto"
-            placeholder="Título ou cliente..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+
+        <!-- Toggle de Visualização -->
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-700">Visualização:</span>
+          <div class="flex bg-gray-100 rounded-lg p-1">
+            <button 
+              (click)="alterarVisualizacao('kanban')"
+              [class.bg-white]="visualizacao === 'kanban'"
+              [class.shadow-sm]="visualizacao === 'kanban'"
+              [class.text-gray-900]="visualizacao === 'kanban'"
+              [class.text-gray-600]="visualizacao !== 'kanban'"
+              class="px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200">
+              📋 Kanban
+            </button>
+            <button 
+              (click)="alterarVisualizacao('lista')"
+              [class.bg-white]="visualizacao === 'lista'"
+              [class.shadow-sm]="visualizacao === 'lista'"
+              [class.text-gray-900]="visualizacao === 'lista'"
+              [class.text-gray-600]="visualizacao !== 'lista'"
+              class="px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200">
+              📄 Lista
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="space-y-4">
+    <!-- Visualização Kanban -->
+    <div *ngIf="visualizacao === 'kanban'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div *ngFor="let coluna of colunas" class="bg-gray-50 rounded-xl p-4">
+        <!-- Cabeçalho da Coluna -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">{{ coluna.icone }}</span>
+            <h3 class="text-lg font-semibold text-gray-900">{{ coluna.titulo }}</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="bg-white px-2 py-1 rounded-full text-xs font-medium text-gray-600">
+              {{ getTotalPorColuna(coluna.id) }}
+            </span>
+            <span class="text-xs text-gray-500">
+              {{ formatCurrency(getValorTotalPorColuna(coluna.id)) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Cards dos Contratos -->
+        <div class="space-y-3 min-h-[200px]">
+          <div *ngFor="let contrato of getContratosPorColuna(coluna.id)" 
+               class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer">
+            <div class="mb-3">
+              <h4 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">{{ contrato.titulo }}</h4>
+              <p class="text-xs text-gray-600">{{ contrato.cliente }}</p>
+            </div>
+            
+            <div class="space-y-2 mb-3">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-500">Valor:</span>
+                <span class="text-sm font-semibold text-gray-900">{{ formatCurrency(contrato.valor) }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-500">Vencimento:</span>
+                <span class="text-xs text-gray-600">{{ contrato.dataVencimento | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button 
+                (click)="assinarContrato(contrato)"
+                class="flex-1 px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors">
+                ✍️ Assinar
+              </button>
+              <button 
+                (click)="enviarWhatsApp(contrato)"
+                class="flex-1 px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 transition-colors">
+                📱 WhatsApp
+              </button>
+            </div>
+          </div>
+
+          <!-- Mensagem quando não há contratos na coluna -->
+          <div *ngIf="getContratosPorColuna(coluna.id).length === 0" 
+               class="text-center py-8 text-gray-400">
+            <div class="text-4xl mb-2">{{ coluna.icone }}</div>
+            <p class="text-sm">Nenhum contrato</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visualização Lista -->
+    <div *ngIf="visualizacao === 'lista'" class="space-y-4">
       <div *ngFor="let contrato of contratosFiltrados" 
            class="bg-white rounded-xl shadow-sm p-4 lg:p-6 hover:shadow-md transition-shadow">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
@@ -116,6 +207,278 @@
         <div class="text-gray-400 text-6xl mb-4">📋</div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhum contrato encontrado</h3>
         <p class="text-gray-600">Tente ajustar os filtros ou adicionar um novo contrato.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Formulário Dados do Cliente -->
+  <div *ngIf="mostrarFormularioCliente" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <!-- Cabeçalho do Modal -->
+      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900">Dados do Cliente</h2>
+            <p class="text-sm text-gray-600">Criado em {{ getDataAtual() }}</p>
+          </div>
+          <button 
+            (click)="fecharFormularioCliente()"
+            class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Conteúdo do Formulário -->
+      <div class="p-6 space-y-8">
+        <!-- Informações do Contrato -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-blue-900">Informações do Contrato</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Serviço *</label>
+              <input 
+                [(ngModel)]="servico"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                placeholder="Ex: Consultoria Financeira">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Início do Contrato *</label>
+              <input 
+                [(ngModel)]="inicioContrato"
+                type="date" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Início da Recorrência *</label>
+              <input 
+                [(ngModel)]="inicioRecorrencia"
+                type="date" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Valor do Contrato (R$) *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">R$</span>
+                <input 
+                  [(ngModel)]="valorContrato"
+                  type="number" 
+                  step="0.01"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                  placeholder="0,00">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Valor da Recorrência (R$) *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">R$</span>
+                <input 
+                  [(ngModel)]="valorRecorrencia"
+                  type="number" 
+                  step="0.01"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                  placeholder="0,00">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Forma de Pagamento *</label>
+              <select 
+                [(ngModel)]="formaPagamento"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white">
+                <option value="">Selecione...</option>
+                <option value="pix">PIX</option>
+                <option value="boleto">Boleto Bancário</option>
+                <option value="cartao">Cartão de Crédito</option>
+                <option value="transferencia">Transferência Bancária</option>
+                <option value="dinheiro">Dinheiro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados da Empresa -->
+        <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-6 border border-gray-200">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">Dados da Empresa</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Razão Social *</label>
+              <input 
+                [(ngModel)]="dadosCliente.razaoSocial"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 bg-white"
+                placeholder="Ex: COMERCIO DE EQUIPAMENTOS DE CONSTRUÇÃO LTDA">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Nome Fantasia</label>
+              <input 
+                [(ngModel)]="dadosCliente.nomeFantasia"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 bg-white"
+                placeholder="Ex: Construtora ABC">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">CNPJ</label>
+              <input 
+                [(ngModel)]="dadosCliente.cnpj"
+                (input)="formatarCNPJ($event)"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 bg-white"
+                placeholder="00.000.000/0000-00">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">CEP</label>
+              <input 
+                [(ngModel)]="dadosCliente.cep"
+                (input)="formatarCEP($event)"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 bg-white"
+                placeholder="00000-000">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Endereço Completo</label>
+              <input 
+                [(ngModel)]="dadosCliente.enderecoCompleto"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 bg-white"
+                placeholder="Rua, número, bairro, cidade - UF">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados Financeiros -->
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-green-900">Dados Financeiros</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Celular Financeiro</label>
+              <input 
+                [(ngModel)]="dadosCliente.celularFinanceiro"
+                (input)="formatarCelular($event)"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                placeholder="(00) 00000-0000">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">E-mail Financeiro</label>
+              <input 
+                [(ngModel)]="dadosCliente.emailFinanceiro"
+                type="email" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                placeholder="financeiro@empresa.com">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Responsável</label>
+              <input 
+                [(ngModel)]="dadosCliente.responsavel"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                placeholder="Nome do responsável">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">CPF</label>
+              <input 
+                [(ngModel)]="dadosCliente.cpf"
+                (input)="formatarCPF($event)"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                placeholder="000.000.000-00">
+            </div>
+          </div>
+        </div>
+
+        <!-- Plano e Negociação -->
+        <div class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-6 border border-yellow-100">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-yellow-900">Plano e Negociação</h3>
+          </div>
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Plano</label>
+              <input 
+                [(ngModel)]="dadosCliente.plano"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 bg-white"
+                placeholder="Ex: TURBOLOC">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Descrição da Negociação</label>
+              <textarea 
+                [(ngModel)]="dadosCliente.descricaoNegociacao"
+                rows="4"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 bg-white resize-none"
+                placeholder="Ex: SETUP: R$12.600,00 em 9x de R$2.100,00"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Valor da Recorrência</label>
+              <input 
+                [(ngModel)]="dadosCliente.valorRecorrencia"
+                type="text" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 bg-white"
+                placeholder="Ex: R$2.500,00 + 15% após o 3° mês">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Data da Venda</label>
+                <input 
+                  [(ngModel)]="dadosCliente.dataVenda"
+                  type="date" 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 bg-white">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Data 1ª Parcela Recorrência</label>
+                <input 
+                  [(ngModel)]="dadosCliente.dataPrimeiraParcelaRecorrencia"
+                  type="date" 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 bg-white">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rodapé do Modal -->
+      <div class="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-xl">
+        <div class="flex justify-end gap-3">
+          <button 
+            (click)="fecharFormularioCliente()"
+            class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            Cancelar
+          </button>
+          <button 
+            (click)="salvarDadosCliente()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Salvar Dados
+          </button>
+        </div>
       </div>
     </div>
   </div>

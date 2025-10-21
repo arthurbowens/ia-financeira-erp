@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AiService } from '../../services/ai.service';
-import { CONTRATOS_MOCK, Contrato } from '../../data/mock-data';
+import { CONTRATOS_MOCK, Contrato, DadosCliente } from '../../data/mock-data';
 
 @Component({
   selector: 'app-assinatura',
@@ -19,6 +19,33 @@ export class AssinaturaComponent implements OnInit {
   analiseIA: string = '';
   isAnalisando: boolean = false;
   currentDate: Date = new Date();
+  mostrarFormularioCliente: boolean = false;
+
+  // Formulário de dados do cliente
+  dadosCliente: DadosCliente = {
+    razaoSocial: '',
+    nomeFantasia: '',
+    cnpj: '',
+    enderecoCompleto: '',
+    cep: '',
+    celularFinanceiro: '',
+    emailFinanceiro: '',
+    responsavel: '',
+    cpf: '',
+    plano: '',
+    descricaoNegociacao: '',
+    valorRecorrencia: '',
+    dataVenda: '',
+    dataPrimeiraParcelaRecorrencia: ''
+  };
+
+  // Dados adicionais do contrato
+  servico: string = '';
+  inicioContrato: string = '';
+  inicioRecorrencia: string = '';
+  valorContrato: number = 0;
+  valorRecorrencia: number = 0;
+  formaPagamento: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -32,6 +59,7 @@ export class AssinaturaComponent implements OnInit {
       this.contrato = CONTRATOS_MOCK.find(c => c.id === contratoId) || null;
       if (this.contrato) {
         this.analisarContratoComIA();
+        this.preencherDadosMockados();
       }
     }
   }
@@ -108,5 +136,100 @@ export class AssinaturaComponent implements OnInit {
 
   voltarParaContratos(): void {
     this.router.navigate(['/contratos']);
+  }
+
+  // Métodos para formulário de dados do cliente
+  preencherDadosMockados(): void {
+    if (!this.contrato) return;
+
+    // Preencher dados existentes se houver, senão usar dados mockados
+    if (this.contrato.dadosCliente) {
+      this.dadosCliente = { ...this.contrato.dadosCliente };
+    } else {
+      const dadosMock = this.gerarDadosMockados();
+      this.dadosCliente = { ...dadosMock };
+    }
+    
+    if (this.contrato.servico) {
+      this.servico = this.contrato.servico;
+    } else {
+      this.servico = 'Consultoria Financeira e Implementação de ERP';
+    }
+    
+    if (this.contrato.inicioContrato) {
+      this.inicioContrato = this.contrato.inicioContrato;
+    } else {
+      this.inicioContrato = new Date().toISOString().split('T')[0];
+    }
+    
+    if (this.contrato.inicioRecorrencia) {
+      this.inicioRecorrencia = this.contrato.inicioRecorrencia;
+    } else {
+      const dataRecorrencia = new Date();
+      dataRecorrencia.setMonth(dataRecorrencia.getMonth() + 1);
+      this.inicioRecorrencia = dataRecorrencia.toISOString().split('T')[0];
+    }
+    
+    if (this.contrato.valorContrato) {
+      this.valorContrato = this.contrato.valorContrato;
+    } else {
+      this.valorContrato = this.contrato.valor;
+    }
+    
+    if (this.contrato.valorRecorrencia) {
+      this.valorRecorrencia = this.contrato.valorRecorrencia;
+    } else {
+      this.valorRecorrencia = Math.round(this.contrato.valor * 0.15);
+    }
+    
+    if (this.contrato.formaPagamento) {
+      this.formaPagamento = this.contrato.formaPagamento;
+    } else {
+      this.formaPagamento = 'pix';
+    }
+  }
+
+  gerarDadosMockados(): DadosCliente {
+    if (!this.contrato) return this.dadosCliente;
+
+    const hoje = new Date();
+    const dataVenda = new Date(hoje.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+    const dataRecorrencia = new Date(dataVenda);
+    dataRecorrencia.setMonth(dataRecorrencia.getMonth() + 1);
+
+    return {
+      razaoSocial: this.contrato.cliente + ' LTDA',
+      nomeFantasia: this.contrato.cliente,
+      cnpj: this.gerarCNPJ(),
+      enderecoCompleto: 'Rua das Flores, 123, Centro, São Paulo - SP',
+      cep: '01234-567',
+      celularFinanceiro: '(11) 99999-8888',
+      emailFinanceiro: 'financeiro@' + this.contrato.cliente.toLowerCase().replace(/\s+/g, '') + '.com.br',
+      responsavel: 'João Silva',
+      cpf: '123.456.789-00',
+      plano: 'TURBOLOC',
+      descricaoNegociacao: `SETUP: ${this.formatCurrency(this.contrato.valor)} em ${Math.ceil(this.contrato.valor / 1000)}x de ${this.formatCurrency(Math.ceil(this.contrato.valor / Math.ceil(this.contrato.valor / 1000)))}`,
+      valorRecorrencia: `${this.formatCurrency(Math.round(this.contrato.valor * 0.15))} + 15% após o 3° mês`,
+      dataVenda: dataVenda.toISOString().split('T')[0],
+      dataPrimeiraParcelaRecorrencia: dataRecorrencia.toISOString().split('T')[0]
+    };
+  }
+
+  gerarCNPJ(): string {
+    const numeros = Array.from({length: 14}, () => Math.floor(Math.random() * 10));
+    return `${numeros[0]}${numeros[1]}.${numeros[2]}${numeros[3]}${numeros[4]}.${numeros[5]}${numeros[6]}${numeros[7]}/${numeros[8]}${numeros[9]}${numeros[10]}${numeros[11]}-${numeros[12]}${numeros[13]}`;
+  }
+
+  abrirFormularioCliente(): void {
+    this.mostrarFormularioCliente = true;
+  }
+
+  fecharFormularioCliente(): void {
+    this.mostrarFormularioCliente = false;
+  }
+
+
+  getDataAtual(): string {
+    return new Date().toLocaleDateString('pt-BR');
   }
 }

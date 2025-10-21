@@ -8,6 +8,30 @@ export interface Contrato {
   descricao: string;
   conteudo: string;
   whatsapp: string;
+  dadosCliente?: DadosCliente;
+  servico?: string;
+  inicioContrato?: string;
+  inicioRecorrencia?: string;
+  valorContrato?: number;
+  valorRecorrencia?: number;
+  formaPagamento?: string;
+}
+
+export interface DadosCliente {
+  razaoSocial: string;
+  nomeFantasia: string;
+  cnpj: string;
+  enderecoCompleto: string;
+  cep: string;
+  celularFinanceiro: string;
+  emailFinanceiro: string;
+  responsavel: string;
+  cpf: string;
+  plano: string;
+  descricaoNegociacao: string;
+  valorRecorrencia: string;
+  dataVenda: string;
+  dataPrimeiraParcelaRecorrencia: string;
 }
 
 export interface DadosFinanceiros {

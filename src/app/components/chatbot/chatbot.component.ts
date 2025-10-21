@@ -14,6 +14,15 @@ export class ChatbotComponent implements OnInit {
   messages: ChatMessage[] = [];
   newMessage: string = '';
   isLoading: boolean = false;
+  
+  quickSuggestions: string[] = [
+    'Análise de fluxo de caixa',
+    'Gestão de contratos',
+    'Relatórios financeiros',
+    'Planejamento orçamentário',
+    'Análise de inadimplência',
+    'Estratégias de crescimento'
+  ];
 
   constructor(private aiService: AiService) {}
 
@@ -24,7 +33,18 @@ export class ChatbotComponent implements OnInit {
   addWelcomeMessage() {
     this.messages.push({
       role: 'assistant',
-      content: 'Olá! Sou sua IA Financeira. Como posso ajudá-lo hoje? Posso analisar contratos, fornecer insights financeiros ou responder dúvidas sobre gestão empresarial.',
+      content: `# 👋 Bem-vindo ao Assistente Financeiro IA
+
+Sou sua consultora especializada em **gestão empresarial e financeira**. Estou aqui para ajudá-lo com:
+
+## 🎯 **Principais Serviços:**
+- **Análise de Contratos** - Revisão e insights jurídicos
+- **Gestão Financeira** - Fluxo de caixa e orçamento
+- **Relatórios Inteligentes** - Dashboards e métricas
+- **Estratégias Empresariais** - Crescimento e otimização
+
+## 💡 **Como posso ajudar hoje?**
+Use as sugestões abaixo ou descreva sua consulta específica.`,
       timestamp: new Date()
     });
   }
@@ -68,6 +88,10 @@ export class ChatbotComponent implements OnInit {
       event.preventDefault();
       this.sendMessage();
     }
+  }
+
+  selectSuggestion(suggestion: string) {
+    this.newMessage = suggestion;
   }
 
   clearChat() {
