@@ -146,6 +146,7 @@
           <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Cliente/Fornecedor</th>
           <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Categoria</th>
           <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Valor (R$)</th>
+          <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Saldo (R$)</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
@@ -173,10 +174,13 @@
             <div class="text-gray-500 text-xs">{{ mov.descricao }}</div>
           </td>
           <td class="px-4 py-3 text-sm text-gray-900">{{ getCategoriaLabel(mov.categoria) }}</td>
-          <td class="px-4 py-3 text-sm text-right font-medium"
+          <td class="px-4 py-3 text-sm text-right font-mono font-medium"
               [class.text-red-600]="mov.tipo === 'DESPESA'"
               [class.text-green-600]="mov.tipo === 'RECEITA'">
-            {{ formatCurrency(mov.valor) }}
+            {{ formatExtrato(mov.valor, mov.tipo) }}
+          </td>
+          <td class="px-4 py-3 text-sm text-right font-mono font-medium text-gray-900">
+            {{ formatSaldo(getSaldoAcumulado(mov)) }}
           </td>
         </tr>
       </tbody>

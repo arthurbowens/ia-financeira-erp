@@ -355,6 +355,51 @@ export class MovimentacoesComponent {
     }).format(value);
   }
 
+  // Formatação para extrato bancário
+  formatExtrato(value: number, tipo: string): string {
+    const formatted = new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(Math.abs(value));
+    
+    if (tipo === 'DESPESA') {
+      return `-${formatted}`;
+    } else {
+      return `+${formatted}`;
+    }
+  }
+
+  // Formatação do saldo
+  formatSaldo(value: number): string {
+    const formatted = new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(Math.abs(value));
+    
+    if (value >= 0) {
+      return formatted;
+    } else {
+      return `-${formatted}`;
+    }
+  }
+
+  // Calcula o saldo acumulado até a movimentação atual
+  getSaldoAcumulado(movimentacao: any): number {
+    const index = this.movimentacoesFiltradas.findIndex(m => m.id === movimentacao.id);
+    let saldo = 0;
+    
+    for (let i = 0; i <= index; i++) {
+      const mov = this.movimentacoesFiltradas[i];
+      if (mov.tipo === 'RECEITA') {
+        saldo += mov.valor;
+      } else {
+        saldo -= mov.valor;
+      }
+    }
+    
+    return saldo;
+  }
+
   // Labels para os filtros
   getCategoriaLabel(value: string): string {
     const categoria = this.categorias.find(c => c.value === value);
