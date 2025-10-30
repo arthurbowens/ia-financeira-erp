@@ -1,5 +1,6 @@
 <div class="min-h-screen bg-gray-50 flex flex-col">
-  <nav class="bg-black shadow-lg border-b border-gray-800">
+  <!-- Header - apenas para páginas autenticadas -->
+  <nav *ngIf="!isLoginPage()" class="bg-black shadow-lg border-b border-gray-800">
     <div class="max-w-8xl mx-auto px-6 sm:px-8 lg:px-12">
       <div class="flex justify-between items-center h-20">
         <!-- Logo -->
@@ -53,6 +54,44 @@
               </svg>
               Chat IA
             </a>
+            <!-- User Menu Dropdown -->
+            <div class="relative" (click)="toggleUserMenu()">
+              <button class="text-white hover:text-gray-300 hover:bg-gray-800 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 cursor-pointer">
+                <svg *ngIf="isAdmin" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <svg *ngIf="!isAdmin" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                {{ isAdmin ? 'Configurações' : 'Sair' }}
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <div *ngIf="isUserMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <!-- Opções para Admin -->
+                <div *ngIf="isAdmin">
+                  <a (click)="onManageAccess()" 
+                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    </svg>
+                    Gerenciar Acessos
+                  </a>
+                </div>
+                
+                <!-- Sair sempre disponível para todos -->
+                <div class="border-t border-gray-200 mt-1 pt-1">
+                  <a (click)="logout()" 
+                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Sair
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -134,7 +173,7 @@
   </main>
 
 <!-- Footer global (em todas as telas, não fixo) -->
-<footer class="bg-white border-t border-gray-200">
+<footer *ngIf="!isLoginPage()" class="bg-white border-t border-gray-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between text-sm">
     <div class="flex items-center gap-2 text-gray-700">
       <span class="font-semibold text-gray-900">Star Target</span>
