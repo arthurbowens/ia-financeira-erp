@@ -71,6 +71,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último Acesso</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permissões</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
@@ -104,6 +105,12 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatarData(usuario.ultimoAcesso) }}
               </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <button (click)="abrirModalPermissoes(usuario)" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-800 text-xs font-semibold">
+                  Gerenciar permissões
+                </button>
+              </td>
+
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex items-center gap-2">
                   <button 
@@ -253,6 +260,55 @@
               Criar Usuário
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Permissões -->
+  <div *ngIf="isPermissoesAberto" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Permissões de Acesso</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.dashboard" class="rounded">
+            <span>Dashboard</span>
+          </label>
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.contratos" class="rounded">
+            <span>Contratos</span>
+          </label>
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.relatorio" class="rounded">
+            <span>Relatório</span>
+          </label>
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.movimentacoes" class="rounded">
+            <span>Movimentações</span>
+          </label>
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.fluxoCaixa" class="rounded">
+            <span>DFC</span>
+          </label>
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.chat" class="rounded">
+            <span>Chat</span>
+          </label>
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.assinatura" class="rounded">
+            <span>Assinatura</span>
+          </label>
+          <label class="inline-flex items-center gap-2 p-3 border rounded-lg">
+            <input type="checkbox" [(ngModel)]="usuarioPermissoes!.permissions.gerenciarAcessos" class="rounded">
+            <span>Gerenciar Acessos</span>
+          </label>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+          <button (click)="fecharModalPermissoes()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">Cancelar</button>
+          <button (click)="salvarPermissoes()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Salvar</button>
         </div>
       </div>
     </div>

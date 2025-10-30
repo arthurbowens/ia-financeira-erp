@@ -7,6 +7,16 @@ export interface User {
   name: string;
   role: string;
   loginTime: string;
+  permissions?: {
+    dashboard: boolean;
+    relatorio: boolean;
+    movimentacoes: boolean;
+    fluxoCaixa: boolean;
+    contratos: boolean;
+    chat: boolean;
+    assinatura: boolean;
+    gerenciarAcessos: boolean;
+  };
 }
 
 @Injectable({
@@ -65,7 +75,17 @@ export class AuthService {
               email: email,
               name: 'Julia (Admin)',
               role: 'admin',
-              loginTime: new Date().toISOString()
+              loginTime: new Date().toISOString(),
+              permissions: {
+                dashboard: true,
+                relatorio: true,
+                movimentacoes: true,
+                fluxoCaixa: true,
+                contratos: true,
+                chat: true,
+                assinatura: true,
+                gerenciarAcessos: true
+              }
             }
           });
         } else if (email === 'cliente@startarget.com' && password === '123456') {
@@ -76,7 +96,17 @@ export class AuthService {
               email: email,
               name: 'Cliente',
               role: 'cliente',
-              loginTime: new Date().toISOString()
+              loginTime: new Date().toISOString(),
+              permissions: {
+                dashboard: true,
+                relatorio: true,
+                movimentacoes: true,
+                fluxoCaixa: true,
+                contratos: true,
+                chat: true,
+                assinatura: true,
+                gerenciarAcessos: true
+              }
             }
           });
         } else {
@@ -117,6 +147,12 @@ export class AuthService {
     return this.userSubject.value;
   }
 
+  // Atualizar usuário (por exemplo, permissões)
+  updateCurrentUser(user: User) {
+    this.userSubject.next(user);
+    localStorage.setItem('userData', JSON.stringify(user));
+  }
+
   // Obter token
   getToken(): string | null {
     return localStorage.getItem('authToken');
@@ -148,8 +184,20 @@ export class AuthService {
     // Admin pode acessar tudo
     if (user.role === 'admin') return true;
     
-    // Outras regras de permissão podem ser adicionadas aqui
-    return true;
+    const map: Record<string, keyof NonNullable<User['permissions']>> = {
+      'dashboard': 'dashboard',
+      'relatorio': 'relatorio',
+      'movimentacoes': 'movimentacoes',
+      'fluxo-caixa': 'fluxoCaixa',
+      'contratos': 'contratos',
+      'chat': 'chat',
+      'assinatura': 'assinatura',
+      'gerenciar-acessos': 'gerenciarAcessos'
+    };
+
+    const key = map[route];
+    if (!key) return true; // rotas não mapeadas liberadas
+    return Boolean(user.permissions?.[key]);
   }
 
   // Renovar token (simulação)

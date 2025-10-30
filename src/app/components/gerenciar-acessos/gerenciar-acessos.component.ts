@@ -10,6 +10,16 @@ export interface Usuario {
   status: 'ativo' | 'inativo';
   ultimoAcesso: string;
   dataCriacao: string;
+  permissions: {
+    dashboard: boolean;
+    relatorio: boolean;
+    movimentacoes: boolean;
+    fluxoCaixa: boolean;
+    contratos: boolean;
+    chat: boolean;
+    assinatura: boolean;
+    gerenciarAcessos: boolean;
+  };
 }
 
 @Component({
@@ -29,6 +39,10 @@ export class GerenciarAcessosComponent implements OnInit {
   // Modal de edição
   usuarioEditando: Usuario | null = null;
   isModalAberto: boolean = false;
+  
+  // Modal de permissões
+  usuarioPermissoes: Usuario | null = null;
+  isPermissoesAberto: boolean = false;
   
   // Formulário de novo usuário
   novoUsuario = {
@@ -54,7 +68,17 @@ export class GerenciarAcessosComponent implements OnInit {
         role: 'cliente',
         status: 'ativo',
         ultimoAcesso: '2024-01-14T15:45:00Z',
-        dataCriacao: '2024-01-02T00:00:00Z'
+        dataCriacao: '2024-01-02T00:00:00Z',
+        permissions: {
+          dashboard: true,
+          relatorio: true,
+          movimentacoes: true,
+          fluxoCaixa: true,
+          contratos: true,
+          chat: true,
+          assinatura: true,
+          gerenciarAcessos: true
+        }
       }
     ];
   }
@@ -97,6 +121,27 @@ export class GerenciarAcessosComponent implements OnInit {
     }
   }
 
+  abrirModalPermissoes(usuario: Usuario) {
+    // clonar para edição sem afetar lista até salvar
+    this.usuarioPermissoes = JSON.parse(JSON.stringify(usuario));
+    this.isPermissoesAberto = true;
+  }
+
+  fecharModalPermissoes() {
+    this.isPermissoesAberto = false;
+    this.usuarioPermissoes = null;
+  }
+
+  salvarPermissoes() {
+    if (!this.usuarioPermissoes) return;
+    const idx = this.usuarios.findIndex(u => u.id === this.usuarioPermissoes!.id);
+    if (idx !== -1) {
+      this.usuarios[idx] = { ...this.usuarios[idx], permissions: { ...this.usuarioPermissoes.permissions } };
+      this.aplicarFiltros();
+    }
+    this.fecharModalPermissoes();
+  }
+
   abrirModalNovo() {
     this.novoUsuario = {
       nome: '',
@@ -120,7 +165,17 @@ export class GerenciarAcessosComponent implements OnInit {
         role: this.novoUsuario.role,
         status: 'ativo',
         ultimoAcesso: new Date().toISOString(),
-        dataCriacao: new Date().toISOString()
+        dataCriacao: new Date().toISOString(),
+        permissions: {
+          dashboard: true,
+          relatorio: true,
+          movimentacoes: true,
+          fluxoCaixa: true,
+          contratos: true,
+          chat: true,
+          assinatura: true,
+          gerenciarAcessos: true
+        }
       };
       
       this.usuarios.push(novoUsuario);

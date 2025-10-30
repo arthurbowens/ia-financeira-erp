@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -11,14 +11,19 @@ export class AuthGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(): boolean {
-    if (this.authService.isAuthenticated() && this.authService.isTokenValid()) {
-      return true;
-    } else {
-      // Limpar dados de sessão inválidos
+  canActivate(route: ActivatedRouteSnapshot): boolean {
+    if (!this.authService.isAuthenticated() || !this.authService.isTokenValid()) {
       this.authService.logout();
       this.router.navigate(['/login']);
       return false;
     }
+
+    const path = route.routeConfig?.path ?? '';
+    if (!this.authService.canAccess(path)) {
+      this.router.navigate(['/dashboard']);
+      return false;
+    }
+
+    return true;
   }
 }
