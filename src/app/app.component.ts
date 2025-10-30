@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
@@ -41,8 +41,18 @@ export class AppComponent {
     return this.router.url === '/login';
   }
 
-  toggleUserMenu() {
+  toggleUserMenu(event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+    }
     this.isUserMenuOpen = !this.isUserMenuOpen;
+  }
+
+  @HostListener('document:click')
+  closeUserMenuOnOutsideClick() {
+    if (this.isUserMenuOpen) {
+      this.isUserMenuOpen = false;
+    }
   }
 
   onManageAccess() {
