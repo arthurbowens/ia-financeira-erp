@@ -109,15 +109,14 @@ export class AuthService {
 
     try {
       type LoginApiResponse = {
-        accessToken: string;
-        tokenType?: string;
-        expiresIn?: number;
+        token: string;  // Backend retorna 'token', não 'accessToken'
+        tipoToken?: string;
         usuario: {
           email: string;
           name: string;
           role: string;
           loginTime: string;
-          permissoes?: any[];
+          permissions?: { [key: string]: boolean };  // Backend retorna Map como objeto JSON
         };
       };
 
@@ -130,12 +129,12 @@ export class AuthService {
         name: apiResponse.usuario.name,
         role: apiResponse.usuario.role?.toLowerCase() ?? 'cliente',
         loginTime: apiResponse.usuario.loginTime,
-        permissions: this.mapPermissions(apiResponse.usuario.permissoes)
+        permissions: this.mapPermissionsFromBackend(apiResponse.usuario.permissions)
       };
 
       return {
         success: true,
-        token: apiResponse.accessToken,
+        token: apiResponse.token,  // Corrigido: usar 'token' do backend
         user: mappedUser
       };
     } catch (error) {
@@ -210,26 +209,23 @@ export class AuthService {
     };
   }
 
-  // Mapear permissões vindas do backend para o modelo usado no front
-  private mapPermissions(permissoes: any[] | undefined): NonNullable<User['permissions']> {
-    if (!permissoes || permissoes.length === 0) {
-      // Se backend ainda não estiver enviando permissões detalhadas,
-      // libera tudo para não travar navegação.
+  // Mapear permissões vindas do backend (Map) para o modelo usado no front
+  private mapPermissionsFromBackend(permissions: { [key: string]: boolean } | undefined): NonNullable<User['permissions']> {
+    if (!permissions || Object.keys(permissions).length === 0) {
+      // Se backend não enviar permissões, libera tudo para não travar navegação
       return this.buildFullAccessPermissions();
     }
 
-    const has = (modulo: string) =>
-      permissoes.some((p: any) => p.modulo === modulo && p.habilitado === true);
-
+    // Backend já retorna as permissões no formato correto (camelCase)
     return {
-      dashboard: has('DASHBOARD'),
-      relatorio: has('RELATORIO'),
-      movimentacoes: has('MOVIMENTACOES'),
-      fluxoCaixa: has('FLUXO_CAIXA'),
-      contratos: has('CONTRATOS'),
-      chat: has('CHAT'),
-      assinatura: has('ASSINATURA'),
-      gerenciarAcessos: has('GERENCIAR_ACESSOS')
+      dashboard: permissions['dashboard'] ?? false,
+      relatorio: permissions['relatorio'] ?? false,
+      movimentacoes: permissions['movimentacoes'] ?? false,
+      fluxoCaixa: permissions['fluxoCaixa'] ?? false,
+      contratos: permissions['contratos'] ?? false,
+      chat: permissions['chat'] ?? false,
+      assinatura: permissions['assinatura'] ?? false,
+      gerenciarAcessos: permissions['gerenciarAcessos'] ?? false
     };
   }
 

@@ -23,8 +23,26 @@ export const API_CONFIG = {
   // ===========================
 
   // URL base do backend Spring Boot
-  // Em desenvolvimento: backend rodando em localhost:8080
-  BACKEND_API_URL: 'http://localhost:8080',
+  // Detecta automaticamente: localhost em dev, Render em produção
+  // Você pode forçar uma URL específica definindo a variável de ambiente BACKEND_API_URL
+  BACKEND_API_URL: (() => {
+    // Se tiver variável de ambiente definida (útil para builds de produção), usa ela
+    if (typeof process !== 'undefined' && process.env['BACKEND_API_URL']) {
+      return process.env['BACKEND_API_URL'];
+    }
+    
+    // Detecta se está rodando localmente (desenvolvimento)
+    const isLocalhost = typeof window !== 'undefined' && 
+                       (window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' ||
+                        window.location.hostname === '');
+    
+    // Em desenvolvimento: usa localhost
+    // Em produção (deploy): usa a URL do Render
+    return isLocalhost 
+      ? 'http://localhost:8080'  // Desenvolvimento local
+      : 'https://finnza-backend.onrender.com';  // Produção (Render)
+  })(),
 
   // Flag para usar login mockado no front (false = usar backend real)
   USE_BACKEND_MOCK_AUTH: false
