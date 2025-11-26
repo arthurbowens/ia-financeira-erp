@@ -11,12 +11,23 @@ export const API_CONFIG = {
   OPENAI_API_URL: 'https://api.openai.com/v1/chat/completions',
   
   // OPÇÃO 3: API Local/Simulada (SEMPRE GRATUITA)
-  USE_MOCK_API: true, // Mude para false para usar APIs reais
+  USE_MOCK_API: true, // Mude para false para usar APIs reais de IA
   
-  // Configurações gerais
+  // Configurações gerais de IA
   MODEL: 'gpt-4o-mini',
   MAX_TOKENS: 1000,
-  TEMPERATURE: 0.7
+  TEMPERATURE: 0.7,
+
+  // ===========================
+  // BACKEND FINNZA / AUTENTICAÇÃO
+  // ===========================
+
+  // URL base do backend Spring Boot
+  // Em desenvolvimento: backend rodando em localhost:8080
+  BACKEND_API_URL: 'http://localhost:8080',
+
+  // Flag para usar login mockado no front (false = usar backend real)
+  USE_BACKEND_MOCK_AUTH: false
 };
 
 // INSTRUÇÕES PARA APIs GRATUITAS:

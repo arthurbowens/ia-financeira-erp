@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { API_CONFIG } from '../config/api.config';
 
 export interface User {
   email: string;
@@ -29,7 +32,10 @@ export class AuthService {
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   public user$ = this.userSubject.asObservable();
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.checkAuthStatus();
   }
 
@@ -47,7 +53,6 @@ export class AuthService {
   // Login
   async login(email: string, password: string): Promise<boolean> {
     try {
-      // Simular chamada para API
       const response = await this.authenticateWithAPI(email, password);
       
       if (response.success) {
@@ -62,58 +67,81 @@ export class AuthService {
     }
   }
 
-  // Simulação de autenticação com API
+  // Autenticação com API (backend real ou mock, controlado por flag)
   private async authenticateWithAPI(email: string, password: string): Promise<any> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Simular credenciais válidas
-        if (email === 'julia@startarget.com' && password === '123456') {
-          resolve({
-            success: true,
-            token: 'mock-jwt-token-' + Date.now(),
-            user: {
-              email: email,
-              name: 'Julia (Admin)',
-              role: 'admin',
-              loginTime: new Date().toISOString(),
-              permissions: {
-                dashboard: true,
-                relatorio: true,
-                movimentacoes: true,
-                fluxoCaixa: true,
-                contratos: true,
-                chat: true,
-                assinatura: true,
-                gerenciarAcessos: true
+    // Modo mock antigo (útil para demo offline ou se backend estiver fora do ar)
+    if (API_CONFIG.USE_BACKEND_MOCK_AUTH) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          if (email === 'julia@startarget.com' && password === '123456') {
+            resolve({
+              success: true,
+              token: 'mock-jwt-token-' + Date.now(),
+              user: {
+                email: email,
+                name: 'Julia (Admin)',
+                role: 'admin',
+                loginTime: new Date().toISOString(),
+                permissions: this.buildFullAccessPermissions()
               }
-            }
-          });
-        } else if (email === 'cliente@startarget.com' && password === '123456') {
-          resolve({
-            success: true,
-            token: 'mock-jwt-token-' + Date.now(),
-            user: {
-              email: email,
-              name: 'Cliente',
-              role: 'cliente',
-              loginTime: new Date().toISOString(),
-              permissions: {
-                dashboard: true,
-                relatorio: true,
-                movimentacoes: true,
-                fluxoCaixa: true,
-                contratos: true,
-                chat: true,
-                assinatura: true,
-                gerenciarAcessos: true
+            });
+          } else if (email === 'cliente@startarget.com' && password === '123456') {
+            resolve({
+              success: true,
+              token: 'mock-jwt-token-' + Date.now(),
+              user: {
+                email: email,
+                name: 'Cliente',
+                role: 'cliente',
+                loginTime: new Date().toISOString(),
+                permissions: this.buildFullAccessPermissions()
               }
-            }
-          });
-        } else {
-          resolve({ success: false });
-        }
-      }, 1000);
-    });
+            });
+          } else {
+            resolve({ success: false });
+          }
+        }, 1000);
+      });
+    }
+
+    // Autenticação real no backend Spring Boot
+    const url = `${API_CONFIG.BACKEND_API_URL}/api/auth/login`;
+
+    try {
+      type LoginApiResponse = {
+        accessToken: string;
+        tokenType?: string;
+        expiresIn?: number;
+        usuario: {
+          email: string;
+          name: string;
+          role: string;
+          loginTime: string;
+          permissoes?: any[];
+        };
+      };
+
+      const apiResponse = await firstValueFrom(
+        this.http.post<LoginApiResponse>(url, { email, senha: password })
+      );
+
+      const mappedUser: User = {
+        email: apiResponse.usuario.email,
+        name: apiResponse.usuario.name,
+        role: apiResponse.usuario.role?.toLowerCase() ?? 'cliente',
+        loginTime: apiResponse.usuario.loginTime,
+        permissions: this.mapPermissions(apiResponse.usuario.permissoes)
+      };
+
+      return {
+        success: true,
+        token: apiResponse.accessToken,
+        user: mappedUser
+      };
+    } catch (error) {
+      console.error('Erro ao autenticar no backend:', error);
+      return { success: false };
+    }
   }
 
   // Salvar sessão do usuário
@@ -158,13 +186,51 @@ export class AuthService {
     return localStorage.getItem('authToken');
   }
 
-  // Verificar se token é válido (simulação)
+  // Verificar se token é válido
   isTokenValid(): boolean {
     const token = this.getToken();
     if (!token) return false;
-    
-    // Simular validação de token
-    return token.startsWith('mock-jwt-token');
+    // Boa prática: aqui poderíamos decodificar o JWT e verificar expiração.
+    // Por enquanto, consideramos qualquer token presente como válido;
+    // o backend é quem faz a validação definitiva.
+    return true;
+  }
+
+  // Construir permissões completas (usado em modo mock ou fallback)
+  private buildFullAccessPermissions(): NonNullable<User['permissions']> {
+    return {
+      dashboard: true,
+      relatorio: true,
+      movimentacoes: true,
+      fluxoCaixa: true,
+      contratos: true,
+      chat: true,
+      assinatura: true,
+      gerenciarAcessos: true
+    };
+  }
+
+  // Mapear permissões vindas do backend para o modelo usado no front
+  private mapPermissions(permissoes: any[] | undefined): NonNullable<User['permissions']> {
+    if (!permissoes || permissoes.length === 0) {
+      // Se backend ainda não estiver enviando permissões detalhadas,
+      // libera tudo para não travar navegação.
+      return this.buildFullAccessPermissions();
+    }
+
+    const has = (modulo: string) =>
+      permissoes.some((p: any) => p.modulo === modulo && p.habilitado === true);
+
+    return {
+      dashboard: has('DASHBOARD'),
+      relatorio: has('RELATORIO'),
+      movimentacoes: has('MOVIMENTACOES'),
+      fluxoCaixa: has('FLUXO_CAIXA'),
+      contratos: has('CONTRATOS'),
+      chat: has('CHAT'),
+      assinatura: has('ASSINATURA'),
+      gerenciarAcessos: has('GERENCIAR_ACESSOS')
+    };
   }
 
   // Verificar permissões
