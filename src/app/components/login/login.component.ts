@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService
   ) {}
 
@@ -36,7 +37,21 @@ export class LoginComponent implements OnInit {
     // Verificar se já está logado
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
+      return;
     }
+
+    // Verificar query params para mensagens
+    this.route.queryParams.subscribe(params => {
+      if (params['expired']) {
+        this.errorMessage = params['message'] || 'Sua sessão expirou. Por favor, faça login novamente.';
+      }
+      if (params['senhaRedefinida']) {
+        this.errorMessage = 'Senha redefinida com sucesso! Faça login com sua nova senha.';
+      }
+      if (params['forbidden']) {
+        this.errorMessage = params['message'] || 'Você não tem permissão para acessar este recurso.';
+      }
+    });
   }
 
   // Toggle de visibilidade da senha
@@ -89,8 +104,7 @@ export class LoginComponent implements OnInit {
 
   // Esqueci minha senha
   onForgotPassword(): void {
-    // Implementar lógica de recuperação de senha
-    alert('Funcionalidade de recuperação de senha será implementada em breve.');
+    this.router.navigate(['/esqueci-senha']);
   }
 
   // Limpar mensagens de erro

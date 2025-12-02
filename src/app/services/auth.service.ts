@@ -274,4 +274,32 @@ export class AuthService {
       return false;
     }
   }
+
+  /**
+   * Solicita recuperação de senha
+   */
+  async forgotPassword(email: string): Promise<boolean> {
+    try {
+      const url = `${API_CONFIG.BACKEND_API_URL}/api/auth/forgot-password`;
+      await firstValueFrom(this.http.post(url, { email }));
+      return true;
+    } catch (error) {
+      console.error('Erro ao solicitar recuperação de senha:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Redefine senha usando token
+   */
+  async resetPassword(token: string, novaSenha: string): Promise<boolean> {
+    try {
+      const url = `${API_CONFIG.BACKEND_API_URL}/api/auth/reset-password`;
+      await firstValueFrom(this.http.post(url, { token, novaSenha }));
+      return true;
+    } catch (error) {
+      console.error('Erro ao redefinir senha:', error);
+      return false;
+    }
+  }
 }

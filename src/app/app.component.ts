@@ -2,11 +2,13 @@ import { Component, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
+import { LoadingComponent } from './components/loading/loading.component';
+import { ErrorNotificationComponent } from './components/error-notification/error-notification.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, LoadingComponent, ErrorNotificationComponent],
   templateUrl: './app.component.html',
 })
 export class AppComponent {
@@ -24,6 +26,44 @@ export class AppComponent {
     private authService: AuthService,
     private router: Router
   ) {}
+
+  // Métodos para verificar permissões e ocultar itens de menu
+  hasPermission(permission: string): boolean {
+    return this.authService.canAccess(permission);
+  }
+
+  // Métodos específicos para cada módulo
+  canAccessDashboard(): boolean {
+    return this.hasPermission('dashboard');
+  }
+
+  canAccessRelatorio(): boolean {
+    return this.hasPermission('relatorio');
+  }
+
+  canAccessMovimentacoes(): boolean {
+    return this.hasPermission('movimentacoes');
+  }
+
+  canAccessFluxoCaixa(): boolean {
+    return this.hasPermission('fluxo-caixa');
+  }
+
+  canAccessContratos(): boolean {
+    return this.hasPermission('contratos');
+  }
+
+  canAccessChat(): boolean {
+    return this.hasPermission('chat');
+  }
+
+  canAccessAssinatura(): boolean {
+    return this.hasPermission('assinatura');
+  }
+
+  canAccessGerenciarAcessos(): boolean {
+    return this.hasPermission('gerenciar-acessos');
+  }
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;

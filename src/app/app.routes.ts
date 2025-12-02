@@ -12,6 +12,15 @@ export const routes: Routes = [
     loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
   },
   {
+    path: 'esqueci-senha',
+    loadComponent: () => import('./components/esqueci-senha/esqueci-senha.component').then(m => m.EsqueciSenhaComponent)
+  },
+  {
+    path: 'meu-perfil',
+    loadComponent: () => import('./components/meu-perfil/meu-perfil.component').then(m => m.MeuPerfilComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [AuthGuard]

@@ -176,5 +176,26 @@ export class UsuarioService {
       headers: this.getAuthHeaders()
     });
   }
+
+  /**
+   * Atualiza o perfil do usuário logado
+   */
+  atualizarMeuPerfil(request: { nome?: string }): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.baseUrl}/me`, request, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Altera a senha do usuário logado
+   */
+  alterarMinhaSenha(senhaAtual: string, novaSenha: string): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/me/senha`, {
+      senhaAtual,
+      novaSenha
+    }, {
+      headers: this.getAuthHeaders()
+    });
+  }
 }
 
