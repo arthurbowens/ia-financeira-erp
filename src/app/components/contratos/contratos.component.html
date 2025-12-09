@@ -471,6 +471,121 @@
           </div>
         </div>
 
+        <!-- Configurações de Pagamento (Asaas) -->
+        <div class="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6 border border-purple-100">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-purple-900">Configurações de Pagamento</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Forma de Pagamento</label>
+              <select 
+                [(ngModel)]="formaPagamento"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white">
+                <option value="BOLETO">Boleto Bancário</option>
+                <option value="PIX">PIX</option>
+                <option value="CREDIT_CARD">Cartão de Crédito</option>
+                <option value="DEBIT_CARD">Cartão de Débito</option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">Forma de pagamento no Asaas</p>
+            </div>
+            <div *ngIf="tipoContrato === 'UNICO'">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Parcelas</label>
+              <select 
+                [(ngModel)]="numeroParcelas"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white">
+                <option [ngValue]="1">À vista (1x)</option>
+                <option [ngValue]="2">2x</option>
+                <option [ngValue]="3">3x</option>
+                <option [ngValue]="4">4x</option>
+                <option [ngValue]="5">5x</option>
+                <option [ngValue]="6">6x</option>
+                <option [ngValue]="7">7x</option>
+                <option [ngValue]="8">8x</option>
+                <option [ngValue]="9">9x</option>
+                <option [ngValue]="10">10x</option>
+                <option [ngValue]="11">11x</option>
+                <option [ngValue]="12">12x</option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">Número de parcelas (apenas para pagamento único)</p>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Juros ao Mês (%)</label>
+              <div class="relative">
+                <input 
+                  [(ngModel)]="jurosAoMes"
+                  type="number" 
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white"
+                  placeholder="0,00">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">%</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Percentual de juros ao mês em caso de atraso</p>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Multa por Atraso (%)</label>
+              <div class="relative">
+                <input 
+                  [(ngModel)]="multaPorAtraso"
+                  type="number" 
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white"
+                  placeholder="0,00">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">%</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Percentual de multa por atraso no pagamento</p>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Desconto (%)</label>
+              <div class="relative">
+                <input 
+                  [(ngModel)]="descontoPercentual"
+                  type="number" 
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white"
+                  placeholder="0,00">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">%</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Desconto percentual (ou use valor fixo abaixo)</p>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Desconto (R$)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">R$</span>
+                <input 
+                  [(ngModel)]="descontoValorFixo"
+                  type="number" 
+                  step="0.01"
+                  min="0"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white"
+                  placeholder="0,00">
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Desconto em valor fixo (ou use percentual acima)</p>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Prazo Máximo do Desconto (dias)</label>
+              <input 
+                [(ngModel)]="prazoMaximoDesconto"
+                type="number" 
+                min="0"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white"
+                placeholder="0">
+              <p class="text-xs text-gray-500 mt-1">Número de dias para aplicar o desconto</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Descrição e Observações -->
         <div class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-6 border border-yellow-100">
           <div class="flex items-center gap-3 mb-6">

@@ -62,6 +62,15 @@ export class ContratosComponent implements OnInit, OnDestroy {
   valorContrato: number = 0;
   valorRecorrencia: number = 0;
   tipoContrato: 'UNICO' | 'RECORRENTE' = 'UNICO';
+  
+  // Configurações de pagamento (Asaas)
+  formaPagamento: string = 'BOLETO';
+  numeroParcelas: number = 1;
+  jurosAoMes: number | undefined = undefined;
+  multaPorAtraso: number | undefined = undefined;
+  descontoPercentual: number | undefined = undefined;
+  descontoValorFixo: number | undefined = undefined;
+  prazoMaximoDesconto: number | undefined = undefined;
 
   // Colunas do Kanban
   colunas = [
@@ -289,7 +298,15 @@ export class ContratosComponent implements OnInit, OnDestroy {
       servico: toUndefinedIfEmpty(this.servico),
       inicioContrato: this.inicioContrato && this.inicioContrato.length > 0 ? this.inicioContrato : undefined,
       inicioRecorrencia: (this.tipoContrato === 'RECORRENTE' && this.inicioRecorrencia && this.inicioRecorrencia.length > 0) ? this.inicioRecorrencia : undefined,
-      whatsapp: whatsappFormatado && whatsappFormatado.length > 0 ? whatsappFormatado : undefined
+      whatsapp: whatsappFormatado && whatsappFormatado.length > 0 ? whatsappFormatado : undefined,
+      // Configurações de pagamento
+      formaPagamento: this.formaPagamento || 'BOLETO',
+      numeroParcelas: (this.tipoContrato === 'UNICO' && this.numeroParcelas && this.numeroParcelas > 1) ? this.numeroParcelas : undefined,
+      jurosAoMes: this.jurosAoMes && this.jurosAoMes > 0 ? this.jurosAoMes : undefined,
+      multaPorAtraso: this.multaPorAtraso && this.multaPorAtraso > 0 ? this.multaPorAtraso : undefined,
+      descontoPercentual: this.descontoPercentual && this.descontoPercentual > 0 ? this.descontoPercentual : undefined,
+      descontoValorFixo: this.descontoValorFixo && this.descontoValorFixo > 0 ? this.descontoValorFixo : undefined,
+      prazoMaximoDesconto: this.prazoMaximoDesconto && this.prazoMaximoDesconto > 0 ? this.prazoMaximoDesconto : undefined
     };
 
     // Log para debug (remover em produção)
@@ -948,6 +965,14 @@ export class ContratosComponent implements OnInit, OnDestroy {
   }
 
   limparFormulario(): void {
+    // Resetar configurações de pagamento
+    this.formaPagamento = 'BOLETO';
+    this.numeroParcelas = 1;
+    this.jurosAoMes = undefined;
+    this.multaPorAtraso = undefined;
+    this.descontoPercentual = undefined;
+    this.descontoValorFixo = undefined;
+    this.prazoMaximoDesconto = undefined;
     this.dadosCliente = {
       razaoSocial: '',
       nomeFantasia: '',

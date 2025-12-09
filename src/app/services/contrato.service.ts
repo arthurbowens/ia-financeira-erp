@@ -75,6 +75,14 @@ export interface CriarContratoRequest {
   inicioContrato?: string;
   inicioRecorrencia?: string;
   whatsapp?: string;
+  // Configurações de pagamento (Asaas)
+  formaPagamento?: string; // BOLETO, PIX, CREDIT_CARD, DEBIT_CARD
+  numeroParcelas?: number; // 1-12 (apenas para UNICO)
+  jurosAoMes?: number; // Percentual de juros ao mês
+  multaPorAtraso?: number; // Percentual de multa por atraso
+  descontoPercentual?: number; // Percentual de desconto
+  descontoValorFixo?: number; // Valor fixo de desconto
+  prazoMaximoDesconto?: number; // Dias para aplicar desconto
 }
 
 export interface PageResponse<T> {
