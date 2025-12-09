@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CONTRATOS_MOCK, Contrato, DadosCliente } from '../../data/mock-data';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import { ContratoService, ContratoDTO, CriarContratoRequest } from '../../services/contrato.service';
+import { Contrato, DadosCliente } from '../../data/mock-data';
 
 @Component({
   selector: 'app-contratos',
@@ -10,13 +12,30 @@ import { CONTRATOS_MOCK, Contrato, DadosCliente } from '../../data/mock-data';
   imports: [CommonModule, FormsModule],
   templateUrl: './contratos.component.html',
 })
-export class ContratosComponent implements OnInit {
+export class ContratosComponent implements OnInit, OnDestroy {
   contratos: Contrato[] = [];
+  contratosBackend: ContratoDTO[] = [];
   filtroStatus: string = 'todos';
   filtroTexto: string = '';
   visualizacao: 'lista' | 'kanban' = 'kanban';
   mostrarFormularioCliente: boolean = false;
+  mostrarFormularioNovo: boolean = false;
+  mostrarDetalhes: boolean = false;
   contratoSelecionado: Contrato | null = null;
+  contratoDetalhes: ContratoDTO | null = null;
+  loading: boolean = false;
+  saving: boolean = false;
+  error: string | null = null;
+  successMessage: string | null = null;
+  modoEdicao: boolean = false;
+  
+  // Paginação
+  page: number = 0;
+  size: number = 50;
+  totalElements: number = 0;
+  
+  private destroy$ = new Subject<void>();
+  private filtroTextoSubject = new Subject<string>();
 
   // Formulário de dados do cliente
   dadosCliente: DadosCliente = {
@@ -42,7 +61,7 @@ export class ContratosComponent implements OnInit {
   inicioRecorrencia: string = '';
   valorContrato: number = 0;
   valorRecorrencia: number = 0;
-  formaPagamento: string = '';
+  tipoContrato: 'UNICO' | 'RECORRENTE' = 'UNICO';
 
   // Colunas do Kanban
   colunas = [
@@ -52,37 +71,88 @@ export class ContratosComponent implements OnInit {
     { id: 'inadimplentes', titulo: 'Inadimplentes', cor: 'red', icone: '⚠️' }
   ];
 
-  constructor(private router: Router) {}
-
-  ngOnInit() {
-    this.contratos = CONTRATOS_MOCK;
-  }
-
-  get contratosFiltrados(): Contrato[] {
-    return this.contratos.filter(contrato => {
-      const statusMatch = this.filtroStatus === 'todos' || contrato.status === this.filtroStatus;
-      const textoMatch = this.filtroTexto === '' || 
-        contrato.titulo.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
-        contrato.cliente.toLowerCase().includes(this.filtroTexto.toLowerCase());
-      
-      return statusMatch && textoMatch;
+  constructor(
+    private router: Router,
+    public contratoService: ContratoService
+  ) {
+    // Debounce para busca por texto
+    this.filtroTextoSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(termo => {
+      this.carregarContratos();
     });
   }
 
+  ngOnInit() {
+    this.carregarContratos();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  carregarContratos(): void {
+    this.loading = true;
+    this.error = null;
+
+    const status = this.filtroStatus === 'todos' ? undefined : this.filtroStatus.toUpperCase();
+    const termo = this.filtroTexto.trim() || undefined;
+
+    this.contratoService.buscarComFiltros(undefined, status, termo, this.page, this.size)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.contratosBackend = response.content;
+          this.totalElements = response.totalElements;
+          // Converter para formato do componente
+          this.contratos = response.content.map(c => this.contratoService.converterParaFormatoComponente(c));
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar contratos:', error);
+          this.error = 'Erro ao carregar contratos. Tente novamente.';
+          this.loading = false;
+          // Fallback para lista vazia
+          this.contratos = [];
+        }
+      });
+  }
+
+  onFiltroTextoChange(): void {
+    this.filtroTextoSubject.next(this.filtroTexto);
+  }
+
+  onFiltroStatusChange(): void {
+    this.page = 0;
+    this.carregarContratos();
+  }
+
+  get contratosFiltrados(): Contrato[] {
+    // Os contratos já vêm filtrados do backend
+    return this.contratos;
+  }
+
   getStatusClass(status: string): string {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'pendente': return 'status-pendente';
       case 'assinado': return 'status-assinado';
       case 'vencido': return 'status-vencido';
+      case 'pago': return 'status-pago';
+      case 'cancelado': return 'status-cancelado';
       default: return '';
     }
   }
 
   getStatusText(status: string): string {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'pendente': return 'Pendente';
       case 'assinado': return 'Assinado';
       case 'vencido': return 'Vencido';
+      case 'pago': return 'Pago';
+      case 'cancelado': return 'Cancelado';
       default: return status;
     }
   }
@@ -111,20 +181,233 @@ export class ContratosComponent implements OnInit {
   }
 
   adicionarContrato() {
-    // Simular adição de novo contrato
-    const novoContrato: Contrato = {
-      id: (this.contratos.length + 1).toString(),
-      titulo: 'Novo Contrato',
-      cliente: 'Cliente Novo',
-      valor: 0,
-      dataVencimento: new Date().toISOString().split('T')[0],
-      status: 'pendente',
-      descricao: 'Descrição do novo contrato',
-      conteudo: 'Conteúdo do contrato...',
-      whatsapp: '5548988281035'
-    };
+    this.mostrarFormularioNovo = true;
+    this.limparFormulario();
     
-    this.contratos.unshift(novoContrato);
+    // Preencher valores padrão
+    this.inicioContrato = new Date().toISOString().split('T')[0];
+    const dataRecorrencia = new Date();
+    dataRecorrencia.setMonth(dataRecorrencia.getMonth() + 1);
+    this.inicioRecorrencia = dataRecorrencia.toISOString().split('T')[0];
+    this.servico = 'Consultoria Financeira e Implementação de ERP';
+    this.tipoContrato = 'UNICO';
+  }
+
+  onTipoContratoChange(): void {
+    // Se mudar para único, limpar valor de recorrência
+    if (this.tipoContrato === 'UNICO') {
+      this.valorRecorrencia = 0;
+    } else {
+      // Se mudar para recorrente e não tiver valor, sugerir 15% do valor do contrato
+      if (!this.valorRecorrencia && this.valorContrato > 0) {
+        this.valorRecorrencia = Math.round(this.valorContrato * 0.15 * 100) / 100;
+      }
+    }
+  }
+
+  criarContrato(): void {
+    if (!this.validarFormulario()) {
+      this.error = 'Preencha todos os campos obrigatórios.';
+      this.successMessage = null;
+      return;
+    }
+
+    this.saving = true;
+    this.error = null;
+    this.successMessage = null;
+
+    // Remover formatação do CPF/CNPJ
+    const cpfCnpj = this.dadosCliente.cnpj?.replace(/\D/g, '') || '';
+    const cpf = this.dadosCliente.cpf ? this.dadosCliente.cpf.replace(/\D/g, '') : undefined;
+    const celular = this.dadosCliente.celularFinanceiro ? this.dadosCliente.celularFinanceiro.replace(/\D/g, '') : undefined;
+    const cep = this.dadosCliente.cep ? this.dadosCliente.cep.replace(/\D/g, '') : undefined;
+
+    // Determinar data de vencimento (deve ser futura conforme validação do backend)
+    // Garantir que a data está no formato ISO (YYYY-MM-DD)
+    let dataVencimento: string | undefined;
+    if (this.tipoContrato === 'RECORRENTE') {
+      dataVencimento = this.inicioRecorrencia || this.inicioContrato;
+    } else {
+      dataVencimento = this.inicioContrato;
+    }
+    
+    // Validar que a data não está no passado
+    if (dataVencimento) {
+      const dataVenc = new Date(dataVencimento);
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      if (dataVenc < hoje) {
+        this.error = 'A data de vencimento deve ser futura.';
+        this.saving = false;
+        return;
+      }
+    }
+
+    // Validar WhatsApp se fornecido (regex do backend: ^\+?[1-9]\d{1,14}$)
+    // O regex espera apenas dígitos, começando com 1-9, sem espaços ou caracteres especiais
+    let whatsappFormatado: string | undefined = undefined;
+    if (celular && celular.length > 0) {
+      // Remover todos os caracteres não numéricos e garantir que começa com dígito 1-9
+      const whatsappLimpo = celular.replace(/\D/g, '');
+      if (whatsappLimpo.length >= 2 && whatsappLimpo.length <= 15) {
+        // Se começar com 0, remover (o regex não aceita começar com 0)
+        whatsappFormatado = whatsappLimpo.startsWith('0') ? whatsappLimpo.substring(1) : whatsappLimpo;
+        // Garantir que começa com 1-9
+        if (whatsappFormatado && /^[1-9]/.test(whatsappFormatado)) {
+          whatsappFormatado = whatsappFormatado;
+        } else {
+          // Se não começar com 1-9, adicionar código do país (55 para Brasil)
+          whatsappFormatado = '55' + whatsappFormatado;
+        }
+      }
+    }
+
+    // Helper para garantir que strings vazias sejam undefined
+    const toUndefinedIfEmpty = (value: string | undefined | null): string | undefined => {
+      if (!value || value.trim() === '') return undefined;
+      return value.trim();
+    };
+
+    const request: CriarContratoRequest = {
+      titulo: this.servico ? `${this.servico} - ${this.dadosCliente.razaoSocial}` : `Contrato - ${this.dadosCliente.razaoSocial}`,
+      descricao: toUndefinedIfEmpty(this.dadosCliente.descricaoNegociacao) || toUndefinedIfEmpty(this.servico) || undefined,
+      dadosCliente: {
+        razaoSocial: this.dadosCliente.razaoSocial.trim(),
+        nomeFantasia: toUndefinedIfEmpty(this.dadosCliente.nomeFantasia),
+        cpfCnpj: cpfCnpj,
+        enderecoCompleto: toUndefinedIfEmpty(this.dadosCliente.enderecoCompleto),
+        cep: cep && cep.length > 0 ? cep : undefined,
+        celularFinanceiro: celular && celular.length > 0 ? celular : undefined,
+        emailFinanceiro: toUndefinedIfEmpty(this.dadosCliente.emailFinanceiro),
+        responsavel: toUndefinedIfEmpty(this.dadosCliente.responsavel),
+        cpf: cpf && cpf.length > 0 ? cpf : undefined
+      },
+      valorContrato: this.valorContrato,
+      valorRecorrencia: (this.tipoContrato === 'RECORRENTE' && this.valorRecorrencia > 0) ? this.valorRecorrencia : undefined,
+      dataVencimento: dataVencimento!,
+      tipoPagamento: this.tipoContrato,
+      servico: toUndefinedIfEmpty(this.servico),
+      inicioContrato: this.inicioContrato && this.inicioContrato.length > 0 ? this.inicioContrato : undefined,
+      inicioRecorrencia: (this.tipoContrato === 'RECORRENTE' && this.inicioRecorrencia && this.inicioRecorrencia.length > 0) ? this.inicioRecorrencia : undefined,
+      whatsapp: whatsappFormatado && whatsappFormatado.length > 0 ? whatsappFormatado : undefined
+    };
+
+    // Log para debug (remover em produção)
+    console.log('Request sendo enviado:', JSON.stringify(request, null, 2));
+
+    this.contratoService.criarContrato(request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (contrato) => {
+          this.saving = false;
+          this.successMessage = 'Contrato criado com sucesso!';
+          this.mostrarFormularioNovo = false;
+          this.limparFormulario();
+          this.carregarContratos();
+          // Limpar mensagem de sucesso após 5 segundos
+          setTimeout(() => this.successMessage = null, 5000);
+        },
+        error: (error) => {
+          console.error('Erro ao criar contrato:', error);
+          
+          // Tratar erros de validação do backend
+          if (error.error?.errors) {
+            const validationErrors = error.error.errors;
+            const errorMessages: string[] = [];
+            
+            // Mapear campos para nomes amigáveis
+            const fieldNames: Record<string, string> = {
+              'titulo': 'Título',
+              'dadosCliente.razaoSocial': 'Razão Social',
+              'dadosCliente.cpfCnpj': 'CPF/CNPJ',
+              'valorContrato': 'Valor do Contrato',
+              'dataVencimento': 'Data de Vencimento',
+              'tipoPagamento': 'Tipo de Pagamento',
+              'dadosCliente.emailFinanceiro': 'E-mail Financeiro',
+              'whatsapp': 'WhatsApp'
+            };
+            
+            // Coletar todas as mensagens de erro
+            Object.keys(validationErrors).forEach(field => {
+              const fieldName = fieldNames[field] || field;
+              errorMessages.push(`${fieldName}: ${validationErrors[field]}`);
+            });
+            
+            this.error = errorMessages.length > 0 
+              ? errorMessages.join('\n')
+              : error.error?.message || 'Erro de validação nos campos';
+          } else {
+            this.error = error.error?.message || 'Erro ao criar contrato. Verifique os dados e tente novamente.';
+          }
+          
+          this.saving = false;
+          this.successMessage = null;
+        }
+      });
+  }
+
+  validarFormulario(): boolean {
+    // Validações básicas
+    if (!this.dadosCliente.razaoSocial || this.dadosCliente.razaoSocial.trim().length < 3) {
+      this.error = 'Razão Social deve ter pelo menos 3 caracteres.';
+      return false;
+    }
+
+    const cpfCnpj = this.dadosCliente.cnpj.replace(/\D/g, '');
+    if (!cpfCnpj || (cpfCnpj.length !== 11 && cpfCnpj.length !== 14)) {
+      this.error = 'CPF/CNPJ inválido. Deve ter 11 ou 14 dígitos.';
+      return false;
+    }
+
+    if (!this.valorContrato || this.valorContrato <= 0) {
+      this.error = 'Valor do contrato deve ser maior que zero.';
+      return false;
+    }
+
+    if (!this.inicioContrato) {
+      this.error = 'Data de início do contrato é obrigatória.';
+      return false;
+    }
+
+    // Validar que data de vencimento é futura (backend exige)
+    const dataVencimento = this.inicioRecorrencia || this.inicioContrato;
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataVenc = new Date(dataVencimento);
+    if (dataVenc <= hoje) {
+      this.error = 'Data de vencimento deve ser futura.';
+      return false;
+    }
+
+    // Se for contrato recorrente, validar valor e data de recorrência
+    if (this.tipoContrato === 'RECORRENTE') {
+      if (!this.valorRecorrencia || this.valorRecorrencia <= 0) {
+        this.error = 'Valor da recorrência é obrigatório para contratos recorrentes.';
+        return false;
+      }
+      if (!this.inicioRecorrencia) {
+        this.error = 'Data de início da recorrência é obrigatória para contratos recorrentes.';
+        return false;
+      }
+      const dataRec = new Date(this.inicioRecorrencia);
+      if (dataRec <= new Date()) {
+        this.error = 'Data de início da recorrência deve ser futura.';
+        return false;
+      }
+    }
+
+    // Validação de email se fornecido
+    if (this.dadosCliente.emailFinanceiro && !this.validarEmail(this.dadosCliente.emailFinanceiro)) {
+      this.error = 'E-mail financeiro inválido.';
+      return false;
+    }
+
+    return true;
+  }
+
+  validarEmail(email: string): boolean {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   }
 
   getTotalContratos(): number {
@@ -136,27 +419,152 @@ export class ContratosComponent implements OnInit {
   }
 
   getContratosPorStatus(status: string): number {
-    return this.contratos.filter(c => c.status === status).length;
+    const statusMap: Record<string, string> = {
+      'pendente': 'PENDENTE',
+      'assinado': 'ASSINADO',
+      'vencido': 'VENCIDO',
+      'pago': 'PAGO',
+      'cancelado': 'CANCELADO'
+    };
+    const statusBackend = statusMap[status] || status;
+    return this.contratosBackend.filter(c => c.status === statusBackend).length;
   }
 
-  // Métodos para Kanban
+  // Métodos para Kanban - baseado nos status do Asaas
   getContratosPorColuna(colunaId: string): Contrato[] {
     const contratosFiltrados = this.contratosFiltrados;
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
     
     switch (colunaId) {
       case 'em-dia':
+        // Em Dia = PAGO ou cobranças RECEIVED/DUNNING_RECEIVED ou ASSINADO com cobranças PENDING e data futura
+        // IMPORTANTE: Não pode ter cobranças OVERDUE ou vencidas
+        return contratosFiltrados.filter(c => {
+          // Se tem cobranças, verificar status do Asaas PRIMEIRO
+          if (c.cobrancas && c.cobrancas.length > 0) {
+            // Se tem cobrança OVERDUE, NÃO está em dia
+            const temVencida = c.cobrancas.some(cob => 
+              cob.status === 'OVERDUE' || 
+              cob.status === 'DUNNING_REQUESTED' ||
+              cob.status === 'CHARGEBACK_REQUESTED'
+            );
+            if (temVencida) return false;
+            
+            // Se tem cobrança PENDING vencida, NÃO está em dia
+            const temPendenteVencida = c.cobrancas.some(cob => {
+              if (cob.status === 'PENDING' && cob.dataVencimento) {
+                const vencCobranca = new Date(cob.dataVencimento);
+                vencCobranca.setHours(0, 0, 0, 0);
+                return vencCobranca < hoje;
+              }
+              return false;
+            });
+            if (temPendenteVencida) return false;
+            
+            // Se está pago (todas as cobranças pagas), está em dia
+            const todasPagas = c.cobrancas.every(cob => 
+              cob.status === 'RECEIVED' || 
+              cob.status === 'RECEIVED_IN_CASH_UNDONE' || 
+              cob.status === 'DUNNING_RECEIVED'
+            );
+            if (todasPagas) return true;
+            
+            // Se tem pelo menos uma cobrança paga, está em dia
+            const temCobrancaPaga = c.cobrancas.some(cob => 
+              cob.status === 'RECEIVED' || 
+              cob.status === 'RECEIVED_IN_CASH_UNDONE' || 
+              cob.status === 'DUNNING_RECEIVED'
+            );
+            if (temCobrancaPaga) return true;
+            
+            // Se todas as cobranças estão PENDING e data é futura, está em dia
+            const todasPendentes = c.cobrancas.every(cob => cob.status === 'PENDING');
+            if (todasPendentes) {
+              const vencimento = new Date(c.dataVencimento);
+              vencimento.setHours(0, 0, 0, 0);
+              return vencimento >= hoje;
+            }
+          }
+          
+          // Se está pago (sem cobranças ou todas pagas), está em dia
+          if (c.status === 'pago') return true;
+          
+          // Se está assinado e data é futura (e não tem cobranças vencidas), está em dia
+          if (c.status === 'assinado') {
+            const vencimento = new Date(c.dataVencimento);
+            vencimento.setHours(0, 0, 0, 0);
+            return vencimento >= hoje;
+          }
+          
+          return false;
+        });
+        
+      case 'atraso':
+        // Atraso = ASSINADO com cobranças PENDING e data vencida (mas não muito tempo)
         return contratosFiltrados.filter(c => {
           if (c.status !== 'assinado') return false;
-          const hoje = new Date();
+          
           const vencimento = new Date(c.dataVencimento);
-          return vencimento >= hoje; // Data de vencimento maior ou igual a hoje
+          vencimento.setHours(0, 0, 0, 0);
+          const diasVencidos = Math.floor((hoje.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24));
+          
+          // Considera atraso se venceu há menos de 30 dias
+          if (vencimento < hoje && diasVencidos <= 30) {
+            // Se tem cobranças, verificar se estão PENDING
+            if (c.cobrancas && c.cobrancas.length > 0) {
+              return c.cobrancas.some(cob => cob.status === 'PENDING');
+            }
+            return true;
+          }
+          
+          return false;
         });
-      case 'atraso':
-        return contratosFiltrados.filter(c => this.isAtraso(c));
+        
       case 'pendente':
-        return contratosFiltrados.filter(c => c.status === 'pendente');
+        // Pendentes = PENDENTE ou cobranças PENDING com data futura
+        return contratosFiltrados.filter(c => {
+          if (c.status === 'pendente') return true;
+          
+          // Se tem cobranças PENDING e data futura
+          if (c.cobrancas && c.cobrancas.length > 0) {
+            const temPendente = c.cobrancas.some(cob => cob.status === 'PENDING');
+            if (temPendente) {
+              const vencimento = new Date(c.dataVencimento);
+              vencimento.setHours(0, 0, 0, 0);
+              return vencimento >= hoje;
+            }
+          }
+          
+          return false;
+        });
+        
       case 'inadimplentes':
-        return contratosFiltrados.filter(c => c.status === 'vencido' || this.isInadimplente(c));
+        // Inadimplentes = VENCIDO ou cobranças OVERDUE ou ASSINADO com data vencida há mais de 30 dias
+        return contratosFiltrados.filter(c => {
+          if (c.status === 'vencido') return true;
+          
+          // Se tem cobranças, verificar status OVERDUE
+          if (c.cobrancas && c.cobrancas.length > 0) {
+            const temVencida = c.cobrancas.some(cob => 
+              cob.status === 'OVERDUE' || 
+              cob.status === 'DUNNING_REQUESTED' ||
+              cob.status === 'CHARGEBACK_REQUESTED'
+            );
+            if (temVencida) return true;
+          }
+          
+          // Se está assinado e venceu há mais de 30 dias
+          if (c.status === 'assinado') {
+            const vencimento = new Date(c.dataVencimento);
+            vencimento.setHours(0, 0, 0, 0);
+            const diasVencidos = Math.floor((hoje.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24));
+            return vencimento < hoje && diasVencidos > 30;
+          }
+          
+          return false;
+        });
+        
       default:
         return [];
     }
@@ -164,13 +572,44 @@ export class ContratosComponent implements OnInit {
 
   isInadimplente(contrato: Contrato): boolean {
     const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
     const vencimento = new Date(contrato.dataVencimento);
-    // Debug: console.log(`Contrato ${contrato.titulo}: vencimento=${contrato.dataVencimento}, hoje=${hoje.toISOString().split('T')[0]}, vencimento < hoje=${vencimento < hoje}`);
-    return contrato.status === 'assinado' && vencimento < hoje;
+    vencimento.setHours(0, 0, 0, 0);
+    
+    // Verificar se tem cobranças OVERDUE
+    if (contrato.cobrancas && contrato.cobrancas.length > 0) {
+      return contrato.cobrancas.some(cob => cob.status === 'OVERDUE');
+    }
+    
+    // Se está vencido ou assinado com data vencida há mais de 30 dias
+    if (contrato.status === 'vencido') return true;
+    if (contrato.status === 'assinado' && vencimento < hoje) {
+      const diasVencidos = Math.floor((hoje.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24));
+      return diasVencidos > 30;
+    }
+    
+    return false;
   }
 
   isAtraso(contrato: Contrato): boolean {
-    // Para este exemplo, não há contratos em atraso conforme solicitado
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const vencimento = new Date(contrato.dataVencimento);
+    vencimento.setHours(0, 0, 0, 0);
+    
+    if (contrato.status !== 'assinado') return false;
+    
+    const diasVencidos = Math.floor((hoje.getTime() - vencimento.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Atraso = vencido há menos de 30 dias
+    if (vencimento < hoje && diasVencidos <= 30) {
+      // Se tem cobranças, verificar se estão PENDING
+      if (contrato.cobrancas && contrato.cobrancas.length > 0) {
+        return contrato.cobrancas.some(cob => cob.status === 'PENDING');
+      }
+      return true;
+    }
+    
     return false;
   }
 
@@ -230,10 +669,11 @@ export class ContratosComponent implements OnInit {
       this.valorRecorrencia = Math.round(contrato.valor * 0.15);
     }
     
-    if (contrato.formaPagamento) {
-      this.formaPagamento = contrato.formaPagamento;
+    // Determinar tipo de contrato baseado em valorRecorrencia
+    if (contrato.valorRecorrencia && contrato.valorRecorrencia > 0) {
+      this.tipoContrato = 'RECORRENTE';
     } else {
-      this.formaPagamento = 'pix';
+      this.tipoContrato = 'UNICO';
     }
   }
 
@@ -274,20 +714,228 @@ export class ContratosComponent implements OnInit {
 
   fecharFormularioCliente(): void {
     this.mostrarFormularioCliente = false;
+    this.mostrarFormularioNovo = false;
+    this.modoEdicao = false;
     this.contratoSelecionado = null;
     this.limparFormulario();
+    this.error = null;
+    this.successMessage = null;
+  }
+
+  // Visualizar detalhes do contrato
+  visualizarDetalhes(contrato: Contrato): void {
+    this.contratoSelecionado = contrato;
+    const contratoId = parseInt(contrato.id);
+    this.loading = true;
+    this.error = null;
+    
+    this.contratoService.buscarPorId(contratoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (detalhes) => {
+          this.contratoDetalhes = detalhes;
+          this.mostrarDetalhes = true;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erro ao buscar detalhes do contrato:', error);
+          this.error = 'Erro ao carregar detalhes do contrato.';
+          this.loading = false;
+        }
+      });
+  }
+
+  fecharDetalhes(): void {
+    this.mostrarDetalhes = false;
+    this.contratoDetalhes = null;
+    this.error = null;
+    this.successMessage = null;
+  }
+
+  sincronizarComAsaas(contrato: Contrato): void {
+    if (!contrato || !contrato.id) {
+      this.error = 'Contrato inválido.';
+      return;
+    }
+
+    this.saving = true;
+    this.error = null;
+    this.successMessage = null;
+
+    const contratoId = parseInt(contrato.id);
+    this.contratoService.sincronizarStatusComAsaas(contratoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (contratoAtualizado) => {
+          this.saving = false;
+          this.successMessage = 'Status sincronizado com sucesso!';
+          this.contratoDetalhes = contratoAtualizado;
+          // Atualizar na lista
+          this.carregarContratos();
+          setTimeout(() => this.successMessage = null, 3000);
+        },
+        error: (error) => {
+          console.error('Erro ao sincronizar contrato:', error);
+          this.error = error.error?.message || 'Erro ao sincronizar com Asaas. Tente novamente.';
+          this.saving = false;
+          setTimeout(() => this.error = null, 5000);
+        }
+      });
+  }
+
+  // Editar contrato
+  editarContrato(contrato: Contrato): void {
+    this.visualizarDetalhes(contrato);
+    // Por enquanto, edição será feita através do formulário de detalhes
+    // TODO: Implementar endpoint de atualização no backend
+  }
+
+  // Cancelar contrato
+  cancelarContrato(contrato: Contrato): void {
+    if (!confirm(`Tem certeza que deseja cancelar o contrato "${contrato.titulo}"?`)) {
+      return;
+    }
+
+    const contratoId = parseInt(contrato.id);
+    this.loading = true;
+    this.error = null;
+    this.successMessage = null;
+
+    this.contratoService.removerContrato(contratoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.successMessage = 'Contrato cancelado com sucesso!';
+          this.loading = false;
+          this.carregarContratos();
+          setTimeout(() => this.successMessage = null, 5000);
+        },
+        error: (error) => {
+          console.error('Erro ao cancelar contrato:', error);
+          this.error = error.error?.message || 'Erro ao cancelar contrato.';
+          this.loading = false;
+        }
+      });
+  }
+
+  // Criar objeto Contrato a partir de ContratoDTO
+  criarContratoFromDTO(detalhes: ContratoDTO): Contrato {
+    return {
+      id: detalhes.id.toString(),
+      titulo: detalhes.titulo,
+      cliente: detalhes.cliente.razaoSocial,
+      valor: detalhes.valorContrato,
+      dataVencimento: detalhes.dataVencimento,
+      status: this.contratoService.mapearStatus(detalhes.status) as 'pendente' | 'assinado' | 'vencido' | 'pago' | 'cancelado',
+      descricao: detalhes.descricao || '',
+      conteudo: detalhes.conteudo || '',
+      whatsapp: detalhes.whatsapp || detalhes.cliente.celularFinanceiro || '',
+      servico: detalhes.servico,
+      inicioContrato: detalhes.inicioContrato,
+      inicioRecorrencia: detalhes.inicioRecorrencia,
+      valorContrato: detalhes.valorContrato,
+      valorRecorrencia: detalhes.valorRecorrencia
+    };
+  }
+
+  // Reenviar link de pagamento
+  reenviarLinkPagamento(contrato: Contrato): void {
+    // Se já temos os detalhes carregados, usar diretamente
+    if (this.contratoDetalhes) {
+      const cobranca = this.contratoDetalhes.cobrancas?.[0];
+      const whatsapp = this.contratoDetalhes.whatsapp || this.contratoDetalhes.cliente.celularFinanceiro;
+      
+      if (!whatsapp) {
+        this.error = 'WhatsApp não cadastrado para este contrato.';
+        return;
+      }
+
+      if (cobranca?.linkPagamento) {
+        const mensagem = `Olá! Segue o link para pagamento do contrato "${this.contratoDetalhes.titulo}": ${cobranca.linkPagamento}`;
+        const url = `https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
+        window.open(url, '_blank');
+        this.successMessage = 'Link de pagamento enviado via WhatsApp!';
+        setTimeout(() => this.successMessage = null, 5000);
+        return;
+      }
+    }
+
+    // Caso contrário, buscar do backend
+    if (!contrato.whatsapp) {
+      this.error = 'WhatsApp não cadastrado para este contrato.';
+      return;
+    }
+
+    const contratoId = parseInt(contrato.id);
+    this.loading = true;
+    this.error = null;
+    this.successMessage = null;
+
+    this.contratoService.buscarPorId(contratoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (detalhes) => {
+          const cobranca = detalhes.cobrancas?.[0];
+          const whatsapp = detalhes.whatsapp || detalhes.cliente.celularFinanceiro;
+          
+          if (!whatsapp) {
+            this.error = 'WhatsApp não cadastrado para este contrato.';
+            this.loading = false;
+            return;
+          }
+
+          if (cobranca?.linkPagamento) {
+            const mensagem = `Olá! Segue o link para pagamento do contrato "${detalhes.titulo}": ${cobranca.linkPagamento}`;
+            const url = `https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, '_blank');
+            this.successMessage = 'Link de pagamento enviado via WhatsApp!';
+            this.loading = false;
+            setTimeout(() => this.successMessage = null, 5000);
+          } else {
+            this.error = 'Link de pagamento não disponível para este contrato.';
+            this.loading = false;
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao buscar link de pagamento:', error);
+          this.error = 'Erro ao buscar link de pagamento.';
+          this.loading = false;
+        }
+      });
+  }
+
+  // Copiar link de pagamento
+  copiarLinkPagamento(link: string): void {
+    navigator.clipboard.writeText(link).then(() => {
+      this.successMessage = 'Link copiado para a área de transferência!';
+      setTimeout(() => this.successMessage = null, 3000);
+    }).catch(() => {
+      this.error = 'Erro ao copiar link.';
+    });
+  }
+
+  // Abrir link de pagamento
+  abrirLinkPagamento(link: string): void {
+    window.open(link, '_blank');
   }
 
   salvarDadosCliente(): void {
+    // Se estiver criando novo contrato
+    if (this.mostrarFormularioNovo) {
+      this.criarContrato();
+      return;
+    }
+
+    // Se estiver editando contrato existente (por enquanto apenas fecha)
+    // TODO: Implementar atualização de contrato quando backend tiver endpoint
     if (this.contratoSelecionado) {
-      // Atualizar dados do cliente no contrato
+      // Atualizar dados do cliente no contrato (apenas localmente por enquanto)
       this.contratoSelecionado.dadosCliente = { ...this.dadosCliente };
       this.contratoSelecionado.servico = this.servico;
       this.contratoSelecionado.inicioContrato = this.inicioContrato;
       this.contratoSelecionado.inicioRecorrencia = this.inicioRecorrencia;
       this.contratoSelecionado.valorContrato = this.valorContrato;
       this.contratoSelecionado.valorRecorrencia = this.valorRecorrencia;
-      this.contratoSelecionado.formaPagamento = this.formaPagamento;
 
       // Atualizar na lista de contratos
       const index = this.contratos.findIndex(c => c.id === this.contratoSelecionado!.id);
@@ -321,12 +969,17 @@ export class ContratosComponent implements OnInit {
     this.inicioRecorrencia = '';
     this.valorContrato = 0;
     this.valorRecorrencia = 0;
-    this.formaPagamento = '';
+    this.tipoContrato = 'UNICO';
   }
 
   formatarCNPJ(event: any): void {
     let value = event.target.value.replace(/\D/g, '');
-    if (value.length <= 14) {
+    if (value.length <= 11) {
+      // CPF: 000.000.000-00
+      value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+      this.dadosCliente.cnpj = value;
+    } else if (value.length <= 14) {
+      // CNPJ: 00.000.000/0000-00
       value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
       this.dadosCliente.cnpj = value;
     }

@@ -4,7 +4,7 @@ export interface Contrato {
   cliente: string;
   valor: number;
   dataVencimento: string;
-  status: 'pendente' | 'assinado' | 'vencido';
+  status: 'pendente' | 'assinado' | 'vencido' | 'pago' | 'cancelado';
   descricao: string;
   conteudo: string;
   whatsapp: string;
@@ -15,6 +15,20 @@ export interface Contrato {
   valorContrato?: number;
   valorRecorrencia?: number;
   formaPagamento?: string;
+  tipoPagamento?: 'UNICO' | 'RECORRENTE';
+  cobrancas?: Array<{
+    id: number;
+    valor: number;
+    dataVencimento: string;
+    dataPagamento?: string;
+    status: 'PENDING' | 'RECEIVED' | 'OVERDUE' | 'REFUNDED' | 'RECEIVED_IN_CASH_UNDONE' | 
+            'CHARGEBACK_REQUESTED' | 'CHARGEBACK_DISPUTE' | 'AWAITING_CHARGEBACK_REVERSAL' |
+            'DUNNING_REQUESTED' | 'DUNNING_RECEIVED' | 'AWAITING_RISK_ANALYSIS';
+    linkPagamento?: string;
+    codigoBarras?: string;
+    numeroParcela?: number;
+    asaasPaymentId?: string;
+  }>;
 }
 
 export interface DadosCliente {
