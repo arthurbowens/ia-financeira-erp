@@ -77,8 +77,12 @@ export class AppComponent {
     this.authService.logout();
   }
 
-  isLoginPage(): boolean {
-    return this.router.url === '/login';
+  /**
+   * Telas públicas de autenticação (não devem exibir header/footer globais)
+   */
+  isAuthPublicPage(): boolean {
+    const url = this.router.url.split('?')[0];
+    return url === '/login' || url === '/esqueci-senha';
   }
 
   toggleUserMenu(event?: MouseEvent) {

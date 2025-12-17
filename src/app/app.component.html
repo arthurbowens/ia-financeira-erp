@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50 flex flex-col">
   <!-- Header - apenas para páginas autenticadas -->
-  <nav *ngIf="!isLoginPage()" class="bg-black shadow-lg border-b border-gray-800">
+  <nav *ngIf="!isAuthPublicPage()" class="bg-black shadow-lg border-b border-gray-800">
     <div class="max-w-8xl mx-auto px-6 sm:px-8 lg:px-12">
       <div class="flex justify-between items-center h-20">
         <!-- Logo -->
@@ -187,7 +187,7 @@
   <app-error-notification></app-error-notification>
 
 <!-- Footer global (em todas as telas, não fixo) -->
-<footer *ngIf="!isLoginPage()" class="bg-white border-t border-gray-200">
+<footer *ngIf="!isAuthPublicPage()" class="bg-white border-t border-gray-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between text-sm">
     <div class="flex items-center gap-2 text-gray-700">
       <span class="font-semibold text-gray-900">Star Target</span>
