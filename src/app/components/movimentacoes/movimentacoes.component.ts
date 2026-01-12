@@ -257,23 +257,72 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
   }
 
   private normalizarMovimentacaoOmie(mov: MovimentacaoOmie): any {
-    // Normaliza dados do OMIE para o formato esperado pelo componente
-    const debito = mov.debito !== undefined ? mov.debito : (mov['tipo'] === 'DESPESA');
-    const valor = mov['valor_documento'] || mov['valor_pago'] || 0;
+    // Normaliza dados do OMIE (endpoint MF) para o formato esperado pelo componente
+    const debito = mov.debito !== undefined ? mov.debito : (mov['tipo'] === 'DESPESA' || mov['natureza'] === 'P');
+    
+    // Prioriza valor_liquido, depois valor_documento, depois valor_pago
+    const valor = mov['valor_liquido'] || mov['valor_documento'] || mov['valor_pago'] || mov['valor_aberto'] || 0;
+    
+    // Extrai nome do cliente/fornecedor (pode vir de diferentes campos)
+    const nomeClienteFornecedor = mov['nome_cliente_fornecedor'] || 
+                                  mov['nome_fantasia_cliente_fornecedor'] || 
+                                  mov['razao_social_cliente_fornecedor'] || 
+                                  '';
+    
+    // Debug: verifica se o nome está presente
+    if (!nomeClienteFornecedor && mov['codigo_cliente_fornecedor']) {
+      console.debug('Movimentação sem nome de cliente/fornecedor:', {
+        codigo: mov['codigo_cliente_fornecedor'],
+        mov: mov
+      });
+    }
+    
+    // Extrai categoria (pode vir de categorias array ou campo direto)
+    let categoria = mov['categoria'] || mov['codigo_categoria'] || 'Sem categoria';
+    if (mov['categorias'] && Array.isArray(mov['categorias']) && mov['categorias'].length > 0) {
+      const primeiraCategoria = mov['categorias'][0];
+      categoria = primeiraCategoria['cCodCateg'] || primeiraCategoria['codigo_categoria'] || categoria;
+    }
+    
+    // Extrai número da parcela (pode vir de numero_parcela ou ser calculado)
+    const numeroParcela = mov['numero_parcela'] || '';
+    
+    // Status do título
+    const status = mov['status_titulo'] || mov['status'] || '';
+    
+    // Forma de pagamento (prioriza nome_forma_pagamento, depois tipo_documento)
+    const formaPagamento = mov['nome_forma_pagamento'] || mov['tipo_documento'] || '';
     
     return {
-      IdMovimentacaoFinanceiraParcela: mov['codigo_lancamento'] || '',
+      IdMovimentacaoFinanceiraParcela: mov['codigo_lancamento_omie'] || mov['codigo_lancamento_integracao'] || '',
       Debito: debito,
-      DataVencimento: mov['data_vencimento'] || '',
-      DataCompetencia: mov['data_emissao'] || mov['data_vencimento'] || '',
+      DataVencimento: mov['data_vencimento'] || mov['data_previsao'] || '',
+      DataCompetencia: mov['data_emissao'] || mov['data_registro'] || mov['data_vencimento'] || '',
       DataQuitacao: mov['data_pagamento'] || undefined,
       Valor: valor,
-      Nome: mov['nome_cliente_fornecedor'] || mov['observacao'] || 'Movimentação OMIE',
-      Observacao: mov['observacao'] || '',
-      NomeClienteFornecedor: mov['nome_cliente_fornecedor'] || '',
-      NomeCategoriaFinanceira: mov['categoria'] || 'Sem categoria',
-      Status: mov['status'] || '',
-      tipo: mov['tipo'],
+      Nome: mov['numero_documento'] || mov['numero_documento_fiscal'] || mov['numero_pedido'] || 'Movimentação OMIE',
+      Observacao: mov['observacao'] || mov['numero_documento'] || '',
+      NomeClienteFornecedor: nomeClienteFornecedor,
+      NomeFantasiaClienteFornecedor: mov['nome_fantasia_cliente_fornecedor'] || nomeClienteFornecedor,
+      RazaoSocialClienteFornecedor: mov['razao_social_cliente_fornecedor'] || '',
+      NomeCategoriaFinanceira: categoria,
+      Status: status,
+      NumeroParcela: numeroParcela,
+      NumeroDocumento: mov['numero_documento'] || '',
+      NumeroPedido: mov['numero_pedido'] || '',
+      NumeroDocumentoFiscal: mov['numero_documento_fiscal'] || '',
+      NomeFormaPagamento: formaPagamento,
+      CodigoClienteFornecedor: mov['codigo_cliente_fornecedor'] || '',
+      CPFCNPJCliente: mov['cpf_cnpj_cliente'] || '',
+      tipo: mov['tipo'] || (debito ? 'DESPESA' : 'RECEITA'),
+      // Campos adicionais do endpoint MF
+      ValorPago: mov['valor_pago'] || 0,
+      ValorAberto: mov['valor_aberto'] || 0,
+      ValorDesconto: mov['valor_desconto'] || 0,
+      ValorJuros: mov['valor_juros'] || 0,
+      ValorMulta: mov['valor_multa'] || 0,
+      ValorLiquido: mov['valor_liquido'] || valor,
+      Liquidado: mov['liquidado'] === 'S',
       // Campos originais do OMIE preservados
       _omieData: mov
     };
