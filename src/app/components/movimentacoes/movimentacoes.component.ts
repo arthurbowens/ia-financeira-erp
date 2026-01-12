@@ -141,10 +141,10 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     this.bomControleService.buscarMovimentacoes(filtros)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
+        next: (response: any) => {
           this.processarRespostaBomControle(response);
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Erro ao carregar movimentações do Bom Controle:', err);
           this.error = err.error?.mensagem || 'Erro ao carregar movimentações';
           this.loading = false;
@@ -651,7 +651,7 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     this.bomControleService.exportarExcel(filtros)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (blob) => {
+        next: (blob: Blob) => {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -660,7 +660,7 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
           window.URL.revokeObjectURL(url);
           this.loading = false;
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Erro ao exportar Excel:', err);
           this.error = 'Erro ao exportar Excel';
           this.loading = false;
@@ -679,7 +679,7 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     this.bomControleService.exportarPDF(filtros)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (blob) => {
+        next: (blob: Blob) => {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -688,7 +688,7 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
           window.URL.revokeObjectURL(url);
           this.loading = false;
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Erro ao exportar PDF:', err);
           this.error = 'Erro ao exportar PDF';
           this.loading = false;
