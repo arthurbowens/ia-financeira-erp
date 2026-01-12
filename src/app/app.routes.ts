@@ -61,6 +61,16 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'contas-a-pagar',
+    loadComponent: () => import('./components/contas-a-pagar/contas-a-pagar.component').then(m => m.ContasAPagarComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'contas-a-receber',
+    loadComponent: () => import('./components/contas-a-receber/contas-a-receber.component').then(m => m.ContasAReceberComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }
