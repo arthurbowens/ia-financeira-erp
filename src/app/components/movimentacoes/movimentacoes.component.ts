@@ -296,8 +296,8 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     return {
       IdMovimentacaoFinanceiraParcela: mov['codigo_lancamento_omie'] || mov['codigo_lancamento_integracao'] || '',
       Debito: debito,
-      DataVencimento: mov['data_vencimento'] || mov['data_previsao'] || '',
-      DataCompetencia: mov['data_emissao'] || mov['data_registro'] || mov['data_vencimento'] || '',
+      DataVencimento: mov['data_vencimento'] || mov['data_pagamento'] || mov['data_previsao'] || '',
+      DataCompetencia: mov['data_emissao'] || mov['data_pagamento'] || mov['data_registro'] || mov['data_vencimento'] || '',
       DataQuitacao: mov['data_pagamento'] || undefined,
       Valor: valor,
       Nome: mov['numero_documento'] || mov['numero_documento_fiscal'] || mov['numero_pedido'] || 'Movimentação OMIE',
