@@ -31,6 +31,11 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   error: string | null = null;
   
+  // Cache estratégico (Anti-Block) - carrega uma vez e persiste
+  private cacheMovimentacoes: Map<string, { data: MovimentacaoFinanceira[], timestamp: number, totais: any }> = new Map();
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+  private cacheKeyAtual: string = '';
+  
   // Totais agregados (de todas as movimentações, não apenas da página atual)
   totalReceitasGeral: number | null = null;
   totalDespesasGeral: number | null = null;
@@ -152,6 +157,80 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Gera chave única para cache baseada no período de datas
+   */
+  private gerarChaveCache(): string {
+    return `${this.dataInicial}_${this.dataFinal}`;
+  }
+
+  /**
+   * Verifica se há cache válido para o período atual
+   */
+  private obterCache(): { data: MovimentacaoFinanceira[], totais: any } | null {
+    const chave = this.gerarChaveCache();
+    const cached = this.cacheMovimentacoes.get(chave);
+    
+    if (cached && (Date.now() - cached.timestamp) < this.CACHE_TTL) {
+      console.log('✅ Cache hit - usando dados em cache para evitar consumo redundante');
+      return { data: cached.data, totais: cached.totais };
+    }
+    
+    return null;
+  }
+
+  /**
+   * Armazena dados no cache
+   */
+  private armazenarCache(data: MovimentacaoFinanceira[], totais: any): void {
+    const chave = this.gerarChaveCache();
+    this.cacheMovimentacoes.set(chave, {
+      data: [...data], // Cópia para evitar mutação
+      timestamp: Date.now(),
+      totais: { ...totais }
+    });
+    this.cacheKeyAtual = chave;
+    console.log('💾 Dados armazenados no cache (TTL: 5min)');
+  }
+
+  /**
+   * Busca memoizada local - filtra dados em cache sem fazer requisição
+   */
+  private buscarLocalMemoizada(filtros: FiltrosMovimentacoesOmie): MovimentacaoFinanceira[] {
+    const cached = this.obterCache();
+    if (!cached) {
+      return []; // Sem cache, precisa buscar do servidor
+    }
+
+    console.log('🔍 Busca local memoizada - filtrando', cached.data.length, 'itens em cache');
+    
+    let resultado = [...cached.data];
+
+    // Aplica filtros localmente
+    if (filtros.tipo) {
+      const isReceita = filtros.tipo === 'receita';
+      resultado = resultado.filter(mov => isReceita ? !mov.Debito : mov.Debito);
+    }
+
+    if (filtros.categoria) {
+      resultado = resultado.filter(mov => 
+        mov.NomeCategoriaFinanceira === filtros.categoria
+      );
+    }
+
+    if (filtros.textoPesquisa) {
+      const texto = filtros.textoPesquisa.toLowerCase();
+      resultado = resultado.filter(mov => 
+        (mov.Nome && mov.Nome.toLowerCase().includes(texto)) ||
+        (mov.NomeClienteFornecedor && mov.NomeClienteFornecedor.toLowerCase().includes(texto)) ||
+        (mov.Observacao && mov.Observacao.toLowerCase().includes(texto))
+      );
+    }
+
+    console.log(`✅ Busca local concluída: ${resultado.length} itens encontrados`);
+    return resultado;
+  }
+
   private carregarMovimentacoesOmie(): void {
     const filtros: FiltrosMovimentacoesOmie = {
       dataInicio: this.dataInicial || undefined,
@@ -163,13 +242,68 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
       textoPesquisa: this.filtrosUI.textoPesquisa || undefined
     };
 
-    console.log('🔍 Carregando movimentações do OMIE com filtros:', filtros);
+    // ESTRATÉGIA 1: Cache Agressivo (Anti-Block)
+    // Se temos cache válido e apenas filtros de UI mudaram (não período), busca localmente
+    const temCacheValido = this.obterCache() !== null;
+    const periodoMudou = this.cacheKeyAtual !== this.gerarChaveCache();
     
-    this.omieService.pesquisarMovimentacoes(filtros)
+    // Se período não mudou e temos cache, busca localmente (sem requisição ao servidor)
+    if (temCacheValido && !periodoMudou && (filtros.tipo || filtros.categoria || filtros.textoPesquisa)) {
+      console.log('🚀 Modo cache: aplicando filtros localmente sem requisição ao servidor');
+      const resultadoLocal = this.buscarLocalMemoizada(filtros);
+      
+      // Aplica paginação local
+      const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+      const fim = inicio + this.itensPorPagina;
+      this.movimentacoes = resultadoLocal.slice(inicio, fim);
+      this.movimentacoesFiltradas = [...this.movimentacoes];
+      this.totalItens = resultadoLocal.length;
+      this.totalPaginas = Math.ceil(this.totalItens / this.itensPorPagina);
+      
+      // Usa totais do cache
+      const cached = this.obterCache();
+      if (cached?.totais) {
+        this.totalReceitasGeral = cached.totais.totalReceitas;
+        this.totalDespesasGeral = cached.totais.totalDespesas;
+        this.saldoLiquidoGeral = cached.totais.saldoLiquido;
+      }
+      
+      this.loading = false;
+      return;
+    }
+
+    // Se período mudou ou não há cache, busca do servidor
+    console.log('🌐 Buscando do servidor (cache miss ou período alterado)');
+    this.loading = true;
+    this.error = null;
+
+    // Remove filtros de UI da requisição se temos cache (para buscar todos os dados)
+    const filtrosServidor: FiltrosMovimentacoesOmie = temCacheValido && !periodoMudou
+      ? {
+          dataInicio: this.dataInicial || undefined,
+          dataFim: this.dataFinal || undefined,
+          pagina: 1,
+          registrosPorPagina: 500 // Busca máximo para cache completo
+        }
+      : filtros;
+
+    console.log('🔍 Carregando movimentações do OMIE com filtros:', filtrosServidor);
+    
+    this.omieService.pesquisarMovimentacoes(filtrosServidor)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.processarRespostaOmie(response);
+          
+          // Se foi busca completa (sem filtros de UI), armazena no cache
+          if (!filtros.tipo && !filtros.categoria && !filtros.textoPesquisa) {
+            const totais = {
+              totalReceitas: this.totalReceitasGeral,
+              totalDespesas: this.totalDespesasGeral,
+              saldoLiquido: this.saldoLiquidoGeral
+            };
+            this.armazenarCache(this.movimentacoes, totais);
+          }
         },
         error: (err) => {
           console.error('Erro ao carregar movimentações do OMIE:', err);
@@ -222,12 +356,12 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     
     // Normaliza movimentações do OMIE para o formato esperado
     const movimentacoesOmie = response.movimentacoes || [];
-    this.movimentacoes = movimentacoesOmie.map(mov => this.normalizarMovimentacaoOmie(mov));
+    const movimentacoesNormalizadas = movimentacoesOmie.map(mov => this.normalizarMovimentacaoOmie(mov));
     
-    console.log(`📦 Itens recebidos do OMIE: ${this.movimentacoes.length}`);
+    console.log(`📦 Itens recebidos do OMIE: ${movimentacoesNormalizadas.length}`);
     
     // Obtém o total de itens
-    this.totalItens = response.total !== undefined ? response.total : this.movimentacoes.length;
+    this.totalItens = response.total !== undefined ? response.total : movimentacoesNormalizadas.length;
     
     // Obtém totais agregados da resposta do backend (já calculados de todas as movimentações)
     // O backend agora retorna totalReceitas, totalDespesas e saldoLiquido
@@ -245,9 +379,24 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
       this.calcularTotaisOmie(movimentacoesOmie);
     }
     
+    // Se recebeu dados completos (500 registros), armazena tudo no cache
+    if (movimentacoesNormalizadas.length >= 500 || this.totalItens <= movimentacoesNormalizadas.length) {
+      const totais = {
+        totalReceitas: this.totalReceitasGeral,
+        totalDespesas: this.totalDespesasGeral,
+        saldoLiquido: this.saldoLiquidoGeral
+      };
+      this.armazenarCache(movimentacoesNormalizadas, totais);
+    }
+    
+    // Aplica paginação se necessário
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    this.movimentacoes = movimentacoesNormalizadas.slice(inicio, fim);
+    
     this.totalPaginas = Math.ceil(this.totalItens / this.itensPorPagina);
     
-    // Extrai categorias únicas
+    // Extrai categorias únicas (de todos os dados, não apenas da página)
     this.extrairCategorias();
     
     // Os filtros já foram aplicados no backend, então apenas usa os dados retornados
@@ -417,7 +566,10 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     const categoriasSet = new Set<string>();
     categoriasSet.add('');
 
-    this.movimentacoes.forEach(mov => {
+    // Usa dados do cache completo se disponível, senão usa apenas da página atual
+    const dadosParaExtrair = this.obterCache()?.data || this.movimentacoes;
+
+    dadosParaExtrair.forEach(mov => {
       const categoriaRoot = this.extrairCategoriaRoot(mov);
       if (categoriaRoot) {
         categoriasSet.add(categoriaRoot);
@@ -517,8 +669,18 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     this.tempRangeStart = null;
     this.tempRangeEnd = null;
     this.hoverRangeDate = null;
+    
+    const periodoMudou = this.dataInicial !== '' || this.dataFinal !== '';
     this.dataInicial = '';
     this.dataFinal = '';
+    
+    // Limpa cache se período mudou
+    if (periodoMudou) {
+      this.cacheMovimentacoes.clear();
+      this.cacheKeyAtual = '';
+      console.log('🗑️ Cache limpo - período limpo');
+    }
+    
     this.paginaAtual = 1;
     this.carregarMovimentacoes();
   }
