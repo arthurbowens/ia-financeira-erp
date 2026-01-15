@@ -99,15 +99,7 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Define período padrão se não houver datas selecionadas
-    if (!this.dataInicial || !this.dataFinal) {
-      const hoje = new Date();
-      const primeiroDiaAno = new Date(hoje.getFullYear(), 0, 1);
-      this.dataInicial = primeiroDiaAno.toISOString().split('T')[0];
-      this.dataFinal = hoje.toISOString().split('T')[0];
-      console.log('📅 Período padrão definido:', this.dataInicial, 'a', this.dataFinal);
-    }
-    
+    // Carrega automaticamente sem filtro de data inicial
     this.carregarMovimentacoes();
   }
 
@@ -161,7 +153,9 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
    * Gera chave única para cache baseada no período de datas
    */
   private gerarChaveCache(): string {
-    return `${this.dataInicial}_${this.dataFinal}`;
+    const inicio = this.dataInicial || 'sem_data';
+    const fim = this.dataFinal || 'sem_data';
+    return `${inicio}_${fim}`;
   }
 
   /**
@@ -263,9 +257,30 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
       // Usa totais do cache
       const cached = this.obterCache();
       if (cached?.totais) {
-        this.totalReceitasGeral = cached.totais.totalReceitas;
-        this.totalDespesasGeral = cached.totais.totalDespesas;
-        this.saldoLiquidoGeral = cached.totais.saldoLiquido;
+        console.log('💰 Totais restaurados do cache:', cached.totais);
+        this.totalReceitasGeral = cached.totais.totalReceitas ?? null;
+        this.totalDespesasGeral = cached.totais.totalDespesas ?? null;
+        this.saldoLiquidoGeral = cached.totais.saldoLiquido ?? null;
+        console.log('✅ Totais atribuídos do cache:', {
+          totalReceitasGeral: this.totalReceitasGeral,
+          totalDespesasGeral: this.totalDespesasGeral,
+          saldoLiquidoGeral: this.saldoLiquidoGeral
+        });
+      } else {
+        console.warn('⚠️ Cache não tem totais, calculando localmente');
+        // Se não tem totais no cache, calcula localmente
+        let totalReceitas = 0;
+        let totalDespesas = 0;
+        resultadoLocal.forEach(mov => {
+          if (mov.Debito) {
+            totalDespesas += mov.Valor || 0;
+          } else {
+            totalReceitas += mov.Valor || 0;
+          }
+        });
+        this.totalReceitasGeral = totalReceitas;
+        this.totalDespesasGeral = totalDespesas;
+        this.saldoLiquidoGeral = totalReceitas - totalDespesas;
       }
       
       this.loading = false;
@@ -294,16 +309,7 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.processarRespostaOmie(response);
-          
-          // Se foi busca completa (sem filtros de UI), armazena no cache
-          if (!filtros.tipo && !filtros.categoria && !filtros.textoPesquisa) {
-            const totais = {
-              totalReceitas: this.totalReceitasGeral,
-              totalDespesas: this.totalDespesasGeral,
-              saldoLiquido: this.saldoLiquidoGeral
-            };
-            this.armazenarCache(this.movimentacoes, totais);
-          }
+          // Cache já é armazenado dentro de processarRespostaOmie
         },
         error: (err) => {
           console.error('Erro ao carregar movimentações do OMIE:', err);
@@ -366,30 +372,42 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     // Obtém totais agregados da resposta do backend (já calculados de todas as movimentações)
     // O backend agora retorna totalReceitas, totalDespesas e saldoLiquido
     const responseAny = response as any;
+    console.log('💰 Totais recebidos do backend:', {
+      totalReceitas: responseAny.totalReceitas,
+      totalDespesas: responseAny.totalDespesas,
+      saldoLiquido: responseAny.saldoLiquido
+    });
+    
     if (responseAny.totalReceitas !== undefined && responseAny.totalReceitas !== null) {
-      this.totalReceitasGeral = responseAny.totalReceitas;
+      this.totalReceitasGeral = Number(responseAny.totalReceitas);
       this.totalDespesasGeral = responseAny.totalDespesas !== undefined && responseAny.totalDespesas !== null 
-        ? responseAny.totalDespesas : null;
+        ? Number(responseAny.totalDespesas) : 0;
       this.saldoLiquidoGeral = responseAny.saldoLiquido !== undefined && responseAny.saldoLiquido !== null
-        ? responseAny.saldoLiquido
+        ? Number(responseAny.saldoLiquido)
         : (this.totalReceitasGeral !== null && this.totalDespesasGeral !== null 
            ? this.totalReceitasGeral - this.totalDespesasGeral : null);
+      
+      console.log('✅ Totais atribuídos:', {
+        totalReceitasGeral: this.totalReceitasGeral,
+        totalDespesasGeral: this.totalDespesasGeral,
+        saldoLiquidoGeral: this.saldoLiquidoGeral
+      });
     } else {
+      console.warn('⚠️ Backend não retornou totais, calculando localmente');
       // Fallback: calcula apenas da página atual se backend não retornar os totais
       this.calcularTotaisOmie(movimentacoesOmie);
     }
     
-    // Se recebeu dados completos (500 registros), armazena tudo no cache
-    if (movimentacoesNormalizadas.length >= 500 || this.totalItens <= movimentacoesNormalizadas.length) {
-      const totais = {
-        totalReceitas: this.totalReceitasGeral,
-        totalDespesas: this.totalDespesasGeral,
-        saldoLiquido: this.saldoLiquidoGeral
-      };
-      this.armazenarCache(movimentacoesNormalizadas, totais);
-    }
+    // Armazena todos os dados normalizados no cache (não apenas a página atual)
+    // Isso permite busca local e filtros sem requisições adicionais
+    const totais = {
+      totalReceitas: this.totalReceitasGeral,
+      totalDespesas: this.totalDespesasGeral,
+      saldoLiquido: this.saldoLiquidoGeral
+    };
+    this.armazenarCache(movimentacoesNormalizadas, totais);
     
-    // Aplica paginação se necessário
+    // Aplica paginação para exibição
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
     const fim = inicio + this.itensPorPagina;
     this.movimentacoes = movimentacoesNormalizadas.slice(inicio, fim);
@@ -409,8 +427,31 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
     // Normaliza dados do OMIE (endpoint MF) para o formato esperado pelo componente
     const debito = mov.debito !== undefined ? mov.debito : (mov['tipo'] === 'DESPESA' || mov['natureza'] === 'P');
     
-    // Prioriza valor_liquido, depois valor_documento, depois valor_pago
-    const valor = mov['valor_liquido'] || mov['valor_documento'] || mov['valor_pago'] || mov['valor_aberto'] || 0;
+    // Prioriza valor_documento para títulos não liquidados, depois valor_liquido para liquidados
+    // Se liquidado, usa valor_liquido; senão, usa valor_documento ou valor_aberto
+    const isLiquidado = mov['liquidado'] === 'S' || mov['liquidado'] === true;
+    let valor = 0;
+    
+    if (isLiquidado) {
+      // Para títulos liquidados, prioriza valor_liquido
+      valor = mov['valor_liquido'] ?? 
+              mov['valor_pago'] ?? 
+              mov['valor_documento'] ?? 
+              (mov['_detalhes']?.['nValorTitulo'] ?? 0);
+    } else {
+      // Para títulos não liquidados, prioriza valor_documento ou valor_aberto
+      valor = mov['valor_documento'] ?? 
+              mov['valor_aberto'] ?? 
+              (mov['_detalhes']?.['nValorTitulo'] ?? 0);
+    }
+    
+    // Se ainda for 0, tenta qualquer campo disponível como último recurso
+    if (valor === 0) {
+      valor = mov['valor_liquido'] ?? 
+              mov['valor_pago'] ?? 
+              mov['valor_aberto'] ?? 
+              (mov['_detalhes']?.['nValorTitulo'] ?? 0);
+    }
     
     // Extrai nome do cliente/fornecedor (pode vir de diferentes campos)
     const nomeClienteFornecedor = mov['nome_cliente_fornecedor'] || 
@@ -433,11 +474,40 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
       categoria = primeiraCategoria['cCodCateg'] || primeiraCategoria['codigo_categoria'] || categoria;
     }
     
-    // Extrai número da parcela (pode vir de numero_parcela ou ser calculado)
-    const numeroParcela = mov['numero_parcela'] || '';
+    // Extrai número da parcela (pode vir de numero_parcela, _detalhes.cNumParcela ou _movimento_completo.detalhes.cNumParcela)
+    let numeroParcela = mov['numero_parcela'] || '';
+    let quantidadeParcela: number | undefined = undefined;
+    
+    // Tenta extrair de _detalhes.cNumParcela (formato: "004/013")
+    if (!numeroParcela && mov['_detalhes'] && mov['_detalhes']['cNumParcela']) {
+      const parcelaStr = mov['_detalhes']['cNumParcela'];
+      const partes = parcelaStr.split('/');
+      if (partes.length === 2) {
+        // Remove zeros à esquerda, mas mantém pelo menos um dígito
+        const numParcela = parseInt(partes[0], 10);
+        numeroParcela = isNaN(numParcela) ? partes[0] : numParcela.toString();
+        quantidadeParcela = parseInt(partes[1], 10) || undefined;
+      } else {
+        numeroParcela = parcelaStr;
+      }
+    }
+    
+    // Tenta extrair de _movimento_completo.detalhes.cNumParcela como fallback
+    if (!numeroParcela && mov['_movimento_completo'] && mov['_movimento_completo']['detalhes'] && mov['_movimento_completo']['detalhes']['cNumParcela']) {
+      const parcelaStr = mov['_movimento_completo']['detalhes']['cNumParcela'];
+      const partes = parcelaStr.split('/');
+      if (partes.length === 2) {
+        // Remove zeros à esquerda, mas mantém pelo menos um dígito
+        const numParcela = parseInt(partes[0], 10);
+        numeroParcela = isNaN(numParcela) ? partes[0] : numParcela.toString();
+        quantidadeParcela = parseInt(partes[1], 10) || undefined;
+      } else {
+        numeroParcela = parcelaStr;
+      }
+    }
     
     // Status do título
-    const status = mov['status_titulo'] || mov['status'] || '';
+    const status = mov['status_titulo'] || mov['status'] || mov['_detalhes']?.['cStatus'] || '';
     
     // Forma de pagamento (prioriza nome_forma_pagamento, depois tipo_documento)
     const formaPagamento = mov['nome_forma_pagamento'] || mov['tipo_documento'] || '';
@@ -457,6 +527,7 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
       NomeCategoriaFinanceira: categoria,
       Status: status,
       NumeroParcela: numeroParcela,
+      QuantidadeParcela: quantidadeParcela,
       NumeroDocumento: mov['numero_documento'] || '',
       NumeroPedido: mov['numero_pedido'] || '',
       NumeroDocumentoFiscal: mov['numero_documento_fiscal'] || '',
@@ -816,10 +887,31 @@ export class MovimentacoesComponent implements OnInit, OnDestroy {
   formatDate(dateStr: string | null | undefined): string {
     if (!dateStr) return '';
     try {
+      // Detecta formato DD/MM/YYYY (formato do OMIE)
+      if (dateStr.includes('/') && dateStr.length === 10) {
+        const partes = dateStr.split('/');
+        if (partes.length === 3) {
+          // Converte DD/MM/YYYY para YYYY-MM-DD para o JavaScript parsear corretamente
+          const dia = partes[0].padStart(2, '0');
+          const mes = partes[1].padStart(2, '0');
+          const ano = partes[2];
+          const date = new Date(`${ano}-${mes}-${dia}`);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('pt-BR');
+          }
+        }
+      }
+      
+      // Tenta parsear como ISO (YYYY-MM-DD) ou formato padrão
       const date = new Date(dateStr);
-      return date.toLocaleDateString('pt-BR');
-    } catch {
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString('pt-BR');
+      }
+      
+      // Se não conseguiu parsear, retorna a string original
       return dateStr;
+    } catch {
+      return dateStr || '';
     }
   }
 
