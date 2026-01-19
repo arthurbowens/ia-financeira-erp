@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 flex flex-col">
+<div [class.min-h-screen]="!isAuthPublicPage()" [class.bg-gray-50]="!isAuthPublicPage()" [class.flex]="!isAuthPublicPage()" [class.flex-col]="!isAuthPublicPage()">
   <!-- Header - apenas para páginas autenticadas -->
   <nav *ngIf="!isAuthPublicPage()" class="bg-black shadow-lg border-b border-gray-800">
     <div class="max-w-8xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -178,7 +178,7 @@
     </div>
   </nav>
 
-  <main class="flex-1">
+  <main [class.flex-1]="!isAuthPublicPage()">
 <router-outlet />
   </main>
 
