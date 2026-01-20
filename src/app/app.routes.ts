@@ -8,6 +8,21 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'restaurantes',
+    loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent),
+    data: { segmento: 'restaurantes' }
+  },
+  {
+    path: 'prestadores',
+    loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent),
+    data: { segmento: 'prestadores' }
+  },
+  {
+    path: 'agencias',
+    loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent),
+    data: { segmento: 'agencias' }
+  },
+  {
     path: 'login',
     loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
   },
