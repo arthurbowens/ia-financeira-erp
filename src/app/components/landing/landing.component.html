@@ -15,7 +15,7 @@
           <a href="/" class="flex items-center gap-3 hover:opacity-90 transition-opacity group">
             <img src="assets/images/finnzialogo.png" alt="Finzzia" class="h-10 md:h-12 w-auto drop-shadow-lg group-hover:scale-105 transition-transform duration-300" />
           </a>
-        </div>
+      </div>
 
         <!-- Navegação Desktop -->
         <nav class="hidden lg:flex items-center gap-1">
@@ -40,12 +40,12 @@
             <span class="relative z-10">Diagnóstico</span>
             <span class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-emerald-400/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></span>
           </a>
-        </nav>
+      </nav>
 
         <!-- Botão Login Desktop -->
         <div class="hidden lg:flex items-center gap-4">
-          <button
-            (click)="goToLogin()"
+      <button
+        (click)="goToLogin()"
             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-emerald-400 text-white text-sm font-semibold shadow-lg shadow-blue-500/40 hover:shadow-xl hover:brightness-110 transition-all duration-200 hover:scale-105"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,9 +144,9 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
             </svg>
-            Acessar sistema
-          </button>
-        </div>
+        Acessar sistema
+      </button>
+    </div>
       </div>
     </div>
 
@@ -188,82 +188,85 @@
 
     <!-- Seção de Direcionamento por Perfil -->
     <section *ngIf="!segmentoAtual" id="perfis" class="scroll-mt-24">
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-5">
             Soluções personalizadas para o seu negócio
           </h2>
-          <p class="text-lg text-slate-300 max-w-2xl mx-auto">
+          <p class="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Escolha o perfil que melhor se encaixa com sua empresa e descubra como podemos ajudar
           </p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6">
+        <div class="grid md:grid-cols-3 gap-8">
           <!-- Card Agências -->
-          <div class="group relative bg-slate-900/60 rounded-2xl border border-blue-500/30 p-8 hover:border-blue-500/60 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="group relative bg-gradient-to-br from-slate-900/80 to-slate-800/60 rounded-2xl border border-blue-500/40 p-8 hover:border-blue-500/80 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/30 hover:-translate-y-1 backdrop-blur-xl">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div class="relative z-10">
-              <div class="w-14 h-14 rounded-xl bg-blue-500/20 flex items-center justify-center mb-6 group-hover:bg-blue-500/30 transition">
-                <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-600/20 flex items-center justify-center mb-6 group-hover:from-blue-500/40 group-hover:to-blue-600/30 transition-all duration-300 shadow-lg shadow-blue-500/20">
+                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-white mb-3">Agências de Marketing</h3>
-              <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+              <h3 class="text-2xl font-bold text-white mb-4">Agências de Marketing</h3>
+              <p class="text-slate-300 text-base mb-8 leading-relaxed">
                 Para agências que precisam de controle financeiro por cliente e previsibilidade de caixa para crescer com segurança.
               </p>
               <a href="/agencias" 
-                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-500/20 text-blue-300 font-medium hover:bg-blue-500/30 hover:text-blue-200 transition-all duration-200 text-sm group-hover:scale-105">
-                <span>Saiba mais</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                 class="group/btn inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold hover:from-blue-400 hover:to-blue-500 transition-all duration-300 text-base shadow-lg shadow-blue-500/40 hover:shadow-xl hover:shadow-blue-500/50 hover:scale-105 hover:brightness-110 relative overflow-hidden">
+                <span class="relative z-10">Saiba mais</span>
+                <svg class="w-5 h-5 relative z-10 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-blue-300/20 to-blue-400/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
               </a>
             </div>
           </div>
 
           <!-- Card Restaurantes -->
-          <div class="group relative bg-slate-900/60 rounded-2xl border border-emerald-500/30 p-8 hover:border-emerald-500/60 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/20">
-            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="group relative bg-gradient-to-br from-slate-900/80 to-slate-800/60 rounded-2xl border border-emerald-500/40 p-8 hover:border-emerald-500/80 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/30 hover:-translate-y-1 backdrop-blur-xl">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div class="relative z-10">
-              <div class="w-14 h-14 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-6 group-hover:bg-emerald-500/30 transition">
-                <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 flex items-center justify-center mb-6 group-hover:from-emerald-500/40 group-hover:to-emerald-600/30 transition-all duration-300 shadow-lg shadow-emerald-500/20">
+                <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-white mb-3">Restaurantes</h3>
-              <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+              <h3 class="text-2xl font-bold text-white mb-4">Restaurantes</h3>
+              <p class="text-slate-300 text-base mb-8 leading-relaxed">
                 Para restaurantes que querem ter controle total do financeiro, precificação correta e previsibilidade para compras e equipe.
               </p>
               <a href="/restaurantes" 
-                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-medium hover:bg-emerald-500/30 hover:text-emerald-200 transition-all duration-200 text-sm group-hover:scale-105">
-                <span>Saiba mais</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                 class="group/btn inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold hover:from-emerald-400 hover:to-emerald-500 transition-all duration-300 text-base shadow-lg shadow-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/50 hover:scale-105 hover:brightness-110 relative overflow-hidden">
+                <span class="relative z-10">Saiba mais</span>
+                <svg class="w-5 h-5 relative z-10 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-300/20 to-emerald-400/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
               </a>
             </div>
           </div>
 
           <!-- Card Prestadores -->
-          <div class="group relative bg-slate-900/60 rounded-2xl border border-purple-500/30 p-8 hover:border-purple-500/60 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20">
-            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="group relative bg-gradient-to-br from-slate-900/80 to-slate-800/60 rounded-2xl border border-purple-500/40 p-8 hover:border-purple-500/80 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-1 backdrop-blur-xl">
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div class="relative z-10">
-              <div class="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6 group-hover:bg-purple-500/30 transition">
-                <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500/30 to-purple-600/20 flex items-center justify-center mb-6 group-hover:from-purple-500/40 group-hover:to-purple-600/30 transition-all duration-300 shadow-lg shadow-purple-500/20">
+                <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-white mb-3">Prestadores de Serviço</h3>
-              <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+              <h3 class="text-2xl font-bold text-white mb-4">Prestadores de Serviço</h3>
+              <p class="text-slate-300 text-base mb-8 leading-relaxed">
                 Para prestadores que querem separar pessoal de empresa e ter clareza real do que sobra para reinvestir.
               </p>
               <a href="/prestadores" 
-                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-purple-500/20 text-purple-300 font-medium hover:bg-purple-500/30 hover:text-purple-200 transition-all duration-200 text-sm group-hover:scale-105">
-                <span>Saiba mais</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                 class="group/btn inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold hover:from-purple-400 hover:to-purple-500 transition-all duration-300 text-base shadow-lg shadow-purple-500/40 hover:shadow-xl hover:shadow-purple-500/50 hover:scale-105 hover:brightness-110 relative overflow-hidden">
+                <span class="relative z-10">Saiba mais</span>
+                <svg class="w-5 h-5 relative z-10 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-purple-300/20 to-purple-400/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
               </a>
             </div>
           </div>
@@ -735,11 +738,11 @@
           </div>
           <div class="relative z-10">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-              <div class="space-y-2">
-                <p class="text-sm font-semibold text-blue-200 uppercase tracking-wide">Diagnóstico</p>
+            <div class="space-y-2">
+              <p class="text-sm font-semibold text-blue-200 uppercase tracking-wide">Diagnóstico</p>
                 <h3 class="text-3xl font-semibold text-white">Quer saber onde o dinheiro está "vazando"?</h3>
-                <p class="text-slate-200">Encontre o que trava seu caixa e receba um plano de ação claro.</p>
-              </div>
+              <p class="text-slate-200">Encontre o que trava seu caixa e receba um plano de ação claro.</p>
+            </div>
             </div>
             <!-- Formulário de diagnóstico -->
             <form class="grid md:grid-cols-2 gap-4" #diagnosticoForm="ngForm">
@@ -806,7 +809,7 @@
                 Enviar por WhatsApp
               </button>
             </div>
-            </form>
+          </form>
           </div>
         </div>
       </div>
