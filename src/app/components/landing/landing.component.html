@@ -156,8 +156,8 @@
          class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"></div>
   </header>
 
-  <main class="relative space-y-28 pb-24 pt-10">
-    <!-- Hero Section -->
+  <main class="relative space-y-20 pb-24 pt-10">
+    <!-- Hero Section - Focada em Financeiro -->
     <section *ngIf="!segmentoAtual" class="relative pt-20 pb-16">
       <div class="max-w-6xl mx-auto px-4">
         <div class="text-center space-y-6">
@@ -175,12 +175,184 @@
             >
               Começar diagnóstico gratuito
             </button>
-            <a href="#agencias" class="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors text-base md:text-lg">
+            <a href="#perfis" class="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors text-base md:text-lg">
               <span>Conheça nossas soluções</span>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção de Direcionamento por Perfil -->
+    <section *ngIf="!segmentoAtual" id="perfis" class="scroll-mt-24">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Soluções personalizadas para o seu negócio
+          </h2>
+          <p class="text-lg text-slate-300 max-w-2xl mx-auto">
+            Escolha o perfil que melhor se encaixa com sua empresa e descubra como podemos ajudar
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Card Agências -->
+          <div class="group relative bg-slate-900/60 rounded-2xl border border-blue-500/30 p-8 hover:border-blue-500/60 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="relative z-10">
+              <div class="w-14 h-14 rounded-xl bg-blue-500/20 flex items-center justify-center mb-6 group-hover:bg-blue-500/30 transition">
+                <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">Agências de Marketing</h3>
+              <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+                Para agências que precisam de controle financeiro por cliente e previsibilidade de caixa para crescer com segurança.
+              </p>
+              <a href="/agencias" 
+                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-500/20 text-blue-300 font-medium hover:bg-blue-500/30 hover:text-blue-200 transition-all duration-200 text-sm group-hover:scale-105">
+                <span>Saiba mais</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Card Restaurantes -->
+          <div class="group relative bg-slate-900/60 rounded-2xl border border-emerald-500/30 p-8 hover:border-emerald-500/60 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/20">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="relative z-10">
+              <div class="w-14 h-14 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-6 group-hover:bg-emerald-500/30 transition">
+                <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">Restaurantes</h3>
+              <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+                Para restaurantes que querem ter controle total do financeiro, precificação correta e previsibilidade para compras e equipe.
+              </p>
+              <a href="/restaurantes" 
+                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-medium hover:bg-emerald-500/30 hover:text-emerald-200 transition-all duration-200 text-sm group-hover:scale-105">
+                <span>Saiba mais</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Card Prestadores -->
+          <div class="group relative bg-slate-900/60 rounded-2xl border border-purple-500/30 p-8 hover:border-purple-500/60 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20">
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="relative z-10">
+              <div class="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6 group-hover:bg-purple-500/30 transition">
+                <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">Prestadores de Serviço</h3>
+              <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+                Para prestadores que querem separar pessoal de empresa e ter clareza real do que sobra para reinvestir.
+              </p>
+              <a href="/prestadores" 
+                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-purple-500/20 text-purple-300 font-medium hover:bg-purple-500/30 hover:text-purple-200 transition-all duration-200 text-sm group-hover:scale-105">
+                <span>Saiba mais</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Diagnóstico -->
+    <section *ngIf="!segmentoAtual" class="relative">
+      <div class="max-w-4xl mx-auto px-4">
+        <div class="bg-gradient-to-br from-blue-500/20 via-emerald-400/20 to-blue-500/20 rounded-2xl border border-blue-500/30 p-8 md:p-12 text-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-emerald-400/10 opacity-50"></div>
+          <div class="relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+              Quer saber onde o dinheiro está "vazando"?
+            </h2>
+            <p class="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
+              Faça um diagnóstico rápido e sem compromisso. Descubra o que trava seu caixa e receba um plano de ação claro.
+            </p>
+            <button
+              (click)="scrollToDiagnostico()"
+              class="inline-flex justify-center items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-blue-500 to-emerald-400 text-white font-semibold shadow-xl shadow-blue-500/40 hover:shadow-2xl hover:brightness-110 transition text-base md:text-lg"
+            >
+              Fazer diagnóstico gratuito
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Depoimentos -->
+    <section *ngIf="!segmentoAtual" class="relative">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            O que nossos clientes dizem
+          </h2>
+          <p class="text-lg text-slate-300">
+            Empresas que transformaram seu financeiro com a Finzzia
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Depoimento 1 -->
+          <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-emerald-400 flex items-center justify-center text-white font-bold text-lg">
+                O
+              </div>
+              <div>
+                <p class="font-semibold text-white">Oduo</p>
+                <p class="text-sm text-slate-400">Agência de Marketing</p>
+              </div>
+            </div>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              "A Finzzia trouxe previsibilidade que não tínhamos. Agora sabemos exatamente quanto sobra por cliente e podemos tomar decisões com segurança."
+            </p>
+          </div>
+
+          <!-- Depoimento 2 -->
+          <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-green-400 flex items-center justify-center text-white font-bold text-lg">
+                K
+              </div>
+              <div>
+                <p class="font-semibold text-white">Restaurante Kaipon</p>
+                <p class="text-sm text-slate-400">Restaurante</p>
+              </div>
+            </div>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              "Depois que organizamos o financeiro com a Finzzia, conseguimos crescer com muito mais segurança. A precificação ficou correta e temos previsibilidade real."
+            </p>
+          </div>
+
+          <!-- Depoimento 3 -->
+          <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-white font-bold text-lg">
+                V
+              </div>
+              <div>
+                <p class="font-semibold text-white">Veduc</p>
+                <p class="text-sm text-slate-400">Agência de Marketing</p>
+              </div>
+            </div>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              "O acompanhamento mensal e os insights da Finzzia mudaram como tomamos decisões. Agora é tudo baseado em números, não em achismo."
+            </p>
           </div>
         </div>
       </div>
@@ -548,7 +720,7 @@
     </section>
 
     <!-- Diagnóstico -->
-    <section id="diagnostico" class="pt-6 scroll-mt-24">
+    <section id="diagnostico" class="pt-6 scroll-mt-24" [class.mt-20]="!segmentoAtual">
       <div class="max-w-5xl mx-auto px-4">
         <div class="bg-slate-900/80 rounded-2xl shadow-2xl border border-blue-500/40 p-8 md:p-10 space-y-6 backdrop-blur-xl overflow-hidden relative">
           <!-- Imagem de fundo decorativa -->
