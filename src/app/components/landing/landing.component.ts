@@ -57,8 +57,9 @@ export class LandingComponent implements OnInit {
 
   // Verificar se deve mostrar uma seção específica
   mostrarSecao(secao: string): boolean {
+    // Só mostrar seções quando há um segmento específico (não na home)
     if (!this.segmentoAtual) {
-      return true; // Mostrar todas as seções se não houver segmento específico
+      return false; // Não mostrar seções na home
     }
     // Mapear nomes das seções (o que vem na rota vs o ID da seção)
     const mapeamento: { [key: string]: string[] } = {
