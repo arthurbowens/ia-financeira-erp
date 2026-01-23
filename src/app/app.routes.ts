@@ -23,6 +23,11 @@ export const routes: Routes = [
     data: { segmento: 'agencias' }
   },
   {
+    path: 'diagnostico',
+    loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent),
+    data: { apenasDiagnostico: true }
+  },
+  {
     path: 'login',
     loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
   },

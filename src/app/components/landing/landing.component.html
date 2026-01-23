@@ -34,7 +34,7 @@
             <span class="relative z-10">Prestadores</span>
             <span class="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></span>
           </a>
-          <a href="#diagnostico" 
+          <a href="/diagnostico" 
              (click)="fecharMenuMobile()"
              class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 relative group">
             <span class="relative z-10">Diagnóstico</span>
@@ -109,8 +109,8 @@
             <span>Prestadores</span>
           </a>
           
-          <a href="#diagnostico" 
-             (click)="scrollToDiagnostico(); fecharMenuMobile()"
+          <a href="/diagnostico" 
+             (click)="fecharMenuMobile()"
              class="flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-white hover:bg-blue-500/10 transition-all duration-200 group">
             <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-emerald-400/20 flex items-center justify-center group-hover:from-blue-500/30 group-hover:to-emerald-400/30 transition">
               <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,7 +144,7 @@
 
   <main class="relative space-y-20 pb-24 pt-10">
     <!-- Hero Section - Focada em Financeiro -->
-    <section *ngIf="!segmentoAtual" class="relative pt-20 pb-16">
+    <section *ngIf="!segmentoAtual && !apenasDiagnostico" class="relative pt-20 pb-16">
       <div class="max-w-6xl mx-auto px-4">
         <div class="text-center space-y-6">
           <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
@@ -173,7 +173,7 @@
     </section>
 
     <!-- Seção de Direcionamento por Perfil -->
-    <section *ngIf="!segmentoAtual" id="perfis" class="scroll-mt-24">
+    <section *ngIf="!segmentoAtual && !apenasDiagnostico" id="perfis" class="scroll-mt-24">
       <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-16">
           <h2 class="text-4xl md:text-5xl font-bold text-white mb-5">
@@ -261,7 +261,7 @@
     </section>
 
     <!-- CTA Diagnóstico -->
-    <section *ngIf="!segmentoAtual" class="relative">
+    <section *ngIf="!segmentoAtual && !apenasDiagnostico" class="relative">
       <div class="max-w-4xl mx-auto px-4">
         <div class="bg-gradient-to-br from-blue-500/20 via-emerald-400/20 to-blue-500/20 rounded-2xl border border-blue-500/30 p-8 md:p-12 text-center relative overflow-hidden">
           <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-emerald-400/10 opacity-50"></div>
@@ -284,7 +284,7 @@
     </section>
 
     <!-- Depoimentos -->
-    <section *ngIf="!segmentoAtual" class="relative">
+    <section *ngIf="!segmentoAtual && !apenasDiagnostico" class="relative">
       <div class="max-w-6xl mx-auto px-4">
         <div class="text-center mb-12">
           <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -357,12 +357,10 @@
               Agências de Marketing
             </p>
             <h1 class="text-4xl md:text-5xl font-semibold text-white leading-tight tracking-tight">
-              Sua agência não precisa faturar mais pra respirar — precisa de controle e previsibilidade
+              Sua agência não precisa faturar mais pra respirar precisa de controle e previsibilidade
             </h1>
             <p class="text-lg text-slate-300 max-w-xl">
-              A Finzzia organiza o financeiro da sua agência (contas a pagar/receber, conciliação, notas, fluxo de caixa e
-              indicadores), recupera inadimplentes e te entrega clareza do que sobra de verdade por cliente, por mês e por
-              operação.
+              A Finzzia organiza o financeiro da sua agência (contas a pagar/receber, conciliação, notas, fluxo de caixa e indicadores), recupera inadimplentes e te entrega clareza para você tomar melhores decisões.
             </p>
             <ul class="space-y-3 text-slate-100 text-sm md:text-base">
               <li class="flex gap-3">
@@ -407,17 +405,10 @@
           <div class="order-3 md:col-span-2 bg-slate-900/60 rounded-2xl shadow-2xl border border-slate-700/60 p-6 space-y-6 backdrop-blur-xl">
             <div class="space-y-2">
               <h3 class="text-xl font-semibold text-slate-50">
-                Se o caixa some, o problema não é só venda — é gestão do dinheiro no ritmo da operação
+                Se o caixa some, o problema não é só venda é também na gestão do dinheiro
               </h3>
-              <p class="text-slate-300">Agência sofre quando:</p>
-              <ul class="space-y-2 text-slate-300 text-sm">
-                <li class="flex gap-2"><span class="text-blue-300">•</span> Recebe em datas diferentes, paga equipe fixo e vira bola de neve</li>
-                <li class="flex gap-2"><span class="text-blue-300">•</span> Não tem visão clara do fluxo de caixa</li>
-                <li class="flex gap-2"><span class="text-blue-300">•</span> Mistura dinheiro pessoal com empresarial</li>
-                <li class="flex gap-2"><span class="text-blue-300">•</span> Decide contratação e expansão sem números reais</li>
-              </ul>
               <p class="text-blue-300 font-semibold text-sm md:text-base">
-                Faturar R$ X e viver no sufoco é sinal de falta de previsibilidade — não de falta de esforço.
+                Faturar X e viver no sufoco é sinal de falta de previsibilidade e não de falta de esforço.
               </p>
             </div>
             <div class="space-y-3">
@@ -439,7 +430,7 @@
             </div>
             <div class="space-y-2">
               <h4 class="font-semibold text-slate-100 text-sm uppercase tracking-wide">
-                BPO Financeiro completo + leitura dos números (pra você saber o que fazer)
+                BPO Financeiro completo + interpretação (para você saber o próximo passo)
               </h4>
               <ul class="space-y-2 text-slate-300 text-sm">
                 <li class="flex gap-2"><span class="text-blue-300">•</span> Não é só ferramenta: a Finzzia interpreta e te guia</li>
@@ -451,7 +442,7 @@
                   (click)="scrollToDiagnostico()"
                   class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-400/70 text-blue-100 text-xs font-semibold hover:bg-blue-500/10 transition"
                 >
-                  Quer saber onde o dinheiro está “vazando” na sua agência? Agendar diagnóstico
+                  Quer saber onde o dinheiro está "vazando" na sua agência? Clique aqui e agende seu diagnóstico.
                 </button>
               </div>
             </div>
@@ -479,7 +470,7 @@
           <div class="order-1 md:order-2 space-y-6">
             <div class="space-y-2">
               <h3 class="text-xl font-semibold text-slate-50">
-                O problema não é só vender — é vender e não ver o dinheiro
+                O problema não é só vender, é vender e não ver o dinheiro
               </h3>
               <p class="text-slate-300">No restaurante, o financeiro desanda quando:</p>
               <ul class="space-y-2 text-slate-300 text-sm">
@@ -524,20 +515,23 @@
               Restaurantes
             </p>
             <h2 class="text-4xl md:text-5xl font-semibold text-white leading-tight">
-              Restaurante que cresce sem controle financeiro vira refém do caixa
+              O problema não é só vender. É vender e não ver o dinheiro.
             </h2>
             <p class="text-lg text-slate-300">
-              A Finzzia coloca ordem no seu financeiro (pagamentos, recebimentos, conciliação, notas, fluxo de caixa e
-              indicadores) e te dá clareza e previsibilidade pra você decidir com segurança.
+              A Finzzia coloca ordem no seu financeiro (pagamentos, recebimentos, conciliação, notas, fluxo de caixa e indicadores) e te dá clareza e previsibilidade pra você decidir com segurança.
             </p>
             <ul class="space-y-3 text-slate-100 text-sm md:text-base">
               <li class="flex gap-3">
                 <span class="mt-1 h-5 w-5 rounded-full bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center text-[10px] text-emerald-200">✓</span>
-                <span>Saiba o que entra e o que sai com clareza (sem “surpresa” no fim do mês)</span>
+                <span>Mistura de gastos pessoais e do negócio</span>
               </li>
               <li class="flex gap-3">
                 <span class="mt-1 h-5 w-5 rounded-full bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center text-[10px] text-emerald-200">✓</span>
-                <span>Tenha a precificação correta</span>
+                <span>Saiba o que entra e o que sai sem "surpresa" no fim do mês</span>
+              </li>
+              <li class="flex gap-3">
+                <span class="mt-1 h-5 w-5 rounded-full bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center text-[10px] text-emerald-200">✓</span>
+                <span>Precifique corretamente</span>
               </li>
               <li class="flex gap-3">
                 <span class="mt-1 h-5 w-5 rounded-full bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center text-[10px] text-emerald-200">✓</span>
@@ -565,7 +559,7 @@
           <div class="order-3 md:col-span-2 bg-slate-900/60 rounded-2xl shadow-2xl p-6 border border-emerald-500/40 space-y-6 backdrop-blur-xl">
             <div class="space-y-2">
               <h3 class="text-xl font-semibold text-slate-50">
-                O problema não é só vender — é vender e não ver o dinheiro
+                O problema não é só vender, é vender e não ver o dinheiro
               </h3>
               <p class="text-slate-300">No restaurante, o financeiro desanda quando:</p>
               <ul class="space-y-2 text-slate-300 text-sm">
@@ -618,11 +612,10 @@
               Prestadores de Serviço
             </p>
             <h2 class="text-4xl md:text-5xl font-semibold text-white leading-tight">
-              Pare de trabalhar muito e continuar sem clareza do dinheiro
+              Pare de trabalhar demais e seguir sem clareza financeira.
             </h2>
             <p class="text-lg text-slate-300">
-              A Finzzia cuida do seu financeiro (contas a pagar/receber, conciliação, notas, fluxo de caixa e indicadores) e
-              te entrega clareza real do que sobra, pra você parar de decidir no achismo.
+              A Finzzia cuida do seu financeiro (contas a pagar/receber, conciliação, notas, fluxo de caixa e indicadores) e te entrega clareza real do que sobra, para você parar de decidir no achismo.
             </p>
             <ul class="space-y-3 text-slate-100 text-sm md:text-base">
               <li class="flex gap-3">
@@ -687,7 +680,7 @@
             </div>
             <div class="space-y-2">
               <h4 class="font-semibold text-slate-100 text-sm uppercase tracking-wide">
-                BPO Financeiro completo + interpretação (pra você saber o próximo passo)
+                BPO Financeiro completo + interpretação (para você saber o próximo passo)
               </h4>
               <ul class="space-y-2 text-slate-300 text-sm">
                 <li class="flex gap-2"><span class="text-purple-300">•</span> Gerente exclusivo</li>
@@ -709,8 +702,8 @@
     </section>
 
     <!-- Diagnóstico -->
-    <section id="diagnostico" class="pt-6 scroll-mt-24" [class.mt-20]="!segmentoAtual">
-      <div class="max-w-5xl mx-auto px-4">
+    <section id="diagnostico" class="pt-6 scroll-mt-24" [class.mt-20]="!segmentoAtual && !apenasDiagnostico" [class.min-h-screen]="apenasDiagnostico" [class.flex]="apenasDiagnostico" [class.items-center]="apenasDiagnostico">
+      <div class="max-w-5xl mx-auto px-4" [class.w-full]="apenasDiagnostico">
         <div class="bg-slate-900/80 rounded-2xl shadow-2xl border border-blue-500/40 p-8 md:p-10 space-y-6 backdrop-blur-xl overflow-hidden relative">
           <!-- Imagem de fundo decorativa -->
           <div class="absolute top-0 right-0 w-96 h-96 opacity-10 pointer-events-none">
@@ -802,7 +795,7 @@
     </section>
   </main>
 
-  <footer class="relative bg-slate-950/90 text-slate-200 py-10 mt-10 border-t border-white/5">
+  <footer *ngIf="!apenasDiagnostico" class="relative bg-slate-950/90 text-slate-200 py-10 mt-10 border-t border-white/5">
     <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-3">
         <img src="assets/images/finnzialogo.png" alt="Finzzia" class="h-12 w-auto drop-shadow-lg" />

@@ -25,6 +25,9 @@ export class LandingComponent implements OnInit {
   // Segmento atual (para mostrar apenas uma seção)
   segmentoAtual: string | null = null;
 
+  // Se deve mostrar apenas o formulário de diagnóstico
+  apenasDiagnostico: boolean = false;
+
   // Estado do menu mobile
   menuMobileAberto = false;
 
@@ -34,6 +37,9 @@ export class LandingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Verificar se deve mostrar apenas o diagnóstico
+    this.apenasDiagnostico = this.route.snapshot.data['apenasDiagnostico'] || false;
+    
     // Verificar se há um segmento específico na rota
     this.segmentoAtual = this.route.snapshot.data['segmento'] || null;
     
@@ -48,7 +54,7 @@ export class LandingComponent implements OnInit {
     }
     
     // Se houver segmento específico, fazer scroll automático após um pequeno delay
-    if (this.segmentoAtual) {
+    if (this.segmentoAtual && !this.apenasDiagnostico) {
       setTimeout(() => {
         this.scrollToSegmento(this.segmentoAtual!);
       }, 300);
@@ -108,6 +114,18 @@ export class LandingComponent implements OnInit {
   }
 
   scrollToDiagnostico(): void {
+    // Se estiver na rota de diagnóstico, não precisa fazer nada
+    if (this.apenasDiagnostico) {
+      return;
+    }
+    
+    // Se estiver na home ou em outra página, redirecionar para /diagnostico
+    if (!this.segmentoAtual) {
+      this.router.navigate(['/diagnostico']);
+      return;
+    }
+    
+    // Se estiver em uma página de segmento, fazer scroll
     const el = document.getElementById('diagnostico');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });

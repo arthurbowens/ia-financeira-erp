@@ -83,14 +83,15 @@ export class AppComponent {
   isAuthPublicPage(): boolean {
     const url = this.router.url.split('?')[0].split('#')[0];
     // Landing (/) e telas de auth não exibem o layout interno do app
-    // Verifica se é a rota raiz (landing page), páginas de segmento ou páginas de autenticação
+    // Verifica se é a rota raiz (landing page), páginas de segmento, diagnóstico ou páginas de autenticação
     return url === '/' || 
            url === '/login' || 
            url === '/esqueci-senha' || 
            url === '' ||
            url === '/restaurantes' ||
            url === '/prestadores' ||
-           url === '/agencias';
+           url === '/agencias' ||
+           url === '/diagnostico';
   }
 
   toggleUserMenu(event?: MouseEvent) {
