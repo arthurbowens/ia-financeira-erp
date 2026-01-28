@@ -186,5 +186,12 @@ Diagnóstico rápido. Sem compromisso.`;
     // Abrir WhatsApp em nova aba
     window.open(whatsappUrl, '_blank');
   }
+
+  // Método para obter a URL do WhatsApp para o botão flutuante
+  getWhatsAppUrl(): string {
+    const mensagem = 'Olá! Gostaria de saber mais sobre a Finzzia.';
+    const mensagemEncoded = encodeURIComponent(mensagem);
+    return `https://wa.me/${this.whatsappNumber}?text=${mensagemEncoded}`;
+  }
 }
 
