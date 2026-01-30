@@ -45,7 +45,14 @@ export const API_CONFIG = {
   })(),
 
   // Flag para usar login mockado no front (false = usar backend real)
-  USE_BACKEND_MOCK_AUTH: false
+  USE_BACKEND_MOCK_AUTH: false,
+
+  // ===========================
+  // CLINT - INTEGRAÇÃO WEBHOOK
+  // ===========================
+  // Webhook da Clint para integração de formulários
+  // IMPORTANTE: Este webhook é público e seguro, mas não deve ser exposto em repositórios públicos
+  CLINT_WEBHOOK_URL: 'https://functions-api.clint.digital/endpoints/integration/webhook/1a4381ef-bc1a-4a6f-81a9-8ce684649adb'
 };
 
 // INSTRUÇÕES PARA APIs GRATUITAS:

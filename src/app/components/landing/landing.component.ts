@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ClintService } from '../../services/clint.service';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ export class LandingComponent implements OnInit {
   formData = {
     nome: '',
     email: '',
+    telefone: '',
     segmento: '',
     faturamento: '',
     contexto: ''
@@ -31,9 +33,13 @@ export class LandingComponent implements OnInit {
   // Estado do menu mobile
   menuMobileAberto = false;
 
+  // Estado de envio
+  enviandoClint = false;
+
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private clintService: ClintService
   ) {}
 
   ngOnInit(): void {
@@ -132,6 +138,28 @@ export class LandingComponent implements OnInit {
     }
   }
 
+  /**
+   * Envia o formulário para a Clint
+   */
+  enviarFormulario(event?: Event): void {
+    // Prevenir comportamento padrão do formulário
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    console.log('Enviando formulário...', this.formData);
+
+    // Validação básica
+    if (!this.formData.nome || !this.formData.email) {
+      alert('Por favor, preencha pelo menos o nome e email.');
+      return;
+    }
+
+    // Enviar para a Clint
+    this.enviarParaClint();
+  }
+
   enviarDiagnosticoWhatsApp(event?: Event): void {
     // Prevenir comportamento padrão do formulário
     if (event) {
@@ -146,6 +174,9 @@ export class LandingComponent implements OnInit {
       alert('Por favor, preencha pelo menos o nome e email.');
       return;
     }
+
+    // Enviar para a Clint primeiro
+    this.enviarParaClint();
 
     // Determinar mensagem final baseada no segmento
     let mensagemFinal = '';
@@ -165,6 +196,7 @@ export class LandingComponent implements OnInit {
 *Dados do Contato:*
 • Nome: ${this.formData.nome}
 • Email: ${this.formData.email}
+• Telefone: ${this.formData.telefone || 'Não informado'}
 • Segmento: ${this.formData.segmento || 'Não informado'}
 • Faturamento mensal aproximado: ${this.formData.faturamento || 'Não informado'}
 
@@ -185,6 +217,123 @@ Diagnóstico rápido. Sem compromisso.`;
     
     // Abrir WhatsApp em nova aba
     window.open(whatsappUrl, '_blank');
+  }
+
+  /**
+   * Extrai DDI e número do telefone
+   */
+  private extrairDDIeTelefone(telefone: string): { ddi: string; phone: string } {
+    if (!telefone) {
+      return { ddi: '', phone: '' };
+    }
+
+    // Remove caracteres não numéricos
+    const numeros = telefone.replace(/\D/g, '');
+
+    // Se começar com 55 (Brasil), extrai DDI
+    if (numeros.startsWith('55') && numeros.length >= 12) {
+      return {
+        ddi: '55',
+        phone: numeros.substring(2) // Remove o 55 do início
+      };
+    }
+
+    // Se começar com 0 e depois 55, remove o 0
+    if (numeros.startsWith('055') && numeros.length >= 13) {
+      return {
+        ddi: '55',
+        phone: numeros.substring(3)
+      };
+    }
+
+    // Se não tiver DDI explícito, assume Brasil (55) e usa o número completo
+    if (numeros.length >= 10) {
+      return {
+        ddi: '55',
+        phone: numeros
+      };
+    }
+
+    // Caso padrão
+    return {
+      ddi: '55',
+      phone: numeros
+    };
+  }
+
+  /**
+   * Envia os dados do formulário para a Clint via webhook
+   */
+  enviarParaClint(): void {
+    this.enviandoClint = true;
+
+    // Extrair DDI e telefone
+    const { ddi, phone } = this.extrairDDIeTelefone(this.formData.telefone);
+
+    // Preparar dados para a Clint
+    // A Clint espera campos customizados dentro do objeto 'fields'
+    // Os nomes dos campos devem corresponder aos campos configurados na Clint
+    const contactData: any = {
+      name: this.formData.nome,
+      email: this.formData.email,
+      username: this.formData.email.split('@')[0], // Usa a parte antes do @ como username
+      fields: {}
+    };
+
+    // Adicionar telefone e DDI apenas se preenchidos
+    if (phone) {
+      contactData.ddi = ddi;
+      contactData.phone = phone;
+    }
+
+    // Adicionar campos customizados no objeto fields
+    // IMPORTANTE: Os nomes devem corresponder EXATAMENTE aos campos mapeados na Clint
+    
+    // Segmento → "Segmento" na Clint
+    if (this.formData.segmento) {
+      contactData.fields['Segmento'] = this.formData.segmento;
+    }
+
+    // Faturamento mensal aproximado → "Número de funcionários" na Clint
+    if (this.formData.faturamento) {
+      contactData.fields['Número de funcionários'] = this.formData.faturamento;
+    }
+
+    // Contexto / principal dor → "Notas do contato" na Clint
+    if (this.formData.contexto) {
+      contactData.fields['Notas do contato'] = this.formData.contexto;
+    }
+
+    // Campos adicionais de rastreamento
+    contactData.fields['Origem'] = 'Landing Page - Diagnóstico';
+    contactData.fields['Data de envio'] = new Date().toISOString();
+
+    this.clintService.createContact(contactData).subscribe({
+      next: (response) => {
+        console.log('Contato criado na Clint com sucesso:', response);
+        this.enviandoClint = false;
+        
+        // Mostrar mensagem de sucesso
+        alert('Formulário enviado com sucesso! Entraremos em contato em breve.');
+        
+        // Limpar formulário após sucesso
+        this.formData = {
+          nome: '',
+          email: '',
+          telefone: '',
+          segmento: '',
+          faturamento: '',
+          contexto: ''
+        };
+      },
+      error: (error) => {
+        console.error('Erro ao enviar para a Clint:', error);
+        this.enviandoClint = false;
+        
+        // Mostrar mensagem de erro
+        alert('Erro ao enviar formulário. Por favor, tente novamente ou entre em contato pelo WhatsApp.');
+      }
+    });
   }
 
   // Método para obter a URL do WhatsApp para o botão flutuante
