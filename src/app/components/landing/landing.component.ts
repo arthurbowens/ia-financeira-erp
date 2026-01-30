@@ -138,6 +138,7 @@ export class LandingComponent implements OnInit {
     }
   }
 
+
   /**
    * Envia o formulário para a Clint
    */

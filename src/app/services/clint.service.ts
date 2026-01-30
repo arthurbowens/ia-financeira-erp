@@ -26,25 +26,26 @@ export interface ClintContactResponse {
   providedIn: 'root'
 })
 export class ClintService {
-  // Usa o webhook da Clint configurado no api.config.ts
-  private readonly webhookUrl = API_CONFIG.CLINT_WEBHOOK_URL;
+  // Endpoint do backend que faz proxy para o webhook da Clint
+  // Isso resolve o problema de CORS, pois o backend faz a requisição
+  private readonly backendUrl = `${API_CONFIG.BACKEND_API_URL}/api/clint/webhook`;
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Envia dados do formulário para a Clint via webhook
-   * O webhook já está configurado com o mapeamento de campos na plataforma Clint
+   * Envia dados do formulário para a Clint via backend
+   * O backend faz o proxy para o webhook da Clint, resolvendo problemas de CORS
    */
   createContact(contact: ClintContactRequest): Observable<ClintContactResponse> {
-    console.log('Enviando para webhook:', this.webhookUrl);
-    console.log('Dados enviados:', contact);
+    console.log('Enviando formulário...', contact);
+    console.log('Enviando para endpoint do backend:', this.backendUrl);
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    // Webhook da Clint - envia os dados diretamente
-    // O webhook processa e cria o contato com o mapeamento configurado
-    return this.http.post<ClintContactResponse>(this.webhookUrl, contact, { headers });
+    // Chama o endpoint do backend que faz proxy para o webhook da Clint
+    // Isso resolve o problema de CORS, pois o backend faz a requisição HTTP
+    return this.http.post<ClintContactResponse>(this.backendUrl, contact, { headers });
   }
 }
