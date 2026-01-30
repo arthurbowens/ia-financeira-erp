@@ -176,8 +176,9 @@ export class LandingComponent implements OnInit {
       return;
     }
 
-    // Enviar para a Clint primeiro
-    this.enviarParaClint();
+    // Por enquanto, apenas enviar por WhatsApp
+    // TODO: Reativar integração com Clint quando necessário
+    // this.enviarParaClint();
 
     // Determinar mensagem final baseada no segmento
     let mensagemFinal = '';
