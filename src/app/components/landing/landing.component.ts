@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClintService } from '../../services/clint.service';
+import { GoogleSheetsService } from '../../services/google-sheets.service';
 
 @Component({
   standalone: true,
@@ -35,11 +36,14 @@ export class LandingComponent implements OnInit {
 
   // Estado de envio
   enviandoClint = false;
+  salvandoDiagnostico = false;
+  diagnosticoSalvo = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private clintService: ClintService
+    private clintService: ClintService,
+    private googleSheetsService: GoogleSheetsService
   ) {}
 
   ngOnInit(): void {
@@ -161,14 +165,12 @@ export class LandingComponent implements OnInit {
     this.enviarParaClint();
   }
 
-  enviarDiagnosticoWhatsApp(event?: Event): void {
+  salvarDiagnostico(event?: Event): void {
     // Prevenir comportamento padrão do formulário
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
-
-    console.log('Enviando diagnóstico...', this.formData);
 
     // Validação básica
     if (!this.formData.nome || !this.formData.email) {
@@ -176,49 +178,43 @@ export class LandingComponent implements OnInit {
       return;
     }
 
-    // Por enquanto, apenas enviar por WhatsApp
-    // TODO: Reativar integração com Clint quando necessário
-    // this.enviarParaClint();
+    // Estado de loading
+    this.salvandoDiagnostico = true;
+    this.diagnosticoSalvo = false;
 
-    // Determinar mensagem final baseada no segmento
-    let mensagemFinal = '';
-    if (this.segmentoAtual === 'restaurantes') {
-      mensagemFinal = 'Quero organizar o financeiro do meu restaurante.';
-    } else if (this.segmentoAtual === 'prestadores') {
-      mensagemFinal = 'Quero clareza do meu financeiro.';
-    } else if (this.segmentoAtual === 'agencias') {
-      mensagemFinal = 'Quero organizar o financeiro da minha agência.';
-    } else {
-      mensagemFinal = 'Quero organizar o financeiro da minha empresa.';
-    }
+    console.log('Salvando diagnóstico...', this.formData);
 
-    // Montar mensagem profissional e organizada
-    const mensagem = `Olá! Gostaria de agendar um diagnóstico financeiro.
-
-*Dados do Contato:*
-• Nome: ${this.formData.nome}
-• Email: ${this.formData.email}
-• Telefone: ${this.formData.telefone || 'Não informado'}
-• Segmento: ${this.formData.segmento || 'Não informado'}
-• Faturamento mensal aproximado: ${this.formData.faturamento || 'Não informado'}
-
-*Contexto / Principal Dor:*
-${this.formData.contexto || 'Não informado'}
-
----
-${mensagemFinal}
-Diagnóstico rápido. Sem compromisso.`;
-
-    // Codificar a mensagem para URL
-    const mensagemEncoded = encodeURIComponent(mensagem);
-    
-    // Criar link do WhatsApp
-    const whatsappUrl = `https://wa.me/${this.whatsappNumber}?text=${mensagemEncoded}`;
-    
-    console.log('Abrindo WhatsApp:', whatsappUrl);
-    
-    // Abrir WhatsApp em nova aba
-    window.open(whatsappUrl, '_blank');
+    // Salvar dados no Google Sheets
+    this.googleSheetsService.salvarDiagnostico({
+      nome: this.formData.nome,
+      email: this.formData.email,
+      telefone: this.formData.telefone,
+      segmento: this.formData.segmento,
+      faturamento: this.formData.faturamento,
+      contexto: this.formData.contexto
+    }).subscribe({
+      next: (result) => {
+        this.salvandoDiagnostico = false;
+        if (result.success) {
+          console.log('Dados salvos no Google Sheets com sucesso');
+          this.diagnosticoSalvo = true;
+          // Limpar formulário após salvar
+          this.limparFormulario();
+          // Esconder mensagem de sucesso após 5 segundos
+          setTimeout(() => {
+            this.diagnosticoSalvo = false;
+          }, 5000);
+        } else {
+          console.warn('Não foi possível salvar no Google Sheets:', result.message);
+          alert('Erro ao salvar diagnóstico. Por favor, tente novamente.');
+        }
+      },
+      error: (error) => {
+        this.salvandoDiagnostico = false;
+        console.error('Erro ao salvar no Google Sheets:', error);
+        alert('Erro ao salvar diagnóstico. Por favor, tente novamente.');
+      }
+    });
   }
 
   /**
@@ -336,6 +332,20 @@ Diagnóstico rápido. Sem compromisso.`;
         alert('Erro ao enviar formulário. Por favor, tente novamente ou entre em contato pelo WhatsApp.');
       }
     });
+  }
+
+  /**
+   * Limpa o formulário de diagnóstico
+   */
+  limparFormulario(): void {
+    this.formData = {
+      nome: '',
+      email: '',
+      telefone: '',
+      segmento: '',
+      faturamento: '',
+      contexto: ''
+    };
   }
 
   // Método para obter a URL do WhatsApp para o botão flutuante

@@ -52,7 +52,20 @@ export const API_CONFIG = {
   // ===========================
   // Webhook da Clint para integração de formulários
   // IMPORTANTE: Este webhook é público e seguro, mas não deve ser exposto em repositórios públicos
-  CLINT_WEBHOOK_URL: 'https://functions-api.clint.digital/endpoints/integration/webhook/1a4381ef-bc1a-4a6f-81a9-8ce684649adb'
+  CLINT_WEBHOOK_URL: 'https://functions-api.clint.digital/endpoints/integration/webhook/1a4381ef-bc1a-4a6f-81a9-8ce684649adb',
+
+  // ===========================
+  // GOOGLE SHEETS - INTEGRAÇÃO
+  // ===========================
+  // URL do Google Apps Script Web App para salvar diagnósticos
+  GOOGLE_SHEETS_WEB_APP_URL: (() => {
+    // Pode ser configurado via variável de ambiente
+    if (typeof process !== 'undefined' && process.env['GOOGLE_SHEETS_WEB_APP_URL']) {
+      return process.env['GOOGLE_SHEETS_WEB_APP_URL'];
+    }
+    // URL do Google Apps Script configurada
+    return 'https://script.google.com/macros/s/AKfycbzzaeEpB7exFpSgQPdpLoe1nnjXag4tM2Gg58B-K1oSznDHYmFnkmiTwAaMtJkomW42/exec';
+  })()
 };
 
 // INSTRUÇÕES PARA APIs GRATUITAS:
