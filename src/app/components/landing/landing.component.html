@@ -84,7 +84,7 @@
 
     <!-- Menu Mobile Lateral -->
     <div *ngIf="menuMobileAberto" 
-         class="lg:hidden fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-slate-950/98 backdrop-blur-xl shadow-2xl border-l border-white/10 transform transition-transform duration-300 ease-in-out">
+         class="lg:hidden fixed top-16 md:top-20 bottom-0 right-0 z-[60] w-full max-w-sm bg-slate-950/98 backdrop-blur-xl shadow-2xl border-l border-white/10 transform transition-transform duration-300 ease-in-out">
       <div class="flex flex-col h-full">
         <!-- Header do Menu Mobile -->
         <div class="flex items-center justify-between p-6 border-b border-white/10">
@@ -164,7 +164,7 @@
     <!-- Overlay para fechar menu mobile -->
     <div *ngIf="menuMobileAberto" 
          (click)="fecharMenuMobile()"
-         class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+         class="lg:hidden fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm transition-opacity"></div>
   </header>
 
   <main class="relative space-y-20 pb-24 pt-10">
