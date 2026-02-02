@@ -117,10 +117,16 @@ export class LandingComponent implements OnInit {
 
   toggleMenuMobile(): void {
     this.menuMobileAberto = !this.menuMobileAberto;
+    if (this.menuMobileAberto) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
   }
 
   fecharMenuMobile(): void {
     this.menuMobileAberto = false;
+    document.body.style.overflow = '';
   }
 
   scrollToDiagnostico(): void {
