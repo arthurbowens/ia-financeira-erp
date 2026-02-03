@@ -3,7 +3,7 @@
   "framework": "angular",
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist/ia-financeira-erp/browser",
-  "installCommand": "git lfs install && git lfs pull && npm install",
+  "installCommand": "npm install",
   "rewrites": [
     {
       "source": "/(.*)",
