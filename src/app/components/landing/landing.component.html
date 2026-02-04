@@ -639,111 +639,144 @@
 
     <!-- Depoimentos -->
     <section *ngIf="!segmentoAtual && !apenasDiagnostico" class="relative">
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+      <div class="max-w-7xl mx-auto px-4">
+        <!-- Título Principal -->
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             O que nossos clientes dizem
           </h2>
-          <p class="text-lg text-slate-300">
+          <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
             Empresas que transformaram seu financeiro com a Finzzia
           </p>
         </div>
 
-        <!-- Vídeos de Depoimento -->
-        <div class="mb-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          <!-- Depoimento 1 -->
-          <div class="relative w-full group">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-emerald-400/20 rounded-2xl blur-2xl group-hover:blur-3xl transition duration-500"></div>
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 bg-slate-900/60 backdrop-blur-xl aspect-square">
-              <video 
-                class="w-full h-full object-contain bg-slate-900"
-                controls
-                poster=""
-                preload="metadata">
-                <source src="/assets/videos/depoimento.mp4" type="video/mp4">
-                Seu navegador não suporta vídeo HTML5.
-              </video>
-            </div>
+        <!-- Seção de Vídeos -->
+        <div class="mb-20">
+          <div class="text-center mb-10">
+            <h3 class="text-2xl md:text-3xl font-bold text-white mb-2">
+              Depoimentos em vídeo
+            </h3>
+            <p class="text-slate-400">
+              Veja o que nossos clientes têm a dizer
+            </p>
           </div>
           
-          <!-- Depoimento 2 -->
-          <div class="relative w-full group">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-emerald-400/20 rounded-2xl blur-2xl group-hover:blur-3xl transition duration-500"></div>
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 bg-slate-900/60 backdrop-blur-xl aspect-square">
-              <video 
-                class="w-full h-full object-contain bg-slate-900"
-                controls
-                poster=""
-                preload="metadata">
-                <source src="/assets/videos/depoimento1.mp4" type="video/mp4">
-                Seu navegador não suporta vídeo HTML5.
-              </video>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- Vídeo 1 -->
+            <div class="relative w-full group">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-emerald-400/20 rounded-2xl blur-2xl group-hover:blur-3xl transition duration-500"></div>
+              <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 bg-slate-900/60 backdrop-blur-xl aspect-square">
+                <video 
+                  class="w-full h-full object-contain bg-slate-900"
+                  controls
+                  poster=""
+                  preload="metadata">
+                  <source src="/assets/videos/depoimento.mp4" type="video/mp4">
+                  Seu navegador não suporta vídeo HTML5.
+                </video>
+              </div>
             </div>
-          </div>
-          
-          <!-- Depoimento 3 -->
-          <div class="relative w-full group">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-emerald-400/20 rounded-2xl blur-2xl group-hover:blur-3xl transition duration-500"></div>
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 bg-slate-900/60 backdrop-blur-xl aspect-square">
-              <video 
-                class="w-full h-full object-contain bg-slate-900"
-                controls
-                poster=""
-                preload="metadata">
-                <source src="/assets/videos/depoimento2.mp4" type="video/mp4">
-                Seu navegador não suporta vídeo HTML5.
-              </video>
+            
+            <!-- Vídeo 2 -->
+            <div class="relative w-full group">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-emerald-400/20 rounded-2xl blur-2xl group-hover:blur-3xl transition duration-500"></div>
+              <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 bg-slate-900/60 backdrop-blur-xl aspect-square">
+                <video 
+                  class="w-full h-full object-contain bg-slate-900"
+                  controls
+                  poster=""
+                  preload="metadata">
+                  <source src="/assets/videos/depoimento1.mp4" type="video/mp4">
+                  Seu navegador não suporta vídeo HTML5.
+                </video>
+              </div>
+            </div>
+            
+            <!-- Vídeo 3 -->
+            <div class="relative w-full group">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-emerald-400/20 rounded-2xl blur-2xl group-hover:blur-3xl transition duration-500"></div>
+              <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 bg-slate-900/60 backdrop-blur-xl aspect-square">
+                <video 
+                  class="w-full h-full object-contain bg-slate-900"
+                  controls
+                  poster=""
+                  preload="metadata">
+                  <source src="/assets/videos/depoimento2.mp4" type="video/mp4">
+                  Seu navegador não suporta vídeo HTML5.
+                </video>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6">
-          <!-- Depoimento 1 -->
-          <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-emerald-400 flex items-center justify-center text-white font-bold text-lg">
-                O
-              </div>
-              <div>
-                <p class="font-semibold text-white">Oduo</p>
-                <p class="text-sm text-slate-400">Agência de Marketing</p>
-              </div>
-            </div>
-            <p class="text-slate-300 text-sm leading-relaxed">
-              "A Finzzia trouxe previsibilidade que não tínhamos. Agora sabemos exatamente quanto sobra por cliente e podemos tomar decisões com segurança."
+        <!-- Separador Visual -->
+        <div class="flex items-center justify-center mb-16">
+          <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+          <div class="px-6">
+            <div class="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-emerald-400"></div>
+          </div>
+          <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+        </div>
+
+        <!-- Seção de Depoimentos em Texto -->
+        <div>
+          <div class="text-center mb-10">
+            <h3 class="text-2xl md:text-3xl font-bold text-white mb-2">
+              Depoimentos escritos
+            </h3>
+            <p class="text-slate-400">
+              Leia o que nossos clientes compartilham
             </p>
           </div>
 
-          <!-- Depoimento 2 -->
-          <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-green-400 flex items-center justify-center text-white font-bold text-lg">
-                K
+          <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <!-- Depoimento 1 -->
+            <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl hover:border-blue-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-emerald-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  O
+                </div>
+                <div>
+                  <p class="font-semibold text-white">Oduo</p>
+                  <p class="text-sm text-slate-400">Agência de Marketing</p>
+                </div>
               </div>
-              <div>
-                <p class="font-semibold text-white">Restaurante Kaipon</p>
-                <p class="text-sm text-slate-400">Restaurante</p>
-              </div>
+              <p class="text-slate-300 text-sm leading-relaxed">
+                "A Finzzia trouxe previsibilidade que não tínhamos. Agora sabemos exatamente quanto sobra por cliente e podemos tomar decisões com segurança."
+              </p>
             </div>
-            <p class="text-slate-300 text-sm leading-relaxed">
-              "Depois que organizamos o financeiro com a Finzzia, conseguimos crescer com muito mais segurança. A precificação ficou correta e temos previsibilidade real."
-            </p>
-          </div>
 
-          <!-- Depoimento 3 -->
-          <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-white font-bold text-lg">
-                V
+            <!-- Depoimento 2 -->
+            <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl hover:border-emerald-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-green-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  K
+                </div>
+                <div>
+                  <p class="font-semibold text-white">Restaurante Kaipon</p>
+                  <p class="text-sm text-slate-400">Restaurante</p>
+                </div>
               </div>
-              <div>
-                <p class="font-semibold text-white">Veduc</p>
-                <p class="text-sm text-slate-400">Agência de Marketing</p>
-              </div>
+              <p class="text-slate-300 text-sm leading-relaxed">
+                "Depois que organizamos o financeiro com a Finzzia, conseguimos crescer com muito mais segurança. A precificação ficou correta e temos previsibilidade real."
+              </p>
             </div>
-            <p class="text-slate-300 text-sm leading-relaxed">
-              "O acompanhamento mensal e os insights da Finzzia mudaram como tomamos decisões. Agora é tudo baseado em números, não em achismo."
-            </p>
+
+            <!-- Depoimento 3 -->
+            <div class="bg-slate-900/60 rounded-2xl border border-slate-700/60 p-6 backdrop-blur-xl hover:border-purple-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  V
+                </div>
+                <div>
+                  <p class="font-semibold text-white">Veduc</p>
+                  <p class="text-sm text-slate-400">Agência de Marketing</p>
+                </div>
+              </div>
+              <p class="text-slate-300 text-sm leading-relaxed">
+                "O acompanhamento mensal e os insights da Finzzia mudaram como tomamos decisões. Agora é tudo baseado em números, não em achismo."
+              </p>
+            </div>
           </div>
         </div>
       </div>
